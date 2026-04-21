@@ -1,0 +1,1009 @@
+@extends('plantilla')
+@section('title', 'Perspectivas')
+@section('contenido')
+@php
+    use App\Models\Indicador;
+    use App\Models\IndicadorLleno;
+@endphp
+<style>
+/* Cuando el checkbox está seleccionado */
+.btn-check:checked + .custom-check {
+    background-color: #0d6efd; /* primary */
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+/* Hover opcional más bonito */
+.custom-check:hover {
+    background-color: #e7f1ff;
+}
+
+/* Opcional: transición suave */
+.custom-check {
+    transition: all 0.2s ease;
+}
+</style>
+
+
+<div class="container-fluid sticky-top">
+    <div class="row bg-primary  d-flex align-items-center">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-10  pt-2 text-white">
+            <h1 class="mt-1 mb-0 league-spartan">Objetivos</h1>
+            @if (session('success'))
+                <div class="text-white fw-bold ">
+                    <i class="fa fa-check-circle mx-2"></i>
+                    {{session('success')}}
+                </div>
+            @endif
+            @if (session('editado'))
+                <div class="text-white fw-bold ">
+                    <i class="fa fa-check-circle mx-2"></i>
+                    {{session('editado')}}
+                </div>
+            @endif
+
+            @if (session('eliminado'))
+                <div class="text-white fw-bold ">
+                    <i class="fa fa-check-circle mx-2"></i>
+                    {{session('eliminado')}}
+                </div>
+            @endif
+        
+            @if (session('encuesta_eliminada'))
+                <div class="text-danger fw-bold ">
+                    <i class="fa fa-check-circle mx-2"></i>
+                    {{session('encuesta_eliminada')}}
+                </div>
+            @endif
+            @if ($errors->any())
+                <div class="text-white fw-bold bad_notifications">
+                    <i class="fa fa-xmark-circle mx-2"></i>
+                    {{$errors->first()}}
+                </div>
+            @endif
+        </div>
+
+        <div class="col-12 cl-sm-12 col-md-6 col-lg-2 text-center ">
+            <form action="{{route('cerrar.session')}}" method="POST">
+                @csrf 
+                <button  class="btn btn-primary text-danger text-white fw-bold">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Cerrar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+    @include('admin.assets.nav')
+
+
+
+    <div class="row">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body py-3 px-4 text-center">
+
+                <form action="#" method="GET">
+                    <div class="d-flex flex-wrap align-items-end gap-3">
+
+                        <!-- Fecha inicio -->
+                        <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Desde</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                                </span>
+                                <input type="date"
+                                    name="fecha_inicio"
+                                    value="{{ request('fecha_inicio') ?? now()->format('Y-m-d') }}"
+                                    class="form-control border-0 bg-light datepicker"
+                                    onchange="this.form.submit()">
+                            </div>
+                        </div>
+
+                        <!-- Fecha fin -->
+                        <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Hasta</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-calendar-days text-danger"></i>
+                                </span>
+                                <input type="date"
+                                    name="fecha_fin"
+                                    value="{{ request('fecha_fin') ?? now()->format('Y-m-d') }}"
+                                    class="form-control border-0 bg-light datepicker"
+                                    onchange="this.form.submit()">
+                            </div>
+                        </div>
+
+                        <!-- Botón gráfica -->
+                        <div class="ms-auto">
+                                <a class="btn btn-primary btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_objetivo">
+                                    <i class="fa-solid fa-plus-circle me-2"></i>
+                                    Agregar Objetivos
+                                </a>                   
+                        </div>
+                </form>
+            </div>
+            <p class="text-muted mb-0 mt-3">
+                @php
+                    $ponderacion_objetivos = [];
+                    foreach ($objetivos as $key => $objetivo) {
+                        array_push($ponderacion_objetivos, $objetivo->ponderacion);
+                    }
+                @endphp
+                <div class="badge badge-lg  {{(array_sum($ponderacion_objetivos) != 100 ? 'badge-danger' : 'badge-success' )}} ">
+                    <i class="fa fa-exclamation-circle"></i>
+                    La suma de las ponderaciones de los Objetivos es: <b> {{array_sum($ponderacion_objetivos)}}% </b> 
+                </div>
+
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-8 col-sm-8 col-md-8 col-lg-6 col-xl-6 mb-4">
+            <div class="card bg-success p-4 text-white text-center" id="card_cumplimiento">
+                <h3>
+                   <i class="fa " id="icono_card_cumplimiento"></i> Cumplimiento
+                </h3>
+                
+                <h2 id="suma_cumplimientos"></h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+                <!-- Departamentos Grid -->
+            <div class="row g-4  justify-content-center">
+                @forelse ($objetivos as $objetivo)
+
+                    @php
+                        $indicadoresObjetivo = Indicador::where(
+                            'id_objetivo_perspectiva',
+                            $objetivo->id
+                        )->get();
+
+                        $suma=0;
+                        $suma_ponderacion=0;
+                    @endphp
+
+                    {{-- Todo esto para poder sacar la suma de las ponderaciones --}}
+                    @forelse($indicadoresObjetivo as $indicador_ponderacion)
+                        @php
+                            $suma_ponderacion = $suma_ponderacion + $indicador_ponderacion->ponderacion_indicador;
+                        @endphp
+                    @empty
+                    @endforelse
+
+                <div class="col-12 col-sm-12 col-md-11 col-lg-6 col-xl-6 ">
+                    <div class="card border-0 shadow-sm h-100 bg-light ">
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <!-- Nombre del Departamento -->
+                            <div class="row mb-1 row">
+                                <div class="col-12">
+                                    <h4 class="fw-bold mb-0 department-name text-truncate" data-mdb-tooltip-init title="{{ $objetivo->nombre }}" >
+                                        {{ $objetivo->nombre }}
+                                    </h4>
+                                    <h5 class="text-primary">
+                                        Peso en la Perspectiva:  <span class="fw-bold">{{ $objetivo->ponderacion }} %</span> 
+                                    </h5>
+                                    <h3 class="text-dark fw-bold">
+                                        Meta:  <span class="fw-bold">{{ $objetivo->meta }} %</span> 
+                                    </h3>
+                                    <h6 class=" badge badge-lg {{ ($suma_ponderacion === 100) ? 'badge-success' : 'badge-danger' }}">
+                                      <i class="fa fa-exclamation-circle"></i>  Suma de las ponderaciones de los indicadores:  <span class="fw-bold">{{ $suma_ponderacion }} %</span> 
+                                    </h6>
+                                </div>
+                                <hr>
+                                <div class="col-12 ">
+                                    <span class=" bungee-regular text-muted">Indicadores:</span>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row justify-content-center">
+
+
+                                    
+                                        @forelse($indicadoresObjetivo as $indicador)
+
+                                                <div class="col-11 my-2 p-2 m-1 rounded shadow-sm border border-2">
+
+                                                    
+                                                        <!-- Nombre -->
+                                                        <div class="fw-bold " style="font-size: 14px;">
+                                                              
+                                                            <a href="{{ route('analizar.indicador', $indicador->id) }}">
+                                                                {{ $indicador->nombre }} 
+                                                            </a>
+                                                            
+                                                            @if(!is_null($indicador->ponderacion_indicador))
+                                                                <span class="text-success">
+                                                                    -  Ponderacion: 
+                                                                    {{ $indicador->ponderacion_indicador }}%
+                                                                </span>
+                                                            @endif
+                                                            <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#pon{{ $indicador->id }}">
+                                                                <i class="fa fa-plus-circle"></i>
+                                                            </a>
+                                                            <a href="#" class="text-danger"></a>
+                                                        </div>
+                                                        <hr>
+                                                        <!-- Info secundaria -->
+                                                        <div class="d-flex gap-3 mt-1 flex-wrap text-muted" style="font-size: 13px;">
+
+                                                            <span>
+                                                                <i class="fa-solid fa-bullseye me-1"></i>
+                                                        Meta: {{ $indicador->meta_esperada }}
+                                                    </span>
+                                                    
+                                                    @php
+                                                        $informacion_indicadores = \App\Models\IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
+                                                        $array_datos = [];
+                                                        foreach($informacion_indicadores as $informacion_indicador){
+
+                                                            array_push($array_datos, $informacion_indicador->informacion_campo);
+                                                        
+                                                        }
+                                                        
+                                                    @endphp
+                                                    <span >
+                                                        <i class="fa-solid fa-gauge"></i>
+                                                        Promedio Cumplimiento: 
+                                                        
+
+                                                        @if (!empty($array_datos))
+                                                            <span class="fw-bold">
+
+                                                                @php
+                                                                    $promedio_cumplimiento;    
+                                                                @endphp
+                                                                
+                                                                @if ($indicador->tipo_indicador == "normal")
+                                                                    {{-- esta mamada la puse por que se les ocurrio que de repente la meta esperrada ya no era 100, era menos, epro a veces is alcanzaban el 100 y el cumplimiento se iba al mas del 100% de cumplimiento por que meta_esperada era 90 o algo asi --}}
+                                                                    @if ($indicador->unidad_medida == "porcentaje")
+                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
+                                                                    @else
+                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)   }} %
+                                                                    @endif
+
+                                                                @else
+
+                                                                    @if($indicador->unidad_medida == "porcentaje")
+                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2)  }} %
+
+                                                                    @else
+                                                                        {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
+                                                                    @endif
+
+                                                                @endif
+                                                            </span>
+                                                        
+                                                        @else
+
+                                                            <span class="fw-bold">0</span>
+                                                        
+                                                        @endif
+                                                    </span>
+                                                    <span>
+                                                        <i class="fa-solid fa-right-left"></i>
+                                                        Indicador vs Ponderación: 
+                                                    </span>
+                                                    @if (!empty($array_datos))
+                                                        <span class="fw-bold">
+                                                            {{round(($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100, 2)}} %
+                                                            {{-- esto es para completar la suma del cumplimiento general --}}
+                                                            @php
+                                                                $suma = $suma + ($indicador->ponderacion_indicador * $promedio_cumplimiento) / 100;
+                                                            @endphp
+                                                        </span>
+                                                    @else
+                                                        <span class="fw-bold">0</span>
+                                                    @endif
+                                                    
+                                                </div>
+
+                                                    
+
+                                                </div>
+{{-- 
+                                                         
+          
+                                                        
+            
+
+
+
+
+
+                                    {{-- modales para la ponderacion --}}
+                                            <div class="modal fade" id="pon{{ $indicador->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+                                                <div class="modal-dialog modal-sm modal-dialog-centered">
+                                                    <div class="modal-content border-0 shadow-lg">
+                                                        <div class="modal-header bg-primary text-white border-0 py-3">
+                                                            <span class="modal-title fw-bold" id="agregarDepartamentoLabel">
+                                                                <i class="fa-solid fa-plus-circle me-2"></i>
+                                                                Agregar Ponderación
+                                                            </span>
+                                                            <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body py-4">
+                                                            <form action="{{ route('agregar.ponderacion.indicador.objetivo', $indicador->id) }}" method="POST">
+                                                                @csrf
+                                                                <div class="form-outline" data-mdb-input-init>
+                                                                    <input type="text" class="form-control" id="ponderacion_indicador" name="ponderacion_indicador" |value="{{old('ponderacion_indicador')}}"required>
+                                                                    <label class="form-label" for="ponderacion_indicador">
+                                                                        Ponderación:
+                                                                        <span class="text-danger">*</span>
+                                                                    </label>
+                                                                    @if ($errors->first('ponderacion_indicador'))
+                                                                        <div class="invalid-feedback">
+                                                                            {{ $errors->first('ponderacion_indicador') }}
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="form-group mt-2">
+                                                                    <button class="btn btn-primary btn-sm">
+                                                                        Guardar
+                                                                    </button>    
+                                                                </div> 
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    {{-- modales para la ponderacion --}}
+
+                                        @empty
+
+                                            <div class="col-12 text-muted my-2">
+                                                No tiene indicadores asignados.
+                                            </div>
+
+                                        @endforelse
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class="row justify-content-center my-4">
+
+                                <div class="col-4 shadow-sm mx-1 rounded p-3 text-white {{ ($suma < $objetivo->meta) ? 'bg-danger' : 'bg-success' }}">
+                                    <h5 class="text-center">Porcentaje de cumplimiento del objetivo: </h5>
+                                    <h1 class="text-center fw-bold ">{{ number_format($suma,2) }}%</h1>
+                                </div>
+
+                                <div class="col-4 shadow-sm mx-1 rounded p-3">
+                                    <h5 class="text-center">Porcentaje aportado a la perspectiva: </h5>
+                                    <h1 class="text-center fw-bold cumplimiento_objetivo">
+                                        
+                                        {{ number_format(($suma / 100) * $objetivo->ponderacion,2) }}%
+                                    </h1>                                   
+                                </div>
+                            </div>
+                            {{-- Aqui va el porcentaje de cumplimietno total --}}
+
+
+                            <!-- Acciones -->
+                            <div class="d-flex justify-content-end align-items-center pt-2 border-top">
+                                <div class="btn-group" role="group">
+
+                                    <button class="btn btn-sm btn-outline-success text-capitalize" data-mdb-tooltip-init title="Agregr Indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#add_in{{$objetivo->id}}">
+                                        <i class="fa-solid fa-plus-circle"></i>
+                                        Agregar Indicadores
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-mdb-tooltip-init title="Editar " data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#edit_ob{{$objetivo->id}}">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </button>
+
+                                    <button class="btn btn-sm btn-outline-danger" data-mdb-tooltip-init title="Eliminar" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#del_ob{{$objetivo->id}}">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                @empty
+            <!-- Empty State -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="fa-solid fa-eye text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">No se han registrado objetivos.</h5>
+                        <p class="text-muted mb-4">
+                            <small>Comienza agregando tu primer objetivo a la perspectiva {{ $perspectiva->nombre }}.</small>
+                        </p>
+                        <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_objetivo">
+                            <i class="fa-solid fa-plus-circle me-2"></i>
+                            Agregar Objetivo
+                        </button>
+                    </div>
+                </div>  
+                @endforelse
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="modal fade" id="agregar_objetivo" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold" id="agregarDepartamentoLabel">
+                    <i class="fa-solid fa-plus-circle me-2"></i>
+                    Agregar Objetivo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <form action="{{ route('objetivo.store', $perspectiva->id) }}" method="post">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-outline" data-mdb-input-init>
+                                <input type="text" class="form-control {{ $errors->first('nombre_objetivo') ? 'is-invalid' : '' }}" id="nombre_objetivo" name="nombre_objetivo" |value="{{old('nombre_objetivo')}}"required>
+                                <label class="form-label" for="nombre_objetivo">
+                                    Objetivos
+                                    <span class="text-danger">*</span>
+                                </label>
+                                @if ($errors->first('nombre_objetivo'))
+                                    <div class="invalid-feedback">
+                                        {{ $errors->first('nombre_objetivo') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="form-outline" data-mdb-input-init>
+                                <input type="number" min="1" max="100" class="form-control {{ $errors->first('ponderacion_objetivo') ? 'is-invalid' : '' }}" id="ponderacion_objetivo" name="ponderacion_objetivo" |value="{{old('ponderacion_objetivo')}}"required>
+                                <label class="form-label" for="ponderacion_objetivo">
+                                    Ponderación
+                                    <span class="text-danger">*</span>
+                                </label>
+                                @if ($errors->first('ponderacion_objetivo'))
+                                    <div class="invalid-feedback">
+                                        {{ $errors->first('ponderacion_objetivo') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+
+                        <div class="col-6">
+                            <div class="form-outline" data-mdb-input-init>
+                                <input type="number" min="1" max="100" class="form-control {{ $errors->first('meta_objetivo') ? 'is-invalid' : '' }}" id="ponderacion_objetivo" name="meta_objetivo" |value="{{old('ponderacion_objetivo')}}"required>
+                                <label class="form-label" for="meta_objetivo">
+                                    Meta
+                                    <span class="text-danger">*</span>
+                                </label>
+                                @if ($errors->first('meta_objetivo'))
+                                    <div class="invalid-feedback">
+                                        {{ $errors->first('meta_objetivo') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer border-0 pt-4">
+                        <button type="button" class="btn btn-outline-secondary" data-mdb-ripple-init data-mdb-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
+                            <i class="fa-solid fa-save me-2"></i>
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+@foreach ($objetivos as $objetivo)
+
+    <div class="modal fade" id="add_in{{$objetivo->id}}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- HEADER -->
+                <div class="modal-header bg-primary py-4">
+                    <h3 class="text-white">
+                        <i class="fa-solid fa-plus-circle me-2"></i>
+                        Indicadores Disponibles
+                    </h3>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal"></button>
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body py-4">
+
+                    <!-- (opcional) buscador -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <input type="search" id="buscadorIndicadores" class="form-control form-control-lg" placeholder="Buscar indicador...">
+                        </div>
+                    </div>
+
+                    <form action="{{ route('add.indicador.objetivo', $objetivo->id) }}" method="POST" id="formIndicadores">
+                        @csrf
+
+                        <div class="row justify-content-around" id="contenedor_indicadores">
+                            <h3>Indicadores</h3>
+                                @forelse ($indicadores as $indicador)
+
+                                    <div class="col-3 m-1 p-3 indicador-item"
+                                        data-nombre="{{ strtolower($indicador->nombre) }}">
+
+                                        <input type="checkbox"
+                                            name="indicadores[]"
+                                            value="{{ $indicador->id }}"
+                                            class="btn-check indicador-checkbox"
+                                            id="indicador{{ $indicador->id }}"
+                                            autocomplete="off"
+                                            {{ $indicador->id_objetivo_perspectiva != null ? 'disabled' : '' }}>
+
+                                        <label class="btn btn-outline-primary custom-check text-start w-100 h-100"
+                                            for="indicador{{ $indicador->id }}">
+
+                                            <!-- NOMBRE -->
+                                            <div class="text-center  fw-bold">
+                                                {{ $indicador->nombre }}  
+                                            </div>
+                                            <div class="text-  fw-bold">
+                                                {{ $indicador->departamento->nombre }}
+                                            </div>
+
+                                            <!-- ID -->
+                                            <div class="mb-2">
+                                                @php
+                                                $tipos = [
+                                                    "g" => "<i class='fa-solid fa-city'></i> Indicador General",
+                                                    "p" => "<i class='fa-solid fa-cow'></i> Pecuarios",
+                                                    "m" => "<i class='fa-solid fa-dog'></i> Mascotas",
+                                                ];
+                                                @endphp
+
+                                                {!!  
+                                                    empty($indicador->planta)
+                                                        ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
+                                                        : ($tipos[strtolower($indicador->planta)] 
+                                                            ?? "<i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
+                                                !!}
+                                            </div>
+
+                                            <!-- ESTADO -->
+                                            <div>
+                                                @if($indicador->id_objetivo_perspectiva != null)
+                                                    <span class="badge bg-danger w-100">
+                                                        <i class="fa-solid fa-circle-check"></i>
+                                                        Ya asignado
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-success w-100">
+                                                        <i class="fa-regular fa-circle-check"></i>
+                                                        Disponible
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                        </label>
+
+                                    </div>
+
+                                @empty
+                                    <div class="col-12 text-center">
+                                        No hay indicadores
+                                    </div>
+                                @endforelse
+
+                                
+                            <h3>Encuestas</h3>
+                            @forelse ($encuestas as $encuesta)
+                                   <div class="col-3 m-1 p-3 indicador-item"
+                                        data-nombre="{{ strtolower($encuesta->nombre) }}">
+
+                                        <input type="checkbox"
+                                            name="encuestas[]"
+                                            value="{{ $encuesta->id }}"
+                                            class="btn-check"
+                                            id="encuesta{{ $encuesta->id }}"
+                                            autocomplete="off"
+                                            {{ $encuesta->id_objetivo_perspectiva != null ? 'disabled' : '' }}>
+
+                                        <label class="btn btn-outline-primary custom-check text-start w-100 h-100"
+                                            for="encuesta{{ $encuesta->id }}">
+
+                                            <!-- NOMBRE -->
+                                            <div class="text-center  fw-bold">
+                                                {{ $encuesta->nombre }}  
+                                            </div>
+                                            <div class="text-  fw-bold">
+                                                {{ $encuesta->departamento->nombre }}
+                                            </div>
+
+                                            <!-- ID -->
+                                            <div class="mb-2">
+                                                @php
+                                                $tipos = [
+                                                    "g" => "<i class='fa-solid fa-city'></i> Indicador General",
+                                                    "p" => "<i class='fa-solid fa-cow'></i> Pecuarios",
+                                                    "m" => "<i class='fa-solid fa-dog'></i> Mascotas",
+                                                ];
+                                                @endphp
+
+                                                {!!  
+                                                    empty($encuesta->planta)
+                                                        ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
+                                                        : ($tipos[strtolower($encuesta->planta)] 
+                                                            ?? "<i class='fa-solid fa-industry'></i> Planta {$encuesta->planta}")
+                                                !!}
+                                            </div>
+
+                                            <!-- ESTADO -->
+                                            <div>
+                                                @if($encuesta->id_objetivo_perspectiva != null)
+                                                    <span class="badge bg-danger w-100">
+                                                        <i class="fa-solid fa-circle-check"></i>
+                                                        Ya asignado
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-success w-100">
+                                                        <i class="fa-regular fa-circle-check"></i>
+                                                        Disponible
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                        </label>
+
+                                    </div>
+                            @empty
+                                <div class="col-12 text-center">
+                                    No hay Encuestas
+                                </div>                                
+                            @endforelse
+
+
+                            <h3>Normas</h3>
+                            @forelse ($normas as $norma)
+                                   <div class="col-3 m-1 p-3 indicador-item"
+                                        data-nombre="{{ strtolower($norma->nombre) }}">
+
+                                        <input type="checkbox"
+                                            name="encuestas[]"
+                                            value="{{ $norma->id }}"
+                                            class="btn-check"
+                                            id="encuesta{{ $norma->id }}"
+                                            autocomplete="off"
+                                            {{ $norma->id_objetivo_perspectiva != null ? 'disabled' : '' }}>
+
+                                        <label class="btn btn-outline-primary custom-check text-start w-100 h-100"
+                                            for="encuesta{{ $norma->id }}">
+
+                                            <!-- NOMBRE -->
+                                            <div class="text-center  fw-bold">
+                                                {{ $norma->nombre }}  
+                                            </div>
+                                            <div class="text-  fw-bold">
+                                                {{ $norma->departamento->nombre }}
+                                            </div>
+
+                                            <!-- ID -->
+                                            <div class="mb-2">
+                                                @php
+                                                $tipos = [
+                                                    "g" => "<i class='fa-solid fa-city'></i> Indicador General",
+                                                    "p" => "<i class='fa-solid fa-cow'></i> Pecuarios",
+                                                    "m" => "<i class='fa-solid fa-dog'></i> Mascotas",
+                                                ];
+                                                @endphp
+
+                                                {!!  
+                                                    empty($norma->planta)
+                                                        ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
+                                                        : ($tipos[strtolower($encuesta->planta)] 
+                                                            ?? "<i class='fa-solid fa-industry'></i> Planta {$encuesta->planta}")
+                                                !!}
+                                            </div>
+
+                                            <!-- ESTADO -->
+                                            <div>
+                                                @if($norma->id_objetivo_perspectiva != null)
+                                                    <span class="badge bg-danger w-100">
+                                                        <i class="fa-solid fa-circle-check"></i>
+                                                        Ya asignado
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-success w-100">
+                                                        <i class="fa-regular fa-circle-check"></i>
+                                                        Disponible
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                        </label>
+
+                                    </div>
+                            @empty
+                                <div class="col-12 text-center">
+                                    No hay Encuestas
+                                </div>                                
+                            @endforelse
+
+
+                        </div>
+
+
+
+
+                    </form>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer">
+                    <button form="formIndicadores" type="submit" class="btn btn-primary w-100 py-3">
+                        <h6>Guardar selección</h6>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="del_ob{{$objetivo->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="eliminarDepartamentoLabel{{$objetivo->id}}">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fa-solid fa-trash text-danger" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6 class="fw-semibold">¿Estás seguro de eliminar esta perspectiva?</h6>
+                        <p class="text-muted mb-0">
+                            <strong>{{$objetivo->nombre}}</strong>
+                        </p>
+
+                        <small class="text-muted d-block">
+                            Esta acción no se puede deshacer.
+                        </small>
+                    </div>
+
+                    <form action="{{route('objetivo.delete', $objetivo->id)}}" method="POST">
+                        @csrf 
+                        @method('DELETE')
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary flex-fill" data-mdb-ripple-init data-mdb-dismiss="modal">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-danger flex-fill" data-mdb-ripple-init>
+                                <i class="fa-solid fa-trash me-2"></i>
+                                Eliminar
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>      
+
+
+    <div class="modal fade" id="edit_ob{{$objetivo->id}}" tabindex="-1" aria-labelledby="editarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="editarDepartamentoLabel{{$objetivo->id}}">
+                        <i class="fa-solid fa-edit me-2"></i>
+                        Editar Objetivo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <form action="{{route('objetivo.update', $objetivo->id)}}" method="POST">
+                        @csrf 
+                        @method('PATCH')
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-outline" data-mdb-input-init>
+                                    <input type="text"  class="form-control {{ $errors->first('nombre_objetivo_edit') ? 'is-invalid' : '' }}"  id="nombre_dep{{$objetivo->id}}"  name="nombre_objetivo_edit"  value="{{old('nombre_objetivo_edit', $objetivo->nombre)}}" required>
+                                    <label class="form-label" for="nombre_edit{{$objetivo->id}}">
+                                        Nombre Perspectiva
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    @if ($errors->first('nombre_objetivo_edit'))
+                                        <div class="invalid-feedback">
+                                            {{ $errors->first('nombre_objetivo_edit') }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-outline" data-mdb-input-init>
+                                    <input type="number" min="1" max="100"  class="form-control {{ $errors->first('ponderacion_objetivo_edit') ? 'is-invalid' : '' }}"  id="ponderacion{{$objetivo->id}}"  name="ponderacion_objetivo_edit"  value="{{old('ponderacion_objetivo_edit', $objetivo->ponderacion)}}" required>
+                                        <label class="form-label" for="ponderacion{{$objetivo->id}}">
+                                            Ponderación del Objetivo
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        @if ($errors->first('ponderacion_objetivo_edit'))
+                                            <div class="invalid-feedback">
+                                                {{ $errors->first('ponderacion_objetivo_edit') }}
+                                            </div>
+                                        @endif
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-outline" data-mdb-input-init>
+                                    <input type="number" min="1" max="100"  class="form-control {{ $errors->first('meta_objetivo_edit') ? 'is-invalid' : '' }}"  id="meta{{$objetivo->id}}"  name="meta_objetivo_edit"  value="{{old('meta_objetivo_edit', $objetivo->meta)}}" required>
+                                        <label class="form-label" for="meta{{$objetivo->id}}">
+                                            Meta del Objetivo
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        @if ($errors->first('meta_objetivo_edit'))
+                                            <div class="invalid-feedback">
+                                                {{ $errors->first('meta_objetivo_edit') }}
+                                            </div>
+                                        @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 pt-4">
+                            <button type="button" class="btn btn-outline-secondary" data-mdb-ripple-init data-mdb-dismiss="modal">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
+                                <i class="fa-solid fa-save me-2"></i>
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endforeach
+
+@endsection
+
+
+@section('scripts')
+
+
+    
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+
+        checkbox.addEventListener("change", function (e) {
+
+            if (checkbox.disabled) {
+                e.preventDefault();
+
+                toastr.warning("Este indicador ya está ocupado y no se puede seleccionar.");
+
+                // Revertir estado por si acaso
+                checkbox.checked = false;
+            }
+
+        });
+
+    });
+
+});
+</script>
+
+
+
+
+<script>
+document.getElementById('buscadorIndicadores')
+.addEventListener('keyup', function () {
+
+    let filtro = this.value.toLowerCase();
+    let contenedores = document.querySelectorAll('.item-indicador');
+
+    contenedores.forEach(function (contenedor) {
+
+        let nombre = contenedor.dataset.nombre || '';
+
+        if (nombre.includes(filtro)) {
+            contenedor.style.display = "";
+        } else {
+            contenedor.style.display = "none";
+        }
+
+    });
+});
+</script>
+
+
+
+
+<script>
+const elementos = document.querySelectorAll('.cumplimiento_objetivo');
+
+let suma = 0;
+
+elementos.forEach(el => {
+    // Obtener texto (ej: "85.50%")
+    let texto = el.textContent;
+
+    // Limpiar % y comas
+    texto = texto.replace('%', '').replace(',', '');
+
+    // Convertir a número
+    let numero = parseFloat(texto);
+
+    if (!isNaN(numero)) {
+        suma += numero;
+    }
+});
+
+// Mostrar resultado
+document.getElementById('suma_cumplimientos').textContent = suma.toFixed(2) + '%';
+
+let card_cumplimiento = document.getElementById('card_cumplimiento');
+let icono_card_cumplimiento = document.getElementById('icono_card_cumplimiento');
+
+if(suma < 80){
+    card_cumplimiento.classList.add('bg-danger');
+    icono_card_cumplimiento.classList.add("fa-xmark-circle");
+
+}
+else{
+    card_cumplimiento.classList.add('bg-succes');
+    icono_card_cumplimiento.classList.add("fa-check-circle");
+
+}
+
+</script>
+
+
+@endsection
+
