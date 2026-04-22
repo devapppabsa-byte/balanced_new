@@ -107,13 +107,10 @@
 
                         <!-- Botón gráfica -->
                         <div class="ms-auto">
-                            <button type="button" class="btn btn-info btn-sm px-4 rounded-pill shadow-sm text-white" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#grafico_indicador">
-                                <i class="fa-solid fa-chart-line me-2"></i>
-                                Ver detalles y grafica
-                            </button>
+
                             <a href="{{ route('analizar.indicador', $indicador->id) }}" class="btn btn-primary btn-sm px-4 rounded-pill shadow-sm text-white"  >
                                 <i class="fa-solid fa-magnifying-glass"></i>
-                                Analizar Datos
+                                 Ver detalles y grafica
                             </a>                        
                         </div>
                     </div>

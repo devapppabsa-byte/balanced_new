@@ -283,8 +283,9 @@
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="row justify-content-center">
-                <div class="col-1 card bg-success text-white text-center my-1">
-                    <h2 class="py-3 fjalla-one-regular">
+                <div class="col-3  text-center my-1 ">
+                    <h5 class="py-3 text-dark bg-white p-0 rounded-pill fw-bolder">
+                       <i class="fa-solid fa-bullseye text-danger"></i>
                         Meta:
                         @if($indicador->unidad_medida === 'pesos')
                             $ {{ $indicador->meta_esperada }}
@@ -298,7 +299,7 @@
                             {{ $indicador->meta_esperada }}
                         @endif
 
-                    </h2>
+                    </h5>
                 </div>
             </div>
         </div>
@@ -593,6 +594,88 @@
                 </div>
             </div>
 
+            <div class="row  mt-1 mb-1 ms-1">
+                <div class="col-12 bg-white mt-3 p-3 shadow-sm">
+                    <div class="row">
+                        <div class="col-12 my-2">
+                            <h5 class="fw-bold">
+                                <i class="fa fa-list"></i>
+                                Historial:
+                            </h5>
+                            <span>
+                            {{ request('campos_a_graficar') ? request('campos_a_graficar') : ''  }}                                
+                                {!!  
+                                    empty($indicador->planta)
+                                        ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
+                                        : ($tipos[strtolower($indicador->planta)] 
+                                            ?? "<br> <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
+                                !!}                                
+                            </span>
+                        </div>
+
+                    
+                    @forelse ($info_meses as $info_mes)
+                    <div class="col-12 col-sm-5 col-md-5 col-lg-3 shadow-sm mx-1  mb-1 p-2 bg-white ">
+                        <span class="fw-bold">
+                            <i class="fa {{ ($loop->first ? 'fa-location-dot text-primary' : 'fa-calendar') }} "></i>
+                            {{ Carbon::parse($info_mes->fecha_periodo)->translatedFormat('F Y') }} 
+                        </span>
+                        
+                        <br>
+                        
+                        <span class="format-number">
+
+                            @if (empty($campo_graficar))
+                                @if($indicador->unidad_medida === 'pesos')
+                                $ {{ number_format($info_mes->informacion_campo, 2) }}
+                                
+                                @elseif($indicador->unidad_medida === 'porcentaje')
+                                {{ round($info_mes->informacion_campo, 2) }} %
+                                
+                                @elseif($indicador->unidad_medida === 'dias')
+                                {{ round($info_mes->informacion_campo, 2) }} Días
+                                
+                                @elseif($indicador->unidad_medida === 'toneladas')
+                                {{ round($info_mes->informacion_campo, 2) }} Ton.
+                                
+                                @else
+                                {{ round($info_mes->informacion_campo, 2) }}
+                                @endif 
+
+                            @else
+
+
+                                @if($datos_campo_graficar->unidad_medida === 'pesos')
+                                    $ {{ number_format($info_mes->informacion_campo, 2) }}
+
+                                @elseif($datos_campo_graficar->unidad_medida === 'porcentaje')
+                                     {{ round($info_mes->informacion_campo, 2) }} %
+
+                                @elseif($datos_campo_graficar->unidad_medida === 'dias')
+                                    {{ round($info_mes->informacion_campo, 2) }} Días
+
+                                @elseif($datos_campo_graficar->unidad_medida === 'toneladas')
+                                    {{ round($info_mes->informacion_campo, 2) }} Ton.
+
+                                @else
+                                   {{ round($info_mes->informacion_campo, 2) }}
+                                @endif  
+
+
+                            @endif
+                            
+                        </span>
+                        
+                    </div>
+                    
+                    @empty
+                    
+                    @endforelse
+                    </div>
+                </div>
+            </div>
+
+
             <div class="row justify-content-center border ms-1">
                 <div class="col-12 bg-white mt-3 p-3 shadow-sm">
                     <div class="row g-2">
@@ -715,89 +798,6 @@
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="row  mt-1 mb-1 ms-1">
-                <div class="col-12 bg-white mt-3 p-3 shadow-sm">
-                    <div class="row">
-                        <div class="col-12 my-2">
-                            <h5 class="fw-bold">
-                                <i class="fa fa-list"></i>
-                                Historial:
-                            </h5>
-                            <span>
-                            {{ request('campos_a_graficar') ? request('campos_a_graficar') : ''  }}                                
-                                {!!  
-                                    empty($indicador->planta)
-                                        ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
-                                        : ($tipos[strtolower($indicador->planta)] 
-                                            ?? "<br> <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
-                                !!}                                
-                            </span>
-                        </div>
-
-                    
-                    @forelse ($info_meses as $info_mes)
-                    <div class="col-12 col-sm-5 col-md-5 col-lg-3 shadow-sm mx-1  mb-1 p-2 bg-white ">
-                        <span class="fw-bold">
-                            <i class="fa {{ ($loop->first ? 'fa-location-dot text-primary' : 'fa-calendar') }} "></i>
-                            {{ Carbon::parse($info_mes->fecha_periodo)->translatedFormat('F Y') }} 
-                        </span>
-                        
-                        <br>
-                        
-                        <span class="format-number">
-
-                            @if (empty($campo_graficar))
-                                @if($indicador->unidad_medida === 'pesos')
-                                $ {{ number_format($info_mes->informacion_campo, 2) }}
-                                
-                                @elseif($indicador->unidad_medida === 'porcentaje')
-                                {{ round($info_mes->informacion_campo, 2) }} %
-                                
-                                @elseif($indicador->unidad_medida === 'dias')
-                                {{ round($info_mes->informacion_campo, 2) }} Días
-                                
-                                @elseif($indicador->unidad_medida === 'toneladas')
-                                {{ round($info_mes->informacion_campo, 2) }} Ton.
-                                
-                                @else
-                                {{ round($info_mes->informacion_campo, 2) }}
-                                @endif 
-
-                            @else
-
-
-                                @if($datos_campo_graficar->unidad_medida === 'pesos')
-                                    $ {{ number_format($info_mes->informacion_campo, 2) }}
-
-                                @elseif($datos_campo_graficar->unidad_medida === 'porcentaje')
-                                     {{ round($info_mes->informacion_campo, 2) }} %
-
-                                @elseif($datos_campo_graficar->unidad_medida === 'dias')
-                                    {{ round($info_mes->informacion_campo, 2) }} Días
-
-                                @elseif($datos_campo_graficar->unidad_medida === 'toneladas')
-                                    {{ round($info_mes->informacion_campo, 2) }} Ton.
-
-                                @else
-                                   {{ round($info_mes->informacion_campo, 2) }}
-                                @endif  
-
-
-                            @endif
-                            
-                        </span>
-                        
-                    </div>
-                    
-                    @empty
-                    
-                    @endforelse
                     </div>
                 </div>
             </div>
