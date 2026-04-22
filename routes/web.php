@@ -260,6 +260,10 @@ Route::get('/perfil_admin/perspectiva/objetivo/{perspectiva}', [perspectivaContr
 
 Route::post('/perfil_admin/perspectiva/objetivo/post/{perspectiva}', [perspectivaController::class, 'objetivo_store'])->name('objetivo.store');
 Route::delete('/perfil_admin/perspectiva/objetivo/delete_objetivo/{objetivo}', [perspectivaController::class, 'objetivo_delete'])->name('objetivo.delete');
+
+Route::put('/perfil_admin/perspectiva/objetivo/delete_indicador_objetivo/{objetivo}/{indicador}', [perspectivaController::class, 'indicador_objetivo_delete'])->name('indicador.objetivo.delete');
+
+
 Route::patch('/perfil_admin/perspectiva/objetivo/update/{objetivo}', [perspectivaController::class, 'objetivo_update'])->name('objetivo.update');
 Route::post('/perfil_admin/perspectiva/objetivo/agregar_indicador_a_objetivo/{objetivo}', [perspectivaController::class, 'add_indicador_objetivo'])->name('add.indicador.objetivo');
 Route::post('/perfil_admin/perspectiva/objetivo/agregar_ponderacion/{indicador}', [perspectivaController::class, 'agregar_ponderacion_indicador_objetivo'])->name('agregar.ponderacion.indicador.objetivo');

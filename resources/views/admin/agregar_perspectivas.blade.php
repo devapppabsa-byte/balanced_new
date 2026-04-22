@@ -253,6 +253,8 @@
                                     @endforeach
 
 
+                                @if (isset($promedio_cumplimiento))
+                                    
 
 
                                 <div class="col-12 text-center mb-3">
@@ -300,6 +302,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                @else
+                                    
+                                @endif
+
                             </div>
                         </div>
                     </div>

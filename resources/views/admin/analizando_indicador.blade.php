@@ -286,7 +286,7 @@
                 <div class="col-3  text-center my-1 ">
                     <h5 class="py-3 text-dark bg-white p-0 rounded-pill fw-bolder">
                        <i class="fa-solid fa-bullseye text-danger"></i>
-                        Meta:
+                        {{ ($indicador->tipo_indicador == 'normal') ? 'Meta' : 'Limite'  }}
                         @if($indicador->unidad_medida === 'pesos')
                             $ {{ $indicador->meta_esperada }}
                         @elseif($indicador->unidad_medida === 'porcentaje')

@@ -135,12 +135,33 @@ class perspectivaController extends Controller
 
     public function objetivo_delete(Objetivo $objetivo){
 
+        Indicador::where('id_objetivo_perspectiva', $objetivo->id)
+            ->update(['id_objetivo_perspectiva' => null]);
+
+
         $objetivo->delete();
+        
 
         return back()->with('deleted', 'El objetivo fue borrado!');
 
-
     }
+
+
+
+    public function indicador_objetivo_delete(Objetivo $objetivo, Indicador $indicador){
+    
+        $indicador->id_objetivo_perspectiva = null;
+        $indicador->update();
+    
+        return back()->with('success','El indicador se elimino del Objetivo!');
+    
+    
+    
+    }
+
+
+
+
 
 
     public function objetivo_update(Request $request, Objetivo $objetivo){
@@ -198,6 +219,8 @@ class perspectivaController extends Controller
 
     public function add_indicador_objetivo(Request $request, Objetivo $objetivo){
 
+
+
         //para agregar los indicadores
         if($request->indicadores){
 
@@ -220,7 +243,7 @@ class perspectivaController extends Controller
         if($request->normas){
 
             $idsNormas = $request->normas;
-            Norma::whereIn('id', $idsEncuestas)->update(['id_objetivo_perspectiva' => $objetivo->id]);
+            Norma::whereIn('id', $idsNormas)->update(['id_objetivo_perspectiva' => $objetivo->id]);
 
         }
         

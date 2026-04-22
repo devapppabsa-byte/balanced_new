@@ -114,7 +114,7 @@
                                aria-controls="ex1-tabs-3" 
                                aria-selected="false">
                                 <i class="fas fa-file-alt me-2"></i>
-                                Seguimiento a Normas
+                                Seguimiento a Normas y Legislaciónes
                             </a>
                         </li>
 
@@ -407,7 +407,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="mb-0">
                                     <i class="fas fa-file-alt text-warning me-2"></i>
-                                    Seguimiento a Normas
+                                    Seguimiento a Normas y Legislaciones.
                                 </h4>
                                 <button type="button" 
                                         class="btn btn-warning btn-sm"

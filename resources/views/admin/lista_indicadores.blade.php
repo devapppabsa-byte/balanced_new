@@ -388,7 +388,6 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 
     @forelse ($normas as $norma)
-
         <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
             <div class="card text-white {{($norma->meta_minima > $norma->porcentaje_cumplimiento) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
                 <a href="{{route('apartado.norma', $norma->id)}}" class="text-white w-100">
@@ -406,7 +405,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                 <div class="card-footer p-2">
                         <div class="row  d-flex justify-content-between align-items-center">
                             <div class="col-auto">
-                                    Ver Detalles
+                                Ver Detalles
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-arrow-circle-right"></i>
@@ -416,7 +415,6 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                 </a>
             </div>
         </div>
-
     @empty
 
     @endforelse 

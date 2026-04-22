@@ -121,10 +121,7 @@ class normaController extends Controller
 
 
     $request->validate([
-        "nombre_norma_edit" => [
-            'required',
-            Rule::unique('norma', 'nombre')->ignore($norma->id) // <-- Ignora el registro actual
-        ],
+        "nombre_norma_edit" => 'required',
         "descripcion_norma_edit" => 'required',
         "ponderacion_norma_edit" => 'required'
     ]);
