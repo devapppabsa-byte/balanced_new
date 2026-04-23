@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('meta_minima');
             $table->string('meta_esperada');
             $table->string("ponderacion");
+            $table->string('planta');
             $table->string('autor');
             $table->string('id_objetivo_perspectiva');
             $table->unsignedBigInteger('id_departamento');

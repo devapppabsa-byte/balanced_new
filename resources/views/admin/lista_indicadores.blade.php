@@ -107,9 +107,9 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                         <div class="card-body">
                             <div class="row justify-content-around d-flex align-items-center">
                                 <div class="col-12 ">
-                                    <h4 class="card-text fw-bold">{{$indicador->nombre}}</h4>
+                                    <h4 class="card-text fw-bold nombre">{{$indicador->nombre}}</h4>
                                     
-                                        <span class="card-title fw-bold display-6 mt-3 h3">
+                                        <span class="card-title fw-bold display-6 mt-3 h3 resultado">
 
                                             @if($indicador->unidad_medida === 'pesos')
                                                 ${{ number_format($cumplimiento, 2) }}
@@ -128,7 +128,12 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                             @endif
 
                                         </span>
-                                    
+
+                                        <input type="hidden" class="meta_minima" value="{{ $indicador->meta_minima }}">
+                                        <input type="hidden" class="meta_maxima" value="{{ $indicador->meta_esperada }}" >
+                                        <input type="hidden" class="resultado_obtenido" value="{{ $cumplimiento }}">
+                                        <input type="hidden" class="tipo_indicado" value="variacion"> 
+                                                                            
                                 </div>
 
                                 <div class="col-12 my-2">
@@ -167,11 +172,11 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                                 ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
                                     !!}
                                 </div>
-                                <div class="col-auto mx-2">
+                                {{-- <div class="col-auto mx-2">
                                     <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
                                         <i class="fa-solid fa-list"></i>
                                     </a>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -192,8 +197,8 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                         <div class="card-body">
                             <div class="row justify-content-around d-flex align-items-center">
                                 <div class="col-12 ">
-                                    <h4 class="card-text fw-bold">{{$indicador->nombre}}</h4>
-                                        <span class="card-title fw-bold display-6 mt-3 h3">
+                                    <h4 class="card-text fw-bold nombre">{{$indicador->nombre}}</h4>
+                                        <span class="card-title fw-bold display-6 mt-3 h3 resultado">
 
                                             @if($indicador->unidad_medida === 'pesos')
                                                 ${{ number_format($cumplimiento, 2) }}
@@ -210,8 +215,13 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                             @else
                                                 {{ round($cumplimiento, 2) }}
                                             @endif
-
                                         </span>
+
+                                        <input type="hidden" class="meta_minima" value="{{ $indicador->meta_minima }}">
+                                        <input type="hidden" class="resultado_obtenido" value="{{ $cumplimiento }}">
+                                        <input type="hidden" class="tipo_indicado" value="riesgo">                                
+
+
                                 </div>
 
                             </div>
@@ -230,6 +240,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                     </span>
                                 </div>
                             </div>
+
                         </div>
                     </a>
                         <div class="card-footer p-2">
@@ -250,11 +261,11 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                                     ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
                                         !!}
                                     </div>
-                                <div class="col-auto mx-2">
-                                    <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
-                                        <i class="fa-solid fa-list"></i>
-                                    </a>
-                                </div>
+                                    {{-- <div class="col-auto mx-2">
+                                        <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
+                                            <i class="fa-solid fa-list"></i>
+                                        </a>
+                                    </div> --}}
                                 </div>
                         </div>
                     </div>
@@ -270,8 +281,8 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                         <div class="card-body">
                             <div class="row justify-content-around d-flex align-items-center">
                                 <div class="col-12 ">
-                                    <h4 class="card-text fw-bold">{{$indicador->nombre}}                               </h4>
-                                        <span class="card-title fw-bold display-6 mt-3 h3">
+                                    <h4 class="card-text fw-bold nombre">{{$indicador->nombre}}                               </h4>
+                                        <span class="card-title fw-bold display-6 mt-3 h3 resultado">
 
                                             @if($indicador->unidad_medida === 'pesos')
                                                 ${{ number_format($cumplimiento, 2) }}
@@ -290,6 +301,11 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                             @endif
 
                                         </span>
+
+                                <input type="hidden" class="meta_minima" value="{{ $indicador->meta_minima }}">
+                                <input type="hidden" class="resultado_obtenido" value="{{ $cumplimiento }}">
+                                <input type="hidden" class="tipo_indicado" value="normal">                                
+
                                 </div>
 
                             </div>
@@ -328,11 +344,11 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                                     ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
                                         !!}
                                     </div>
-                                <div class="col-auto mx-2">
-                                    <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
-                                        <i class="fa-solid fa-list"></i>
-                                    </a>
-                                </div>
+                                    {{-- <div class="col-auto mx-2">
+                                        <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
+                                            <i class="fa-solid fa-list"></i>
+                                        </a>
+                                    </div> --}}
                                 </div>
                         </div>                        
                     </div>
@@ -389,28 +405,31 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
     @forelse ($normas as $norma)
         <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-            <div class="card text-white {{($norma->meta_minima > $norma->porcentaje_cumplimiento) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
+            <div class="card text-white {{($norma->meta_minima > $norma->porcentaje_mes) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
                 <a href="{{route('apartado.norma', $norma->id)}}" class="text-white w-100">
                 <div class="card-body">
                     <div class="row justify-content-around d-flex align-items-center">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
-                            <h2 class="card-title fw-bold display-6 x">{{round($norma->porcentaje_cumplimiento, 2)}}%</h2>
-                            <p class="card-text fw-bold">{{$norma->nombre}}</p>
+                            <h2 class="card-title fw-bold display-6 resultado">{{round($norma->porcentaje_mes, 2)}}%</h2>
+                            <p class="card-text fw-bold nombre">{{$norma->nombre}}</p>
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
                             <i class="fas fa-chart-line fa-3x"></i>
+                            <input type="hidden" class="meta_minima" value="{{ $norma->meta_minima }}">
+                            <input type="hidden" class="resultado_obtenido" value="{{ $norma->porcentaje_mes }}">
+                            <input type="hidden" class="tipo_indicado" value="normal">
+
                         </div>
                     </div>
                 </div>
                 <div class="card-footer p-2">
-                        <div class="row  d-flex justify-content-between align-items-center">
-                            <div class="col-auto">
-                                Ver Detalles
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-arrow-circle-right"></i>
-                            </div>
+                    <div class="row  d-flex justify-content-between align-items-center">
+                        <div class="col-12">
+                           <h4 class="">
+                             {{ $norma->planta }}
+                           </h4>
                         </div>
+                    </div>
                 </div>
                 </a>
             </div>
@@ -428,16 +447,19 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
     @forelse ($encuestas as $encuesta)
 
         <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-            <div class="card text-white {{($encuesta->porcentaje_cumplimiento < $encuesta->meta_minima) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
+            <div class="card text-white {{($encuesta->porcentaje_mes < $encuesta->meta_minima) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
                 <a href="{{route('encuesta.index', $encuesta->id)}}" class="text-white w-100">
                 <div class="card-body">
                     <div class="row justify-content-around d-flex align-items-center">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
-                            <h2 class="card-title fw-bold display-6 x">{{$encuesta->porcentaje_cumplimiento}}%</h2>
-                            <p class="card-text fw-bold">{{$encuesta->nombre}}</p>
+                            <h2 class="card-title fw-bold display-6 x resultado">{{$encuesta->porcentaje_mes}}%</h2>
+                            <p class="card-text fw-bold nombre">{{$encuesta->nombre}}</p>
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
                             <i class="fas fa-chart-line fa-3x"></i>
+                            <input type="hidden" class="meta_minima" value="{{ $encuesta->meta_minima }}">
+                            <input type="hidden" class="resultado_obtenido" value="{{ $encuesta->porcentaje_mes }}">
+                            <input type="hidden" class="tipo_indicado" value="normal">
                         </div>
                     </div>
                 </div>
@@ -484,83 +506,6 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 
 
-
-{{-- MODALES CON GRAFICAS --}}
-<!-- Modal -->
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered ">
-    <div class="modal-content">
-
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">
-          <i class="fa fa-chart-simple"></i>
-          Cumplimiento General {{ $departamento->nombre }}
-        </h5>
-        <small>Tomando en cuenta las ponderaciones</small>
-        <button type="button" class="btn-close" data-mdb-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body p-4">
-
-        <!-- Tabs -->
-        <ul class="nav nav-tabs nav-justified mb-4" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" data-mdb-tab-init href="#tab-barras" role="tab">
-              <i class="fa-solid fa-chart-column me-2"></i>Barras
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-mdb-tab-init href="#tab-linea" role="tab">
-              <i class="fa-solid fa-chart-line me-2"></i>Línea
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-mdb-tab-init href="#tab-pie" role="tab">
-              <i class="fa-solid fa-chart-pie me-2"></i>Pie
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-mdb-tab-init href="#tab-donut" role="tab">
-              <i class="fa-solid fa-chart-donut me-2"></i>Donut
-            </a>
-          </li>
-        </ul>
-
-        <!-- Tabs content -->
-        <div class="tab-content">
-
-          <div class="tab-pane fade show active" id="tab-barras">
-            <canvas id="chartBar" height="120"></canvas>
-          </div>
-
-          <div class="tab-pane fade" id="tab-linea">
-            <canvas id="chartLine" height="120"></canvas>
-          </div>
-
-          <div class="tab-pane fade" id="tab-pie" >
-            <div class="p-5 text-center row justify-content-center" style="max-height: 700px">
-                <canvas id="chartPie" height="120"></canvas>
-            </div>
-          
-        </div>
-
-          <div class="tab-pane fade" id="tab-donut">
-            <div class="p-5 text-center row justify-content-center" style="max-height: 700px">
-                <canvas id="chartDonut" height="120"></canvas>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-mdb-dismiss="modal">Cerrar</button>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 
 
@@ -811,6 +756,82 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 
 
+<button class="btn btn-dark flotante" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#grafico" style="z-index: 9999">
+    <i class="fa-solid fa-chart-column"></i>
+    Gráfica general
+</button>
+
+<div class="modal fade" id="grafico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="static">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="exampleModalLabel">Gráfica</h5>
+        <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Tabs navs -->
+                    <ul class="nav nav-tabs nav-justified mb-3" id="ex1" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a
+                        data-mdb-tab-init
+                        class="nav-link active"
+                        id="ex3-tab-1"
+                        href="#ex3-tabs-1"
+                        role="tab"
+                        aria-controls="ex3-tabs-1"
+                        aria-selected="true"
+                        >Gráfica en Horizontal</a
+                        >
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a
+                        data-mdb-tab-init
+                        class="nav-link"
+                        id="ex3-tab-2"
+                        href="#ex3-tabs-2"
+                        role="tab"
+                        aria-controls="ex3-tabs-2"
+                        aria-selected="false"
+                        >Gráfica en Vertical</a
+                        >
+                    </li>
+                    </ul>
+                    <!-- Tabs navs -->
+
+                    <!-- Tabs content -->
+                    <div class="tab-content" id="ex2-content">
+                    <div
+                        class="tab-pane fade show active"
+                        id="ex3-tabs-1"
+                        role="tabpanel"
+                        aria-labelledby="ex3-tab-1"
+                    >
+                        <canvas id="horizontal"></canvas>
+                    </div>
+                    <div
+                        class="tab-pane fade"
+                        id="ex3-tabs-2"
+                        role="tabpanel"
+                        aria-labelledby="ex3-tab-2"
+                    >
+
+                        <canvas id="vertical"></canvas>
+                    </div>
+
+                    </div>
+                    <!-- Tabs content -->
+                </div>
+            </div>
+            <div id="mensajeVacio" class="text-center fw-bold my-3 text-danger" style="display:none;">
+                 No se encontró información para graficar
+            </div>
+  
+        </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -820,146 +841,239 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 @section('scripts')
 
+
+
 <script>
+function obtenerDatos() {
+    const nombres = document.querySelectorAll('.nombre');
+    const resultados = document.querySelectorAll('.resultado_obtenido');
+    const metasMin = document.querySelectorAll('.meta_minima');
+    const metasMax = document.querySelectorAll('.meta_maxima');
+    const tiposIndicador = document.querySelectorAll('.tipo_indicador');
 
-    const cumplimientoData = @json($cumplimiento_general);
+    let labels = [];
+    let data = [];
+    let colores = [];
+    let lineaMetaMin = [];
+    let lineaMetaMax = [];
 
-    const labels = cumplimientoData.map(item => {
-        const [year, month] = item.mes.split('-');
+    const VERDE = 'rgba(0, 200, 83, 0.9)';
+    const ROJO  = 'rgba(211, 47, 47, 0.9)';
 
-        // month - 1 porque JS empieza en 0
-        const fecha = new Date(Number(year), Number(month) - 2, 1);
+    resultados.forEach((el, i) => {
+        let valor = parseFloat(el.value);
 
-        const formatted = new Intl.DateTimeFormat('es-MX', {
-            month: 'long',
-            year: 'numeric'
-        }).format(fecha);
+        // 👉 si viene vacío lo tomamos como 0
+        if (isNaN(valor)) valor = 0;
 
-        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        let metaMin = parseFloat(metasMin[i]?.value ?? 0);
+        let metaMax = parseFloat(metasMax[i]?.value ?? metaMin);
+        let tipo = tiposIndicador[i]?.value ?? '';
+
+        let nombre = nombres[i]?.innerText.trim() ?? 'N/A';
+
+        labels.push(nombre);
+        data.push(valor);
+        lineaMetaMin.push(metaMin);
+        lineaMetaMax.push(metaMax);
+
+        let color = 'gray';
+
+        if (tipo === 'variacion') {
+            let li = metaMax - metaMin;
+            let ls = metaMax + metaMin;
+
+            color = (valor >= li && valor <= ls) ? VERDE : ROJO;
+        } 
+        else if (tipo === 'riesgo') {
+            color = valor > metaMin ? ROJO : VERDE;
+        } 
+        else {
+            color = valor > metaMin ? VERDE : ROJO;
+        }
+
+        colores.push(color);
     });
 
-    const dataValues = cumplimientoData.map(item => item.total);
+    return { labels, data, colores, lineaMetaMin, lineaMetaMax };
+}
+
+function crearGrafica() {
+
+
+
+    const { labels, data, colores, lineaMetaMin, lineaMetaMax } = obtenerDatos();
+
+    const mensaje = document.getElementById('mensajeVacio');
+    const canvas = document.getElementById('vertical');
+
+    // 🚨 VALIDACIÓN
+    const todosCero = data.every(v => v === 0);
+
+    if (data.length === 0 || todosCero) {
+        mensaje.style.display = 'block';
+        canvas.style.display = 'none';
+        return;
+    } else {
+        mensaje.style.display = 'none';
+        canvas.style.display = 'block';
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    new Chart(ctx, {
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Resultado',
+                    data: data,
+                    backgroundColor: colores
+                },
+                {
+                    type: 'line',
+                    label: 'Meta mínima',
+                    data: lineaMetaMin,
+                    borderColor: 'orange',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    type: 'line',
+                    label: 'Meta máxima',
+                    data: lineaMetaMax,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'x'
+        }
+    });
+}
+
+crearGrafica();
 
 
 </script>
-
 
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+function recolectarIndicadores() {
+    const listaNombres = document.querySelectorAll('.nombre');
+    const listaResultados = document.querySelectorAll('.resultado_obtenido');
+    const listaMetaMinima = document.querySelectorAll('.meta_minima');
+    const listaMetaMaxima = document.querySelectorAll('.meta_maxima');
+    const listaTipoIndicador = document.querySelectorAll('.tipo_indicador');
 
+    let etiquetas = [];
+    let valores = [];
+    let coloresBarras = [];
+    let metasMinimas = [];
+    let metasMaximas = [];
 
+    const COLOR_OK = 'rgba(0, 200, 83, 0.9)';
+    const COLOR_ERROR = 'rgba(211, 47, 47, 0.9)';
 
-  // BARRAS
-  new Chart(document.getElementById('chartBar'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Cumplimiento %',
-        data: dataValues,
-        backgroundColor: '#0d6efd'
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true, max: 100 }
-      }
-    }
-  });
+    listaResultados.forEach((inputResultado, index) => {
+        let valorActual = parseFloat(inputResultado.value);
 
+        if (isNaN(valorActual)) valorActual = 0;
 
+        let metaMin = parseFloat(listaMetaMinima[index]?.value ?? 0);
+        let metaMax = parseFloat(listaMetaMaxima[index]?.value ?? metaMin);
+        let tipo = listaTipoIndicador[index]?.value ?? '';
 
-  // LINEA
-new Chart(document.getElementById('chartLine'), {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: 'Tendencia',
-      data: dataValues,
-      borderColor: '#198754',
-      fill: false,
-      tension: 0.3
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        min: 0,
-        max: 100,
-        ticks: {
-          stepSize: 10
+        let nombreIndicador = listaNombres[index]?.innerText.trim() ?? 'N/A';
+
+        etiquetas.push(nombreIndicador);
+        valores.push(valorActual);
+        metasMinimas.push(metaMin);
+        metasMaximas.push(metaMax);
+
+        let colorAsignado = 'gray';
+
+        if (tipo === 'variacion') {
+            let limiteInferior = metaMax - metaMin;
+            let limiteSuperior = metaMax + metaMin;
+
+            colorAsignado = (valorActual >= limiteInferior && valorActual <= limiteSuperior) 
+                ? COLOR_OK 
+                : COLOR_ERROR;
+        } 
+        else if (tipo === 'riesgo') {
+            colorAsignado = valorActual > metaMin ? COLOR_ERROR : COLOR_OK;
+        } 
+        else {
+            colorAsignado = valorActual > metaMin ? COLOR_OK : COLOR_ERROR;
         }
-      }
-    },
-    plugins: {
-      legend: {
-        position: 'bottom'
-      }
+
+        coloresBarras.push(colorAsignado);
+    });
+
+    return { etiquetas, valores, coloresBarras, metasMinimas, metasMaximas };
+}
+
+function generarGraficaIndicadores() {
+
+    const { etiquetas, valores, coloresBarras, metasMinimas, metasMaximas } = recolectarIndicadores();
+
+    const mensajeVacio = document.getElementById('mensajeVacio');
+    const canvasGrafica = document.getElementById('horizontal');
+
+    const todosEnCero = valores.every(v => v === 0);
+
+    if (valores.length === 0 || todosEnCero) {
+        mensajeVacio.style.display = 'block';
+        canvasGrafica.style.display = 'none';
+        return;
+    } else {
+        mensajeVacio.style.display = 'none';
+        canvasGrafica.style.display = 'block';
     }
-  }
-});
 
+    const contexto = canvasGrafica.getContext('2d');
 
-
-
-
-  // PIE
-  new Chart(document.getElementById('chartPie'), {
-    type: 'pie',
-    data: {
-      labels,
-      datasets: [{
-        data: dataValues,
-        backgroundColor: [
-        '#0a58ca', // primary dark
-        '#0d6efd', // primary
-        '#3d8bfd', // primary light
-        '#6ea8fe'  // primary softer
-        ]
-
-
-      }]
-    },
-    options:{
-        responsive:true,
-        maininAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            }
+    new Chart(contexto, {
+        data: {
+            labels: etiquetas,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Resultado',
+                    data: valores,
+                    backgroundColor: coloresBarras
+                },
+                {
+                    type: 'line',
+                    label: 'Meta mínima',
+                    data: metasMinimas,
+                    borderColor: 'orange',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    type: 'line',
+                    label: 'Meta máxima',
+                    data: metasMaximas,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y' // 👈 aquí ya la dejé horizontal de una vez
         }
-    }
-  });
+    });
+}
 
-
-
-  // DONUT
-  new Chart(document.getElementById('chartDonut'), {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data: dataValues,
-        backgroundColor: ['#6610f2', '#20c997', '#fd7e14', '#0dcaf0']
-      }]
-    },
-    options:{
-        responsive:true,
-        maininAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            }
-        }
-    }
-  });
-
-});
+generarGraficaIndicadores();
 </script>
+
+
 
 @endsection

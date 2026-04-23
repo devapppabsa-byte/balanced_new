@@ -200,6 +200,7 @@ class normaController extends Controller
 
 
 
+
          $grafica = DB::table('norma')
             ->where('norma.id', $norma->id)
             ->joinSub($totalesApartados, 'totales', function ($join) {
@@ -216,9 +217,13 @@ class normaController extends Controller
                 'cumple.mes',
                 DB::raw('IFNULL(ROUND((cumple.cumplidos / totales.total_apartados) * 100, 2), 0) as porcentaje')
             )
-            ->orderBy('cumple.mes')
+            ->orderByRaw("
+                FIELD(cumple.mes, 
+                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                )
+            ")
             ->get();
-
 
 
             $labels = $grafica->pluck('mes');

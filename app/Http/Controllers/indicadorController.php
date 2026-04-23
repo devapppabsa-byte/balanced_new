@@ -1689,33 +1689,43 @@ $diasMes = $inicio->daysInMonth;
 
 
 
-$mesActual = now()->format('m-y');
+$mesActual = now()->subMonth()->format('m-y');
 
 
 //aqui vamos a poner el codigo del cumplimiento normativo
+$mes = now()->subMonth()->format('m');  // 04
+$anio =now()->subMonth()->format('y');  // 26
+
 $normas = DB::table('apartado_norma as an') 
     ->join('norma as n', 'an.id_norma', '=', 'n.id')
     ->join('departamentos as d', 'n.id_departamento', '=', 'd.id')
 
-    ->leftJoin('cumplimiento_norma as cn', function ($join) use ($mesActual) {
+    ->leftJoin('cumplimiento_norma as cn', function ($join) use ($mes, $anio) {
         $join->on('cn.id_apartado_norma', '=', 'an.id')
-             ->where('cn.mes', '=', $mesActual);
+             ->whereRaw("SUBSTRING(cn.mes, 1, 2) = ?", [$mes])
+             ->whereRaw("SUBSTRING(cn.mes, 4, 2) = ?", [$anio]);
     })
 
     ->where('d.id', $departamento->id)
 
     ->select(
-        'n.*', // todos los campos de norma
+        'n.*',
 
         DB::raw('COUNT(DISTINCT an.id) as total_apartados'),
-        DB::raw('COUNT(DISTINCT cn.id_apartado_norma) as cumplidos'),
+
         DB::raw('
-            (COUNT(DISTINCT cn.id_apartado_norma) * 100.0) 
-            / COUNT(DISTINCT an.id) as porcentaje_cumplimiento
+            (
+                SUM(
+                    CASE 
+                        WHEN cn.id_apartado_norma IS NOT NULL THEN 1 
+                        ELSE 0 
+                    END
+                ) / COUNT(DISTINCT an.id)
+            ) * 100 as porcentaje_mes
         ')
     )
 
-    ->groupBy('n.id') 
+    ->groupBy('n.id')
     ->get();
 //aqui vamos a poner el codigo del cumplimiento normativo
 

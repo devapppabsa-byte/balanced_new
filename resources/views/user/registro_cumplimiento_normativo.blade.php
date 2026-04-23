@@ -72,7 +72,7 @@
         <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
-            <div class="col-12 pb-5 px-5 pt-2" >
+            <div class="col-12" >
                 <!-- Tabs navs -->
                 <ul class="nav nav-tabs nav-justified mb-3" id="ex1" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -87,24 +87,19 @@
                             Grafico de Linea
                         </a>
                     </li>
-                    {{-- <li class="nav-item" role="presentation">
-                        <a data-mdb-tab-init class="nav-link fw-bold h-4 text-dark" id="ex3-tab-3" href="#ex3-tabs-3" role="tab" aria-controls="ex3-tabs-3" aria-selected="false">
-                            <i class="fa fa-circle"></i>
-                            Grafico de Dona
-                        </a>
-                    </li> --}}
+
                 </ul>
                 <!-- Tabs navs -->
 
                 <!-- Tabs content -->
-                <div class="tab-content" id="ex2-content">
+                <div class="tab-content" id="ex2-content border border-4">
                     <div class="tab-pane  show active" id="ex3-tabs-1" role="tabpanel" aria-labelledby="ex3-tab-1" >
-                        <div style="style="width: 100%; height: 400px;">
+                        <div style="width: 100%; height: 400px;"  class="">
                             <canvas id="chartBar"></canvas>
                         </div> 
                     </div>
-                    <div class="tab-pane  p-5" id="ex3-tabs-2" role="tabpanel" aria-labelledby="ex3-tab-2">
-                        <div style="style="width: 100%; height: 400px;">
+                    <div class="tab-pane " id="ex3-tabs-2" role="tabpanel" aria-labelledby="ex3-tab-2">
+                        <div style="width: 100%; height: 400px;" class="">
                             <canvas id="chartLinea"></canvas>
                         </div>
                     </div>
@@ -344,15 +339,54 @@ const metaMinima    = Number(@json($metaMinima));
 const metaEsperada  = Number(@json($metaEsperada));
 
 const labelsOriginal = @json($labels);
+const valoresOriginal = @json($valores);
+
+// convertir a diccionario → { "01-24": 80, ... }
+const dataMap = {};
+labelsOriginal.forEach((mes, i) => {
+    dataMap[mes] = valoresOriginal[i];
+});
+
+// año actual (ajústalo si manejas otro)
+const anioActual = new Date().getFullYear().toString().slice(-2);
+const mesActual = new Date().getMonth() + 1;
+
+// generar los 12 meses
+const labelsFull = [];
+const valoresFull = [];
+const estados = [];
+
+for (let i = 1; i <= 12; i++) {
+    const key = String(i).padStart(2, '0') + '-' + anioActual;
+    labelsFull.push(key);
+
+    if (dataMap[key] !== undefined) {
+        valoresFull.push(dataMap[key]);
+        estados.push('ok');
+    } else {
+        if (i >= mesActual) {
+            valoresFull.push(null);
+            estados.push('pendiente');
+        } else {
+            valoresFull.push(0);
+            estados.push('sin_registro');
+        }
+    }
+}
 
 const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ];
 
-const labelsFormateados = labelsOriginal.map(fecha => {
+const labelsFormateados = labelsFull.map((fecha, i) => {
     const [mes, anio] = fecha.split('-');
-    return `${meses[parseInt(mes) - 1]} 20${anio}`;
+    let texto = `${meses[parseInt(mes) - 1]} 20${anio}`;
+
+    if (estados[i] === 'pendiente') texto += ' (Pendiente)';
+    if (estados[i] === 'sin_registro') texto += ' (Sin registro)';
+
+    return texto;
 });
 
 console.log(labelsFormateados);
@@ -372,7 +406,7 @@ new Chart(ctx, {
       {
         type: 'bar',
         label: 'Cumplimiento (%)',
-        data: valores,
+        data: valoresFull,
         backgroundColor: (context) => {
           const v = context.raw;
           return v < metaMinima
@@ -438,32 +472,100 @@ new Chart(ctx, {
 
 
 
-{{-- Grafico de Pie --}}
-
-
-
 <script>
-const ctx2 = document.getElementById('chartLinea');
-new Chart(ctx2, {
+const valoresOriginalLinea = @json($valores);
+const labelsOriginalLinea  = @json($labels);
+
+const metaMinimaLinea    = Number(@json($metaMinima));
+const metaEsperadaLinea  = Number(@json($metaEsperada));
+
+const mesesLinea = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
+// 🔹 Convertir datos a mapa
+const dataMapLinea = {};
+labelsOriginalLinea.forEach((mes, i) => {
+    dataMapLinea[mes] = valoresOriginalLinea[i];
+});
+
+// 🔹 Año y mes actual
+const anioActualLinea = new Date().getFullYear().toString().slice(-2);
+const mesActualLinea = new Date().getMonth() + 1;
+
+// 🔹 Generar 12 meses completos
+const labelsFullLinea = [];
+const valoresFullLinea = [];
+const estadosLinea = [];
+
+for (let i = 1; i <= 12; i++) {
+    const key = String(i).padStart(2, '0') + '-' + anioActualLinea;
+
+    labelsFullLinea.push(key);
+
+    if (dataMapLinea[key] !== undefined) {
+        valoresFullLinea.push(dataMapLinea[key]);
+        estadosLinea.push('ok');
+    } else {
+        if (i >= mesActualLinea) {
+            valoresFullLinea.push(null);
+            estadosLinea.push('pendiente');
+        } else {
+            valoresFullLinea.push(0);
+            estadosLinea.push('sin_registro');
+        }
+    }
+}
+
+// 🔹 Labels bonitos
+const labelsFormateadosLinea = labelsFullLinea.map((fecha, i) => {
+    const [mes, anio] = fecha.split('-');
+
+    let texto = `${mesesLinea[parseInt(mes) - 1]} 20${anio}`;
+
+    if (estadosLinea[i] === 'pendiente') texto += ' (Pendiente)';
+    if (estadosLinea[i] === 'sin_registro') texto += ' (Sin registro)';
+
+    return texto;
+});
+
+// 🔹 Líneas meta
+const lineaMinimaLinea   = labelsFullLinea.map(() => metaMinimaLinea);
+const lineaEsperadaLinea = labelsFullLinea.map(() => metaEsperadaLinea);
+
+
+// ================== GRÁFICA ==================
+
+const ctxLinea = document.getElementById('chartLinea');
+
+new Chart(ctxLinea, {
   type: 'line',
   data: {
-    labels: labelsFormateados,
+    labels: labelsFormateadosLinea,
     datasets: [
       {
         label: 'Cumplimiento (%)',
-        data: valores,
+        data: valoresFullLinea,
         borderColor: '#36a2eb',
         backgroundColor: 'rgba(54,162,235,0.15)',
         fill: true,
         tension: 0.3,
         pointRadius: 4,
-        pointBackgroundColor: valores.map(v =>
-          v < metaMinima ? '#e74c3c' : '#2ecc71'
-        )
+        spanGaps: false,
+
+        pointBackgroundColor: valoresFullLinea.map((v, i) => {
+          const estado = estadosLinea[i];
+
+          if (estado === 'pendiente') return '#bdc3c7';
+          if (estado === 'sin_registro') return '#2c3e50';
+
+          return v < metaMinimaLinea ? '#e74c3c' : '#2ecc71';
+        })
       },
       {
         label: 'Meta mínima',
-        data: labelsFormateados.map(() => metaMinima),
+        data: lineaMinimaLinea,
         borderColor: 'red',
         borderDash: [6, 6],
         borderWidth: 2,
@@ -472,7 +574,7 @@ new Chart(ctx2, {
       },
       {
         label: 'Meta esperada',
-        data: labelsFormateados.map(() => metaEsperada),
+        data: lineaEsperadaLinea,
         borderColor: 'green',
         borderDash: [4, 4],
         borderWidth: 2,
@@ -487,7 +589,7 @@ new Chart(ctx2, {
     scales: {
       y: {
         beginAtZero: true,
-        max: 100,   
+        max: 100,
         ticks: {
           callback: v => v + '%'
         }
@@ -496,7 +598,16 @@ new Chart(ctx2, {
     plugins: {
       tooltip: {
         callbacks: {
-          label: ctx => ctx.raw + '%'
+          label: function(ctx) {
+            const i = ctx.dataIndex;
+            const estado = estadosLinea[i];
+            const v = ctx.raw;
+
+            if (estado === 'pendiente') return 'Pendiente';
+            if (estado === 'sin_registro') return 'Sin registro';
+
+            return v + '%';
+          }
         }
       },
       legend: {
@@ -505,52 +616,9 @@ new Chart(ctx2, {
     }
   }
 });
-
 </script>
 
 
-{{-- grafico de burbuja --}}
-
-
-
-<script>
-const ctx3 = document.getElementById('chartDonut');
-
-new Chart(ctx3, {
-  type: 'doughnut',
-  data: {
-    labels: ['Cumplido', 'No cumplido'],
-    datasets: [{
-      data: [
-        valores[0],                 // cumplimiento
-        100 - valores[0]             // restante
-      ],
-      backgroundColor: [
-        valores[0] < metaMinima
-          ? 'rgba(231,76,60,0.8)'    // rojo
-          : 'rgba(46,204,113,0.8)', // verde
-        'rgba(189,195,199,0.4)'
-      ],
-      borderWidth: 0
-    }]
-  },
-  options: {
-    responsive: true,
-    cutout: '65%',
-    plugins: {
-      legend: {
-        position: 'bottom'
-      },
-      tooltip: {
-        callbacks: {
-          label: ctx => ctx.raw + '%'
-        }
-      }
-    }
-  }
-});
-
-</script>
 
 
 @endsection
