@@ -344,3 +344,17 @@ Route::get('perfil_admin/lista_indicadores/estacionalidad_indicador/{indicador}'
 
 //Rutas de el escudriño de datos pero ahora desde la vista de los usuarios
 Route::get('perfil_usuario/analizando_datos/{indicador}', [indicadorController::class, 'analizar_indicador_usuario'])->name('analizar.indicador.usuario');
+
+
+
+
+
+
+
+
+
+
+
+//filtrado de indicadores general
+
+Route::get('perfil_usuario/indicadores_revision/', [indicadorController::class, 'indicadores_revision'])->name('revision.indicadores');

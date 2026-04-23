@@ -1660,6 +1660,24 @@
                         </div>
                     </div>
 
+                    <div class="form-group mt-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-outline" data-mdb-input-init>
+                                    <input type="number"  class="form-control form-control-lg {{ $errors->first('meta_minima_norma_edit') ? 'is-invalid' : '' }} " id="meta_minima_norm_edit{{$norma->id}}" name="meta_minima_norma_edit" value="{{old('meta_minima_norma_edit', $norma->meta_minima)}}">
+                                    <label class="form-label" for="meta_minima_norm_edit{{$norma->id}}" >Meta Minima<span class="text-danger">*</span> </label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-outline" data-mdb-input-init>
+                                    <input type="number"  class="form-control form-control-lg {{ $errors->first('meta_esperada_norma_edit') ? 'is-invalid' : '' }} " id="meta_esperada_norm_edit{{$norma->id}}" name="meta_esperada_norma_edit" value="{{old('meta_esperada_norma_edit', $norma->meta_esperada)}}">
+                                    <label class="form-label" for="meta_esperada_norm_edit{{$norma->id}}" >Meta Esperada<span class="text-danger">*</span> </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="form-group mt-4">
                         <button  class="btn btn-primary w-100 btn-lg" data-mdb-ripple-init>
                             <i class="fa fa-pencil mx-2"></i>

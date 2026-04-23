@@ -3459,32 +3459,35 @@ function calcularTendenciaKPI( $indicadorId, $meta, $tipo = 'normal', $inicio, $
         'porcentaje_cumplimiento' => $porcentajeCumplimiento,
         'caida_brusca' => $caidaBrusca,
 
-        //aqui va la explicacion de las
-
-        // 'debug' => [
-        //     'valores' => $valores,
-        //     'inicio' => $inicio,
-        //     'ultimo' => $ultimo,
-        //     'meta' => $meta,
-
-        //     'calculos' => [
-        //         'suma_valores' => $sumY,
-        //         'promedio' => $promedio,
-        //         'desviacion' => $desviacion,
-        //         'umbral' => $umbral,
-        //         'pendiente' => $m,
-        //     ],
-
-        //     'formulas' => [
-        //         'cambio' => "$ultimo - $inicio = " . ($ultimo - $inicio),
-        //         'cambio_porcentual' => "(($ultimo - $inicio) / $inicio) * 100",
-        //         'umbral' => "$desviacion * 0.5 = $umbral",
-        //         'tendencia' => "pendiente ($m) vs umbral ($umbral)"
-        //     ]
-        // ]
     
     ];
 }
+
+
+
+
+
+
+
+public function indicadores_revision(){
+
+
+    $indicadores = Indicador::with('indicadorLleno')->get();
+
+    return view('admin.revision_mes_indicadores', compact('indicadores'));
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

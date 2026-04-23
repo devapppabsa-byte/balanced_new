@@ -135,6 +135,16 @@
         </a>
     </div>
 
+
+    <div class="col-auto">
+        <a href="{{ route('revision.indicadores') }}"
+           class="admin-link {{ request()->routeIs('revision.indicadores') ? 'active' : '' }}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Revisión del Mes</span>
+        </a>
+    </div>
+
+
     <div class="col-auto">
         <a href="{{ route('departamentos.show.admin') }}"
            class="admin-link {{ request()->routeIs('departamentos.show.admin') ? 'active' : '' }}">
