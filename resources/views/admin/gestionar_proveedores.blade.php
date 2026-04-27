@@ -48,33 +48,37 @@
         </div>
     </div>
     @include('admin.assets.nav')
+
+    <div class="row">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                    <div>
+                        <h2 class="mb-1 fw-bold">
+                            <i class="fa-solid fa-truck text-primary me-2"></i>
+                            Proveedores
+                        </h2>
+                        <p class="text-muted mb-0">
+                            <small>Gestión y evaluación de proveedores de la empresa</small>
+                        </p>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_proveedor">
+                            <i class="fa-solid fa-plus-circle me-2"></i>
+                            Agregar Proveedor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
-            <!-- Header Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap">
-                        <div>
-                            <h2 class="mb-1 fw-bold">
-                                <i class="fa-solid fa-truck text-primary me-2"></i>
-                                Proveedores
-                            </h2>
-                            <p class="text-muted mb-0">
-                                <small>Gestión y evaluación de proveedores de la empresa</small>
-                            </p>
-                        </div>
-                        <div class="mt-2 mt-md-0">
-                            <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_proveedor">
-                                <i class="fa-solid fa-plus-circle me-2"></i>
-                                Agregar Proveedor
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             @if (!$proveedores->isEmpty())
                 <!-- Proveedores Table -->

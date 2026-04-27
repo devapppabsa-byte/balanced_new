@@ -48,55 +48,60 @@
         </div>
     </div>
     @include('admin.assets.nav')
+            <!-- Header Card -->
+    <div class="row">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+                    <div>
+                        <h2 class="mb-1 fw-bold">
+                            <i class="fa-solid fa-users text-primary me-2"></i>
+                            Lista de Clientes
+                        </h2>
+                        <p class="text-muted mb-0">
+                            <small>Gestión de clientes de la empresa</small>
+                        </p>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_cliente">
+                            <i class="fa-solid fa-plus-circle me-2"></i>
+                            Agregar Cliente
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Campo de búsqueda -->
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-outline" data-mdb-input-init>
+                            <input type="text" 
+                                    class="form-control" 
+                                    id="busquedaCliente" 
+                                    placeholder="Buscar por nombre, email, teléfono, línea o ID...">
+                            <label class="form-label" for="busquedaCliente">
+                                <i class="fa-solid fa-search me-2"></i>
+                                Buscar Cliente
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-end">
+                        <small class="text-muted">
+                            <span id="resultadosCount">0</span> resultados encontrados
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
 </div>
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
-            <!-- Header Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
-                        <div>
-                            <h2 class="mb-1 fw-bold">
-                                <i class="fa-solid fa-users text-primary me-2"></i>
-                                Lista de Clientes
-                            </h2>
-                            <p class="text-muted mb-0">
-                                <small>Gestión de clientes de la empresa</small>
-                            </p>
-                        </div>
-                        <div class="mt-2 mt-md-0">
-                            <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_cliente">
-                                <i class="fa-solid fa-plus-circle me-2"></i>
-                                Agregar Cliente
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Campo de búsqueda -->
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <div class="form-outline" data-mdb-input-init>
-                                <input type="text" 
-                                       class="form-control" 
-                                       id="busquedaCliente" 
-                                       placeholder="Buscar por nombre, email, teléfono, línea o ID...">
-                                <label class="form-label" for="busquedaCliente">
-                                    <i class="fa-solid fa-search me-2"></i>
-                                    Buscar Cliente
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 d-flex align-items-end">
-                            <small class="text-muted">
-                                <span id="resultadosCount">0</span> resultados encontrados
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             @if (!$clientes->isEmpty())
                 <!-- Clientes Table -->
                 <div class="card border-0 shadow-sm">

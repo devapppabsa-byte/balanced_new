@@ -52,76 +52,32 @@
         </div>
     </div>
     @include('admin.assets.nav')
+
+    <div class="row">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap py-3 px-4">
+
+                <h4 class="mb-0 fw-bold">
+                    <i class="fa-solid fa-clipboard-check text-primary me-2"></i>
+                    Campos del Indicador
+                </h4>
+
+                <div class="d-flex gap-2 mt-2 mt-md-0">
+                    <span class="badge bg-info rounded-pill px-3 py-2">
+                        {{ $campo_referencia->count() }} Referencias
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 
 <div class="container-fluid">
 
-    {{-- <div class="row border py-2 justify-content-center bg-white shadow-sm">
-
-        
-        <div class="col-3 col-sm-4 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-secondary btn-sm w-100"
-            data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalCampos">
-                <i class="fa fa-plus-circle mx-2"></i>
-                 Campos Vacios
-            </button>
-        </div>
-
-
-        <div class="col-3 col-sm-3 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-secondary btn-sm w-100"
-            data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalCamposPrecargados">
-                <i class="fa fa-plus-circle mx-2"></i>
-                 Precargados
-            </button>
-        </div>
-
-        <div class="col-3 col-sm-3 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-primary btn-sm w-100" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalPromediarCampos">
-              <i class="fa-solid fa-scale-balanced"></i>
-                Promedio
-            </button>
-        </div>
-
-        <div class="col-3 col-sm-3 col-md-3 col-lg-auto m-1">
-             <button class="btn btn-primary btn-sm w-100" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalDividirCampos">
-               <i class="fa-solid fa-divide fw-bold"></i>
-                 División
-             </button>
-         </div>
-
-        <div class="col-3 col-sm-3 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-primary btn-sm w-100" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalSumarCampos">
-              <i class="fa-solid fa-plus fw-bold"></i>
-                Suma
-            </button>
-        </div>
-
-        <div class="col-3 col-sm-3 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-primary btn-sm w-100" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalRestarCampos">
-              <i class="fa-solid fa-minus fw-bold"></i>
-                Resta
-            </button>
-        </div>
-
-
-        <div class="col-3 col-sm-4 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-primary btn-sm w-100" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalMultiplicarCampos">
-                <i class="fa-solid fa-square-xmark"></i>
-                Multiplicación
-            </button>
-        </div>
-
-        <div class="col-3 col-sm-4 col-md-3 col-lg-auto m-1">
-            <button class="btn btn-primary btn-sm w-100" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modalPorcentajeCampos">
-                <i class="fa-solid fa-square-xmark"></i>
-                Porcentaje
-            </button>
-        </div>
-
-
-    </div> --}}
 <!-- FAB CONTENEDOR -->
 <div class="fab-container">
 
@@ -203,126 +159,20 @@
 
 
 <div class="container-fluid mt-4">
+
+
     <div class="row justify-content-center">
-
         <div class="col-10">
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
 
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3 px-4">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="fa-solid fa-clipboard-check text-primary me-2"></i>
-                        Campos del Indicador
-                    </h4>
+                    @if(!$campos_vacios->isEmpty())
 
-                    <div>
+                        <h5 class="fw-bold mb-3">Campos Vacíos</h5>
 
-                        <span class="badge bg-primary rounded-pill px-3 py-2">
-                            {{ $campos_unidos->count() }} Campos
-                        </span>
-                        <span class="badge bg-info rounded-pill px-3 py-2">
-                            {{ $campo_referencia->count() }} Referencias
-                        </span>
-                    </div>
-                
-                </div>
-            </div>
-
-
-            <div class="card mt-4">
-
-                @if (!$campos_vacios->isEmpty() )
-                    <div class="card-body">
-                        <h2>Campos Vacios</h2>
-                            
-                            <div class="table-responsive">
-                                <table class="table align-middle table-hover">
-                                    <thead class="table-light border-bottom">
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Campo</th>
-                                            <th>Descripción</th>
-                                            <th>Unidad Medida</th>
-                                            <th class="text-center">Acciones</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        @foreach ($campos_vacios as $campo_vacio)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-secondary">
-                                                        {{ $campo_vacio->id }}
-                                                    </span>
-                                                </td>
-
-                                                <td class="fw-semibold">
-                                                    {{ $campo_vacio->nombre }}
-                                                </td>
-
-                                                <td class="text-muted">
-                                                    @if($campo_vacio->descripcion)
-                                                    <span data-mdb-tooltip-init  title="{{$campo_vacio->descripcion}}">
-                                                        {{ Str::limit(strip_tags($campo_vacio->descripcion), 80) }}
-
-                                                    </span>
-                                                    @else
-                                                        <i class="fa fa-info-circle text-primary"></i>
-                                                        Sin descripción
-                                                    @endif
-                                                </td>
-
-                                                <td>
-                                                    <span class="badge bg-light text-dark border">
-                                                        {{ !$campo_vacio->unidad_medida ? 'Sin unidad de medida' : $campo_vacio->unidad_medida }}
-                                                    </span>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <button class="btn btn-outline-danger btn-sm"  data-mdb-ripple-init  data-mdb-modal-init
-                                                            data-mdb-target="#delvac{{ $campo_vacio->id }}"  data-mdb-tooltip-init  title="Eliminar campo" >
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-
-                                                        <button class="btn btn-outline-warning btn-sm"  data-mdb-ripple-init  data-mdb-modal-init
-                                                            data-mdb-target="#edivac{{ $campo_vacio->id }}"  data-mdb-tooltip-init  title="Eliminar campo" >
-                                                            <i class="fa fa-edit"></i>
-                                                        </button>
-
-
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-
-                
-                            @else
-                            <!-- Empty state -->
-                            <div class="text-center py-5">
-                                <img src="{{ asset('/img/iconos/empty.png') }}" class="img-fluid mb-3" style="max-width: 180px;">
-                                <h5 class="fw-bold">
-                                    <i class="fa fa-circle-exclamation text-danger me-1"></i>
-                                    No hay campos vacios disponibles
-                                </h5>
-                                <p class="text-muted mb-0">
-                                    Aún no se han agregado campos a este indicador.
-                                </p>
-                            </div>
-                    </div>
-                @endif
-            </div>
-
-
-            <div class="card mt-4">
-
-                @if (!$campos_precargados->isEmpty())
-                <div class="card-body mt-3">
-                    <h2>Campos Precargados</h2>
                         <div class="table-responsive">
                             <table class="table align-middle table-hover">
+
                                 <thead class="table-light border-bottom">
                                     <tr>
                                         <th>#</th>
@@ -334,78 +184,161 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($campos_precargados as $campo_precargado)
-                                        <tr>
-                                            <td>
-                                                <span class="badge bg-secondary">
-                                                    {{ $campo_precargado->id }}
+                                    @foreach ($campos_vacios as $campo)
+                                    <tr>
+                                        <td><span class="badge bg-secondary">{{ $campo->id }}</span></td>
+
+                                        <td class="fw-semibold">{{ $campo->nombre }}</td>
+
+                                        <td class="text-muted">
+                                            @if($campo->descripcion)
+                                                <span data-mdb-tooltip-init title="{{ $campo->descripcion }}">
+                                                    {{ Str::limit(strip_tags($campo->descripcion), 80) }}
                                                 </span>
-                                            </td>
+                                            @else
+                                                <i class="fa fa-info-circle text-primary"></i> Sin descripción
+                                            @endif
+                                        </td>
 
-                                            <td class="fw-semibold">
-                                                {{ $campo_precargado->nombre }}
-                                            </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $campo->unidad_medida ?? 'Sin unidad de medida' }}
+                                            </span>
+                                        </td>
 
-                                            <td class="text-muted">
-                                                @if($campo_precargado->descripcion)
-                                                <span data-mdb-tooltip-init  title="{{$campo_precargado->descripcion}}">
-                                                    {{ Str::limit(strip_tags($campo_precargado->descripcion), 80) }}
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-outline-danger btn-sm"
+                                                        data-mdb-modal-init
+                                                        data-mdb-target="#delvac{{ $campo->id }}">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
 
-                                                </span>
-                                                @else
-                                                    <i class="fa fa-info-circle text-primary"></i>
-                                                    Sin descripción
-                                                @endif
-                                            </td>
-
-                                            <td>
-                                                <span class="badge bg-light text-dark border">
-                                                    {{ !$campo_precargado->unidad_medida ? 'Sin unidad de medida' : $campo_precargado->unidad_medida }}
-                                                </span>
-                                            </td>
-
-                                            <td class="text-center">
-                                                <div class="btn-group">
-                                                    <button class="btn btn-outline-danger btn-sm"  data-mdb-ripple-init  data-mdb-modal-init
-                                                        data-mdb-target="#delpre{{ $campo_precargado->id }}"  data-mdb-tooltip-init  title="Eliminar campo" >
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-
-                                                    <button class="btn btn-outline-warning btn-sm"  data-mdb-ripple-init  data-mdb-modal-init
-                                                        data-mdb-target="#edipre{{ $campo_precargado->id }}"  data-mdb-tooltip-init  title="Eliminar campo" >
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                <button class="btn btn-outline-warning btn-sm"
+                                                        data-mdb-modal-init
+                                                        data-mdb-target="#edivac{{ $campo->id }}">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
+
                             </table>
                         </div>
 
                     @else
-                        <!-- Empty state -->
-                        <div class="text-center py-5 bg-white mt-4 rounded-3">
-                            <img src="{{ asset('/img/iconos/empty.png') }}" class="img-fluid mb-3" style="max-width: 180px;">
+                        <div class="text-center py-5">
+                            <img src="{{ asset('/img/iconos/empty.png') }}" style="max-width:180px;" class="img-fluid mb-3">
+
+                            <h5 class="fw-bold">
+                                <i class="fa fa-circle-exclamation text-danger me-1"></i>
+                                No hay campos vacíos disponibles
+                            </h5>
+
+                            <p class="text-muted mb-0">
+                                Aún no se han agregado campos a este indicador.
+                            </p>
+                        </div>
+                    @endif
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+
+                    @if(!$campos_precargados->isEmpty())
+
+                        <h5 class="fw-bold mb-3">Campos Precargados</h5>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle table-hover">
+
+                                <thead class="table-light border-bottom">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Campo</th>
+                                        <th>Descripción</th>
+                                        <th>Unidad Medida</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach ($campos_precargados as $campo)
+                                    <tr>
+                                        <td><span class="badge bg-secondary">{{ $campo->id }}</span></td>
+
+                                        <td class="fw-semibold">{{ $campo->nombre }}</td>
+
+                                        <td class="text-muted">
+                                            @if($campo->descripcion)
+                                                <span data-mdb-tooltip-init title="{{ $campo->descripcion }}">
+                                                    {{ Str::limit(strip_tags($campo->descripcion), 80) }}
+                                                </span>
+                                            @else
+                                                <i class="fa fa-info-circle text-primary"></i> Sin descripción
+                                            @endif
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $campo->unidad_medida ?? 'Sin unidad de medida' }}
+                                            </span>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-outline-danger btn-sm"
+                                                        data-mdb-modal-init
+                                                        data-mdb-target="#delpre{{ $campo->id }}">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+
+                                                <button class="btn btn-outline-warning btn-sm"
+                                                        data-mdb-modal-init
+                                                        data-mdb-target="#edipre{{ $campo->id }}">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    @else
+                        <div class="text-center py-5">
+                            <img src="{{ asset('/img/iconos/empty.png') }}" style="max-width:180px;" class="img-fluid mb-3">
+
                             <h5 class="fw-bold">
                                 <i class="fa fa-circle-exclamation text-danger me-1"></i>
                                 No hay campos precargados disponibles
                             </h5>
+
                             <p class="text-muted mb-0">
                                 Aún no se han agregado campos a este indicador.
                             </p>
                         </div>
-                    </div>
-                @endif
+                    @endif
+
+                </div>
             </div>
 
-            
-            <div class="card mt-4">
-                @if (!$campos_calculados->isEmpty())
-                <div class="card-body mt-3">
-                    <h2>Campos Calculados</h2>
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+
+                    @if(!$campos_calculados->isEmpty())
+
+                        <h5 class="fw-bold mb-3">Campos Calculados</h5>
+
                         <div class="table-responsive">
                             <table class="table align-middle table-hover">
+
                                 <thead class="table-light border-bottom">
                                     <tr>
                                         <th>#</th>
@@ -417,77 +350,73 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($campos_calculados as $campo_calculado)
-                                        <tr>
-                                            <td>
-                                                <span class="badge bg-secondary">
-                                                    {{ $campo_calculado->id }}
+                                    @foreach ($campos_calculados as $campo)
+                                    <tr>
+                                        <td><span class="badge bg-secondary">{{ $campo->id }}</span></td>
+
+                                        <td class="fw-semibold">{{ $campo->nombre }}</td>
+
+                                        <td class="text-muted">
+                                            @if($campo->descripcion)
+                                                <span data-mdb-tooltip-init title="{{ $campo->descripcion }}">
+                                                    {{ Str::limit(strip_tags($campo->descripcion), 80) }}
                                                 </span>
-                                            </td>
+                                            @else
+                                                <i class="fa fa-info-circle text-primary"></i> Sin descripción
+                                            @endif
+                                        </td>
 
-                                            <td class="fw-semibold">
-                                                {{ $campo_calculado->nombre }}
-                                            </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $campo->unidad_medida ?? 'Sin unidad de medida' }}
+                                            </span>
+                                        </td>
 
-                                            <td class="text-muted">
-                                                @if($campo_calculado->descripcion)
-                                                <span data-mdb-tooltip-init  title="{{$campo_calculado->descripcion}}">
-                                                    {{ Str::limit(strip_tags($campo_calculado->descripcion), 80) }}
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-outline-danger btn-sm"
+                                                        data-mdb-modal-init
+                                                        data-mdb-target="#delcal{{ $campo->id }}">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
 
-                                                </span>
-                                                @else
-                                                    <i class="fa fa-info-circle text-primary"></i>
-                                                    Sin descripción
-                                                @endif
-                                            </td>
-
-                                            <td>
-                                                <span class="badge bg-light text-dark border">
-                                                    {{ !$campo_calculado->unidad_medida ? 'Sin unidad de medida' : $campo_calculado->unidad_medida }}
-                                                </span>
-                                            </td>
-
-                                            <td class="text-center">
-                                                <div class="btn-group">
-                                                    <button class="btn btn-outline-danger btn-sm"  data-mdb-ripple-init  data-mdb-modal-init
-                                                        data-mdb-target="#delcal{{ $campo_calculado->id }}"  data-mdb-tooltip-init  title="Eliminar campo" >
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-
-                                                    <button class="btn btn-outline-warning btn-sm"  data-mdb-ripple-init  data-mdb-modal-init
-                                                        data-mdb-target="#edical{{ $campo_calculado->id }}"  data-mdb-tooltip-init  title="Eliminar campo" >
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                <button class="btn btn-outline-warning btn-sm"
+                                                        data-mdb-modal-init
+                                                        data-mdb-target="#edical{{ $campo->id }}">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
+
                             </table>
                         </div>
 
                     @else
-                        <!-- Empty state -->
-                        <div class="text-center py-5 bg-white mt-4 rounded-3">
-                            <img src="{{ asset('/img/iconos/empty.png') }}" class="img-fluid mb-3" style="max-width: 180px;">
+                        <div class="text-center py-5">
+                            <img src="{{ asset('/img/iconos/empty.png') }}" style="max-width:180px;" class="img-fluid mb-3">
+
                             <h5 class="fw-bold">
                                 <i class="fa fa-circle-exclamation text-danger me-1"></i>
-                                No hay campos caluclados disponibles
+                                No hay campos calculados disponibles
                             </h5>
+
                             <p class="text-muted mb-0">
                                 Aún no se han agregado campos a este indicador.
                             </p>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
+                </div>
             </div>
-
         </div>
+
     </div>
 
-</div>
 
+</div>
 
 
 

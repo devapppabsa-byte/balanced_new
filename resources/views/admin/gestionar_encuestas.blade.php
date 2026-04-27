@@ -5,7 +5,10 @@
 <div class="container-fluid sticky-top">
     <div class="row bg-primary d-flex align-items-center">
         <div class="col-12 col-sm-12 col-md-6 col-lg-10  pt-2 text-white">
-            <h3 class="mt-1 league-spartan">Encuestas para los clientes</h3>
+            <h1 class="mt-1 league-spartan">
+                <i class="fa-solid fa-clipboard-list"></i>
+                ENCUESTAS
+            </h1>
             @if (session('success'))
                 <div class="text-white fw-bold">
                     <i class="fa fa-check-circle mx-2"></i>
@@ -48,70 +51,93 @@
         </div>
     </div>
     @include('admin.assets.nav')
+
+    <div class="row">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body py-3 px-4">
+
+                <form action="{{ route('encuestas.show.admin') }}" method="GET">
+
+                    <div class="d-flex flex-wrap align-items-end gap-3">
+
+                        <!-- Fecha inicio -->
+                        <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Desde</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                                </span>
+                                <input type="date"
+                                    name="fecha_inicio"
+                                    value="{{ request('fecha_inicio') }}"
+                                    class="form-control border-0 bg-light datepicker"
+                                    onchange="this.form.submit()">
+                            </div>
+                        </div>
+
+                        <!-- Fecha fin -->
+                        <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Hasta</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-calendar-days text-danger"></i>
+                                </span>
+                                <input type="date"
+                                    name="fecha_fin"
+                                    value="{{ request('fecha_fin') }}"
+                                    class="form-control border-0 bg-light datepicker"
+                                    onchange="this.form.submit()">
+                            </div>
+                        </div>
+
+                        <!-- Buscador -->
+                        <div class="flex-grow-1">
+                            <label class="form-label small text-muted fw-semibold mb-1">Buscar</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-search text-dark"></i>
+                                </span>
+                                <input type="search"
+                                    id="buscador"
+                                    class="form-control border-0 bg-light"
+                                    placeholder="Buscar encuesta...">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+
+                <div class="d-flex align-items-center justify-content-between flex-wrap mt-2">
+                    <div class="d-flex gap-2 mt-2 mt-md-0">
+                        <button class="btn btn-info text-white btn-sm"
+                                data-mdb-ripple-init
+                                data-mdb-modal-init
+                                data-mdb-target="#grafico_mes">
+                            <i class="fa-solid fa-chart-line me-1"></i>
+                            Gráficas
+                        </button>
+
+                        <button class="btn btn-primary btn-sm"
+                                data-mdb-ripple-init
+                                data-mdb-modal-init
+                                data-mdb-target="#agregar_cuestionario">
+                            <i class="fa-solid fa-plus-circle me-1"></i>
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
 </div>
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
-            <!-- Header Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap">
-                        <div>
-                            <h2 class="mb-1 fw-bold">
-                                <i class="fa-regular fa-newspaper text-primary me-2"></i>
-                                Encuestas
-                            </h2>
-                            <p class="text-muted mb-0">
-                                <small>Gestión de encuestas y evaluación de cumplimiento</small>
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2 mt-2 mt-md-0">
-                            <button class="btn btn-info text-white" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#grafico_mes">
-                                <i class="fa-solid fa-chart-line me-2"></i>
-                                Ver Gráficas
-                            </button>
-                            <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_cuestionario">
-                                <i class="fa-solid fa-plus-circle me-2"></i>
-                                Agregar Encuesta
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Filtros Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <form action="{{route('encuestas.show.admin')}}" method="GET">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-12 col-md-4">
-                                <label for="fecha_inicio" class="form-label fw-semibold small text-muted text-uppercase">Fecha Inicio</label>
-                                <input type="date" 
-                                       name="fecha_inicio" 
-                                       value="{{request('fecha_inicio')}}" 
-                                       class="form-control datepicker"
-                                       id="fecha_inicio">
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <label for="fecha_fin" class="form-label fw-semibold small text-muted text-uppercase">Fecha Final</label>
-                                <input type="date" 
-                                       name="fecha_fin" 
-                                       value="{{request('fecha_fin')}}" 
-                                       class="form-control datepicker"
-                                       id="fecha_fin">
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fa-solid fa-filter me-2"></i>
-                                    Filtrar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             @if (!$encuestas->isEmpty())
                 <!-- Encuestas Table -->
                 <div class="card border-0 shadow-sm">

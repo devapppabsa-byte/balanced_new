@@ -776,7 +776,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                     <li class="nav-item" role="presentation">
                         <a
                         data-mdb-tab-init
-                        class="nav-link active"
+                        class="nav-link "
                         id="ex3-tab-1"
                         href="#ex3-tabs-1"
                         role="tab"
@@ -788,7 +788,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                     <li class="nav-item" role="presentation">
                         <a
                         data-mdb-tab-init
-                        class="nav-link"
+                        class="nav-link active"
                         id="ex3-tab-2"
                         href="#ex3-tabs-2"
                         role="tab"
@@ -803,7 +803,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                     <!-- Tabs content -->
                     <div class="tab-content" id="ex2-content">
                     <div
-                        class="tab-pane fade show active"
+                        class="tab-pane fade "
                         id="ex3-tabs-1"
                         role="tabpanel"
                         aria-labelledby="ex3-tab-1"
@@ -811,7 +811,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                         <canvas id="horizontal"></canvas>
                     </div>
                     <div
-                        class="tab-pane fade"
+                        class="tab-pane fade show active"
                         id="ex3-tabs-2"
                         role="tabpanel"
                         aria-labelledby="ex3-tab-2"

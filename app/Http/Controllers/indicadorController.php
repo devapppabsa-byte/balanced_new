@@ -1922,6 +1922,8 @@ public function llenado_informacion_indicadores(Indicador $indicador, Request $r
                 'fecha_periodo' => $fecha_periodo,
                 //'created_at' => $created_at 
             ]);
+
+            
         }
 
 //EN ESTA PARTE SE CARGAN LOS CAMPOS VACIOS AL INDICADORE LLENO....
