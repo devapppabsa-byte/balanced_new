@@ -436,7 +436,7 @@
     <div class="row justify-content-center px-2">
 
 
-        <div class="col-12 col-sm-12 col-md-12 col-lg-5">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="row">
 
                 <div class="col-12 p-1 bg-white mt-3 p-3">
@@ -497,7 +497,7 @@
         </div>
 
 
-        <div class="col-12 col-sm-12 col-md-9 col-lg-5 ">
+        <div class="col-12 col-sm-12 col-md-9 col-lg-4 ">
 
 
             <div class="row justify-content-center border ms-1">

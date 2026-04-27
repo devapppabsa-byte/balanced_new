@@ -161,11 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </script>
 
 
-    <script>
-    (function(){
-        emailjs.init("Qg1Uw0UBaSzCmDi1D");
-    })();
-    </script>
 
 
 

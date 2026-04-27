@@ -100,6 +100,10 @@ $fin = request()->filled('fecha_fin')
 $departamentos = Departamento::get();
 
 
+
+
+
+
     $sub = DB::table('indicadores_llenos as il')
         ->join('indicadores as i', 'i.id', '=', 'il.id_indicador')
         ->selectRaw("

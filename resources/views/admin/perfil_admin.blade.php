@@ -94,8 +94,22 @@
                                     onchange="this.form.submit()">
                             </div>
                         </div>
+                        
+                    </form>
+                        <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Buscar</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-search text-dark"></i>
+                                </span>
+                                <input type="search"
+                                    name="nombre_indicador"
+                                    id="buscador"
+                                    class="form-control"
+                                    placeholder="Buscar ..."
+                                >           
+                        </div>
                     </div>
-                </form>
 
             </div>
         </div>
@@ -155,11 +169,11 @@
 
 @forelse ($departamentos as $departamento)
 
-<div class="col-12 col-sm-12 col-md-4 col-lg-3 mt-2">
+<div class="col-12 col-sm-12 col-md-4 col-lg-3 mt-2 departamento">
     <div class="card shadow-3 rounded-4 p-3 border" style="max-width: 400px;">
         <div class="card-body p-1">
 
-            <h4 class="text-muted text-uppercase fw-bold">
+            <h4 class="text-muted text-uppercase fw-bold nombre">
                 {{$departamento->nombre}}
             </h4>
 
@@ -342,7 +356,31 @@ function mesEnEspanol(yyyyMM) {
 
 </script>
 
+<script>
+document.getElementById('buscador').addEventListener('input', function () {
+    let filtro = this.value.toLowerCase().trim();
+    let cards = document.querySelectorAll('.departamento');
 
+    cards.forEach(card => {
+
+        // texto visible
+        let nombre = card.querySelector('.nombre').textContent.toLowerCase();
+
+        // datos ocultos
+        let tipo = (card.dataset.departamento || '').toLowerCase();
+
+        // combinamos todo lo que puede buscarse
+        let contenido = `${nombre}`;
+
+        // filtro
+        if (contenido.includes(filtro)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+</script>
 
 
 

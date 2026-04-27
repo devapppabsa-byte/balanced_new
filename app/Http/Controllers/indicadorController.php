@@ -3472,7 +3472,15 @@ function calcularTendenciaKPI( $indicadorId, $meta, $tipo = 'normal', $inicio, $
 public function indicadores_revision(){
 
 
-    $indicadores = Indicador::with('indicadorLleno')->get();
+    $inicio = now()->subMonth()->startOfMonth();
+    $fin = now()->startOfMonth();
+
+    $indicadores = Indicador::with(['indicadorLleno' => function ($query) use ($inicio, $fin) {
+        $query->select('id', 'id_indicador', 'final', 'informacion_campo')
+            ->whereBetween('fecha_periodo', [$inicio, $fin])
+            ->where('final', 'on');
+    }])->get();
+
 
     return view('admin.revision_mes_indicadores', compact('indicadores'));
 

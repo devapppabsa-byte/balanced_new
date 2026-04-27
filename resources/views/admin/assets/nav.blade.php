@@ -140,7 +140,7 @@
         <a href="{{ route('revision.indicadores') }}"
            class="admin-link {{ request()->routeIs('revision.indicadores') ? 'active' : '' }}">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <span>Revisión del Mes</span>
+            <span>Buscador Indicadores</span>
         </a>
     </div>
 

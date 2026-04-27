@@ -762,15 +762,15 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 </button>
 
 <div class="modal fade" id="grafico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-  <div class="modal-dialog modal-fullscreen">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title" id="exampleModalLabel">Gráfica</h5>
         <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
-            <div class="row">
-                <div class="col-12">
+            <div class="row justify-content-center">
+                <div class="col-10">
                     <!-- Tabs navs -->
                     <ul class="nav nav-tabs nav-justified mb-3" id="ex1" role="tablist">
                     <li class="nav-item" role="presentation">
