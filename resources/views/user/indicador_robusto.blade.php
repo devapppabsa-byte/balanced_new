@@ -241,7 +241,7 @@
 
                             {{-- Campos ocultos (NO se tocan) --}}
                             <input type="hidden" name="id_input[]" value="{{$campo_vacio->id}}">
-                            <input type="hidden" name="tipo_input[]" value="{{$campo_vacio->tipo}}">
+                            <input type="hidden" name="tipo_input[]" value="{{$campo_vacio->unidad_medida}}">
                             <input type="hidden" name="id_input_vacio[]" value="{{$campo_vacio->id_input}}">
                             <input type="hidden" name="nombre_input_vacio[]" value="{{$campo_vacio->nombre}}">
 
