@@ -116,18 +116,20 @@ class normaController extends Controller
 
     public function norma_update(Norma $norma, Request $request){
 
-    
 
     $autor_log = 'Id: '.auth()->guard('admin')->user()->id.' - '.auth()->guard('admin')->user()->nombre .' - '. $puesto_autor = auth()->guard('admin')->user()->puesto;
 
 
 
     $request->validate([
+
         "nombre_norma_edit" => 'required',
         "descripcion_norma_edit" => 'required',
         "ponderacion_norma_edit" => 'required',
         "meta_minima_norma_edit" => 'required',
-        "meta_esperada_norma_edit" => 'required'
+        "meta_esperada_norma_edit" => 'required',
+        "tipo_regulacion_edit" => 'required'
+
     ]);
 
 
@@ -149,6 +151,7 @@ class normaController extends Controller
     $norma->ponderacion = $request->ponderacion_norma_edit;
     $norma->meta_esperada = $request->meta_esperada_norma_edit;
     $norma->meta_minima = $request->meta_minima_norma_edit;
+    $norma->tipo_regulacion = $request->tipo_regulacion_edit;
 
 
     $norma->update();

@@ -770,7 +770,13 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
       </div>
         <div class="modal-body">
             <div class="row justify-content-center">
-                <div class="col-10">
+                <div class="col-12 text-center ">
+                    <h3 class="text-primary fw-bold">{{ $departamento->nombre }}</h3>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-12">
                     <!-- Tabs navs -->
                     <ul class="nav nav-tabs nav-justified mb-3" id="ex1" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -844,45 +850,50 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 
 <script>
-function obtenerDatos() {
+function recolectarDatos() {
     const nombres = document.querySelectorAll('.nombre');
     const resultados = document.querySelectorAll('.resultado_obtenido');
     const metasMin = document.querySelectorAll('.meta_minima');
     const metasMax = document.querySelectorAll('.meta_maxima');
-    const tiposIndicador = document.querySelectorAll('.tipo_indicador');
+    const tipos = document.querySelectorAll('.tipo_indicador');
 
     let labels = [];
+    let fullLabels = [];
     let data = [];
     let colores = [];
-    let lineaMetaMin = [];
-    let lineaMetaMax = [];
+    let lineaMin = [];
+    let lineaMax = [];
 
     const VERDE = 'rgba(0, 200, 83, 0.9)';
     const ROJO  = 'rgba(211, 47, 47, 0.9)';
 
     resultados.forEach((el, i) => {
         let valor = parseFloat(el.value);
-
-        // 👉 si viene vacío lo tomamos como 0
         if (isNaN(valor)) valor = 0;
 
         let metaMin = parseFloat(metasMin[i]?.value ?? 0);
         let metaMax = parseFloat(metasMax[i]?.value ?? metaMin);
-        let tipo = tiposIndicador[i]?.value ?? '';
+        let tipo = tipos[i]?.value ?? '';
 
         let nombre = nombres[i]?.innerText.trim() ?? 'N/A';
 
-        labels.push(nombre);
+        // 🔥 label corto (para eje)
+        let labelCorto = nombre.length > 25 
+            ? nombre.substring(0, 18) + '...' 
+            : nombre;
+
+        labels.push(labelCorto);
+        fullLabels.push(nombre);
+
         data.push(valor);
-        lineaMetaMin.push(metaMin);
-        lineaMetaMax.push(metaMax);
+        lineaMin.push(metaMin);
+        lineaMax.push(metaMax);
 
         let color = 'gray';
 
         if (tipo === 'variacion') {
             let li = metaMax - metaMin;
             let ls = metaMax + metaMin;
-
             color = (valor >= li && valor <= ls) ? VERDE : ROJO;
         } 
         else if (tipo === 'riesgo') {
@@ -895,19 +906,16 @@ function obtenerDatos() {
         colores.push(color);
     });
 
-    return { labels, data, colores, lineaMetaMin, lineaMetaMax };
+    return { labels, fullLabels, data, colores, lineaMin, lineaMax };
 }
 
-function crearGrafica() {
+function crearGrafica(idCanvas, orientacion = 'x') {
 
+    const { labels, fullLabels, data, colores, lineaMin, lineaMax } = recolectarDatos();
 
-
-    const { labels, data, colores, lineaMetaMin, lineaMetaMax } = obtenerDatos();
-
+    const canvas = document.getElementById(idCanvas);
     const mensaje = document.getElementById('mensajeVacio');
-    const canvas = document.getElementById('vertical');
 
-    // 🚨 VALIDACIÓN
     const todosCero = data.every(v => v === 0);
 
     if (data.length === 0 || todosCero) {
@@ -934,7 +942,7 @@ function crearGrafica() {
                 {
                     type: 'line',
                     label: 'Meta mínima',
-                    data: lineaMetaMin,
+                    data: lineaMin,
                     borderColor: 'orange',
                     borderWidth: 2,
                     fill: false
@@ -942,7 +950,7 @@ function crearGrafica() {
                 {
                     type: 'line',
                     label: 'Meta máxima',
-                    data: lineaMetaMax,
+                    data: lineaMax,
                     borderColor: 'blue',
                     borderWidth: 2,
                     fill: false
@@ -950,130 +958,35 @@ function crearGrafica() {
             ]
         },
         options: {
-            indexAxis: 'x'
-        }
-    });
-}
+            indexAxis: orientacion,
 
-crearGrafica();
-
-
-</script>
-
-
-<script>
-function recolectarIndicadores() {
-    const listaNombres = document.querySelectorAll('.nombre');
-    const listaResultados = document.querySelectorAll('.resultado_obtenido');
-    const listaMetaMinima = document.querySelectorAll('.meta_minima');
-    const listaMetaMaxima = document.querySelectorAll('.meta_maxima');
-    const listaTipoIndicador = document.querySelectorAll('.tipo_indicador');
-
-    let etiquetas = [];
-    let valores = [];
-    let coloresBarras = [];
-    let metasMinimas = [];
-    let metasMaximas = [];
-
-    const COLOR_OK = 'rgba(0, 200, 83, 0.9)';
-    const COLOR_ERROR = 'rgba(211, 47, 47, 0.9)';
-
-    listaResultados.forEach((inputResultado, index) => {
-        let valorActual = parseFloat(inputResultado.value);
-
-        if (isNaN(valorActual)) valorActual = 0;
-
-        let metaMin = parseFloat(listaMetaMinima[index]?.value ?? 0);
-        let metaMax = parseFloat(listaMetaMaxima[index]?.value ?? metaMin);
-        let tipo = listaTipoIndicador[index]?.value ?? '';
-
-        let nombreIndicador = listaNombres[index]?.innerText.trim() ?? 'N/A';
-
-        etiquetas.push(nombreIndicador);
-        valores.push(valorActual);
-        metasMinimas.push(metaMin);
-        metasMaximas.push(metaMax);
-
-        let colorAsignado = 'gray';
-
-        if (tipo === 'variacion') {
-            let limiteInferior = metaMax - metaMin;
-            let limiteSuperior = metaMax + metaMin;
-
-            colorAsignado = (valorActual >= limiteInferior && valorActual <= limiteSuperior) 
-                ? COLOR_OK 
-                : COLOR_ERROR;
-        } 
-        else if (tipo === 'riesgo') {
-            colorAsignado = valorActual > metaMin ? COLOR_ERROR : COLOR_OK;
-        } 
-        else {
-            colorAsignado = valorActual > metaMin ? COLOR_OK : COLOR_ERROR;
-        }
-
-        coloresBarras.push(colorAsignado);
-    });
-
-    return { etiquetas, valores, coloresBarras, metasMinimas, metasMaximas };
-}
-
-function generarGraficaIndicadores() {
-
-    const { etiquetas, valores, coloresBarras, metasMinimas, metasMaximas } = recolectarIndicadores();
-
-    const mensajeVacio = document.getElementById('mensajeVacio');
-    const canvasGrafica = document.getElementById('horizontal');
-
-    const todosEnCero = valores.every(v => v === 0);
-
-    if (valores.length === 0 || todosEnCero) {
-        mensajeVacio.style.display = 'block';
-        canvasGrafica.style.display = 'none';
-        return;
-    } else {
-        mensajeVacio.style.display = 'none';
-        canvasGrafica.style.display = 'block';
-    }
-
-    const contexto = canvasGrafica.getContext('2d');
-
-    new Chart(contexto, {
-        data: {
-            labels: etiquetas,
-            datasets: [
-                {
-                    type: 'bar',
-                    label: 'Resultado',
-                    data: valores,
-                    backgroundColor: coloresBarras
-                },
-                {
-                    type: 'line',
-                    label: 'Meta mínima',
-                    data: metasMinimas,
-                    borderColor: 'orange',
-                    borderWidth: 2,
-                    fill: false
-                },
-                {
-                    type: 'line',
-                    label: 'Meta máxima',
-                    data: metasMaximas,
-                    borderColor: 'blue',
-                    borderWidth: 2,
-                    fill: false
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
                 }
-            ]
-        },
-        options: {
-            indexAxis: 'y' // 👈 aquí ya la dejé horizontal de una vez
+            },
+
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        // 🔥 AQUÍ mostramos el label completo
+                        title: function(context) {
+                            return fullLabels[context[0].dataIndex];
+                        }
+                    }
+                }
+            }
         }
     });
 }
 
-generarGraficaIndicadores();
+// 🚀 USO
+crearGrafica('vertical', 'x'); // vertical
+crearGrafica('horizontal', 'y'); // horizontal
 </script>
-
 
 
 @endsection

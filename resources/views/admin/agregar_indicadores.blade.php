@@ -57,6 +57,83 @@
     </div>
 
     @include('admin.assets.nav')
+
+            <!-- Tabs Navigation - MDBootstrap -->
+    <div class="row">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-0">
+                <ul class="nav nav-tabs nav-fill border-0" id="departamentoTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active py-3" 
+                            id="ex1-tab-1" 
+                            data-mdb-tab-init
+                            href="#ex1-tabs-1" 
+                            role="tab" 
+                            aria-controls="ex1-tabs-1" 
+                            aria-selected="true">
+                            <i class="fas fa-users me-2"></i>
+                            Usuarios de {{ $departamento->nombre }}
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link py-3" 
+                            id="ex1-tab-2" 
+                            data-mdb-tab-init
+                            href="#ex1-tabs-2" 
+                            role="tab" 
+                            aria-controls="ex1-tabs-2" 
+                            aria-selected="false">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Indicadores
+                        </a>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link py-3" 
+                            id="ex1-tab-3" 
+                            data-mdb-tab-init
+                            href="#ex1-tabs-3" 
+                            role="tab" 
+                            aria-controls="ex1-tabs-3" 
+                            aria-selected="false">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Seguimiento a Normas y Legislaciónes
+                        </a>
+                    </li>
+
+                    @if ($departamento->nombre === "Ventas")
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link py-3" 
+                            id="ex1-tab-4" 
+                            data-mdb-tab-init
+                            href="#ex1-tabs-4" 
+                            role="tab" 
+                            aria-controls="ex1-tabs-4" 
+                            aria-selected="false">
+                            <i class="fas fa-poll me-2"></i>
+                            Encuestas
+                        </a>
+                    </li>                            
+                    @endif
+
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link py-3" 
+                            id="ex1-tab-5" 
+                            data-mdb-tab-init
+                            href="#ex1-tabs-5" 
+                            role="tab" 
+                            aria-controls="ex1-tabs-3" 
+                            aria-selected="false">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Indicadores de Otras Areas
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
     @if ($ponderacion != 100)
         <div class="row"  style="background-color: rgb(199, 53, 53)">
             <div class="col-12 text-white ">
@@ -74,83 +151,8 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-11 col-xl-10 mt-4 mt-md-5">
-            
-            <!-- Tabs Navigation - MDBootstrap -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-0">
-                    <ul class="nav nav-tabs nav-fill border-0" id="departamentoTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active py-3" 
-                               id="ex1-tab-1" 
-                               data-mdb-tab-init
-                               href="#ex1-tabs-1" 
-                               role="tab" 
-                               aria-controls="ex1-tabs-1" 
-                               aria-selected="true">
-                                <i class="fas fa-users me-2"></i>
-                                Usuarios de {{ $departamento->nombre }}
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link py-3" 
-                               id="ex1-tab-2" 
-                               data-mdb-tab-init
-                               href="#ex1-tabs-2" 
-                               role="tab" 
-                               aria-controls="ex1-tabs-2" 
-                               aria-selected="false">
-                                <i class="fas fa-chart-line me-2"></i>
-                                Indicadores
-                            </a>
-                        </li>
-
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link py-3" 
-                               id="ex1-tab-3" 
-                               data-mdb-tab-init
-                               href="#ex1-tabs-3" 
-                               role="tab" 
-                               aria-controls="ex1-tabs-3" 
-                               aria-selected="false">
-                                <i class="fas fa-file-alt me-2"></i>
-                                Seguimiento a Normas y Legislaciónes
-                            </a>
-                        </li>
-
-                        @if ($departamento->nombre === "Ventas")
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link py-3" 
-                               id="ex1-tab-4" 
-                               data-mdb-tab-init
-                               href="#ex1-tabs-4" 
-                               role="tab" 
-                               aria-controls="ex1-tabs-4" 
-                               aria-selected="false">
-                                <i class="fas fa-poll me-2"></i>
-                                Encuestas
-                            </a>
-                        </li>                            
-                        @endif
-
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link py-3" 
-                               id="ex1-tab-5" 
-                               data-mdb-tab-init
-                               href="#ex1-tabs-5" 
-                               role="tab" 
-                               aria-controls="ex1-tabs-3" 
-                               aria-selected="false">
-                                <i class="fas fa-file-alt me-2"></i>
-                                Indicadores de Otras Areas
-                            </a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Tabs Content (oculto inicialmente para JS) -->
+        <div class="col-12 col-lg-11 col-xl-10 mt-1">
+                        <!-- Tabs Content (oculto inicialmente para JS) -->
             <div class="tab-content " id="ex1-content">
                 
                 <!-- Usuarios Tab -->
@@ -442,7 +444,7 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th scope="col" class="border-0">Norma</th>
-                                                <th scope="col" class="border-0">Autor</th>
+                                                <th scope="col" class="border-0">Tipo Regulación</th>
                                                 <th scope="col" class="border-0">Ponderación</th>
                                                 <th scope="col" class="border-0">Fecha Creación</th>
                                                 <th scope="col" class="border-0 text-end">Acciones</th>
@@ -458,7 +460,7 @@
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <small class="text-muted">{{ $norma->autor }}</small>
+                                                    <small class="text-muted text-capitalize">{{ $norma->tipo_regulacion }}</small>
                                                 </td>
                                                 <td>
                                                     <small class="text-dark">{{ $norma->ponderacion }}%</small>
@@ -1632,7 +1634,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header bg-primary py-4">
-                <h5 class="text-white" id="exampleModalLabel">Editando Departamento {{$norma->nombre}}</h5>
+                <h5 class="text-white" id="exampleModalLabel">Editando {{$norma->nombre}}</h5>
                 <button type="button" class="btn-close " data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
@@ -1644,6 +1646,13 @@
                             <input type="text" class="form-control form-control-lg w-100{{ $errors->first('nombre_norma_edit') ? 'is-invalid' : '' }} " id="nombre_norm{{$norma->id}}" name="nombre_norma_edit" value="{{old('nombre_norma', $norma->nombre)}}" >
                             <label class="form-label" for="nombre_norm{{$norma->id}}" >Nombre  <span class="text-danger">*</span></label>
                         </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <select  class="form-select" name="tipo_regulacion_edit" id="">
+                            <option value="legislacion">Legislación</option>
+                            <option value="norma">Norma</option>
+                        </select>
                     </div>
 
                     <div class="form-group mt-3">

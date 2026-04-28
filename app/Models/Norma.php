@@ -15,6 +15,7 @@ class Norma extends Model
         'meta_minima', 
         'meta_esperada',
         'id_objetivo_perspectiva',
+        'tipo_regulacion',
         'autor'
     ];
 
