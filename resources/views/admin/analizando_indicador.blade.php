@@ -153,27 +153,43 @@
 {{-- Datos de los indicadores, solo el numerito final y se agregara un modal  para ver los detalles --}}
 
 @php
-    $semaforo="";
-    if($indicador->tipo_indicador == "riesgo"){
+$semaforo = "";
 
-        if($indicador->meta_esperada <= $ultimo_mes->informacion_campo){
-            $semaforo = "bg-danger";
-        }
-        if($indicador->meta_esperada > $ultimo_mes->informacion_campo){
-            $semaforo = "bg-success";
-        }
+$valor = $ultimo_mes->informacion_campo;
+$meta  = $indicador->meta_esperada;
+$var   = $indicador->meta_minima; // tu variación
+
+
+if($indicador->variacion === "on"){
+
+    $min = $meta - $var;
+    $max = $meta + $var;
+
+    if($valor >= $min && $valor <= $max){
+        $semaforo = "bg-success";
+    } else {
+        $semaforo = "bg-danger";
     }
+}
 
-    if($indicador->tipo_indicador == "normal"){
+elseif($indicador->tipo_indicador == "riesgo"){
 
-        if($indicador->meta_esperada < $ultimo_mes->informacion_campo){
-            $semaforo = "bg-success";
-        }
-        if($indicador->meta_esperada >= $ultimo_mes->informacion_campo){
-            $semaforo = "bg-danger";
-
-        }
+    if($valor >= $meta){
+        $semaforo = "bg-danger";
+    } else {
+        $semaforo = "bg-success";
     }
+}
+
+
+else{
+
+    if($valor >= $meta){
+        $semaforo = "bg-success";
+    } else {
+        $semaforo = "bg-danger";
+    }
+}
 @endphp
 
 

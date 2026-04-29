@@ -44,35 +44,20 @@
     @include('admin.assets.nav')
  
 </div>
-{{-- 
-Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todos los indicadores terminen en porcentaje)
-<div class="container-fluid">
-    <div class="row  border-bottom  bg-white border-bottom shadow-sm">
-
-
-        <div class="col-12 col-sm-12 col-md-4 col-lg-3 my-1">
-            <button  class="btn btn-sm btn-primary w-100"  data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#exampleModal">
-                <i class="fa fa-eye mx-1"></i>
-                Cumplimiento general
-            </button>
-        </div>
-
-
-    </div>
-</div> --}}
-
-
 
 
 <div class="container-fluid">
     <div class="row jusfify-content-center">
+        
         @forelse ($indicadores as $indicador)
-                @php
-                    $contador = 0;
-                    $suma = 0;
 
-                    $resultado = [];
-                @endphp
+            @php
+                $contador = 0;
+                $suma = 0;
+
+                $resultado = [];
+            @endphp
+
             @foreach($indicador->indicadorLleno as $indicador_lleno)
 
                 @if ($indicador_lleno->final == 'on')
@@ -83,11 +68,9 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                         array_push($resultado,$indicador_lleno->informacion_campo ) 
                     @endphp
 
-
                 @endif
 
-                
-                @endforeach
+            @endforeach
                 
 
 
@@ -96,11 +79,118 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                 $cumplimiento = end($resultado);
             @endphp
 
-                @if ($indicador->variacion === 'on')
+
+
+{{-- 
+            @php
+            $modo = $indicador->variacion === 'on' 
+                ? 'variacion' 
+                : ($indicador->tipo_indicador === 'riesgo' ? 'riesgo' : 'normal');
+                
+            @endphp
+
+            @php
+                $tipos = [
+                    "g" => "<i class='fa-solid fa-city'></i> Indicador General",
+                    "p" => "<i class='fa-solid fa-cow'></i> Pecuarios",
+                    "m" => "<i class='fa-solid fa-dog'></i> Mascotas",
+                ];
+            @endphp
+
+
+            @php
+            $bgClass = match($modo) {
+                'variacion' => ($cumplimiento >= ($indicador->meta_esperada - $indicador->meta_minima) 
+                                && $cumplimiento <= ($indicador->meta_esperada + $indicador->meta_minima))
+                                ? 'bg-success' : 'bg-danger',
+
+                'riesgo' => ($cumplimiento < $indicador->meta_minima) 
+                                ? 'bg-success' : 'bg-danger',
+
+                default => ($cumplimiento <= $indicador->meta_minima) 
+                                ? 'bg-danger' : 'bg-success',
+            };
+            @endphp
+
+
+            <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
+
+                <div class="card text-white {{ $bgClass }} shadow-2-strong"
+                    data-clase="{{ $modo }}">
+
+                    <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
+
+                        <div class="card-body">
+
+                            <!-- HEADER -->
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h4 class="fw-bold nombre">{{$indicador->nombre}}</h4>
+
+                                <!--  Badge dinámico -->
+                                <span class="badge bg-dark text-uppercase">
+                                    {{ $modo }}
+                                </span>
+                            </div>
+
+                            <!-- RESULTADO -->
+                            <div class="text-center my-3">
+                                <span class="fw-bold display-5 resultado">
+                                    {{ round($cumplimiento, 2) }}
+                                    @if($indicador->unidad_medida === 'porcentaje') % @endif
+                                </span>
+                            </div>
+
+                            <!--  DISEÑO DIFERENTE SEGÚN TIPO -->
+                            @if($modo === 'variacion')
+
+                                <div class="d-flex justify-content-around small">
+                                    <span><i class="fa fa-bullseye"></i> Meta: {{ $indicador->meta_esperada }}</span>
+                                    <span><i class="fa-solid fa-wave-square"></i> ± {{ $indicador->meta_minima }}</span>
+                                </div>
+
+                            @elseif($modo === 'riesgo')
+
+                                <div class="d-flex justify-content-around small">
+                                    <span><i class="fa fa-arrow-down"></i> Límite: {{ $indicador->meta_minima }}</span>
+                                    <span><i class="fa fa-triangle-exclamation"></i> Riesgo</span>
+                                </div>
+
+                            @else
+
+                                <div class="d-flex justify-content-around small">
+                                    <span><i class="fa fa-arrow-up"></i> Meta: {{ $indicador->meta_esperada }}</span>
+                                    <span><i class="fa fa-minus"></i> Mín: {{ $indicador->meta_minima }}</span>
+                                </div>
+
+                            @endif
+
+                        </div>
+                    </a>
+
+                    <!-- FOOTER -->
+                    <div class="card-footer text-center small">
+                        {!!  
+                            empty($indicador->planta)
+                                ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
+                                : ($tipos[strtolower($indicador->planta)] 
+                                    ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
+                        !!}
+                    </div>
+
+                </div>
+            </div> --}}
+
+
+                 @if ($indicador->variacion === 'on')
                     
                 <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
 
-                    <div class="card text-white {{($cumplimiento >= ($indicador->meta_esperada - $indicador->meta_minima)&& $cumplimiento <= ($indicador->meta_esperada + $indicador->meta_minima)) ? 'bg-success' : 'bg-danger'}} shadow-2-strong">
+                    <div class="card text-white {{($cumplimiento >= ($indicador->meta_esperada - $indicador->meta_minima)&& $cumplimiento <= ($indicador->meta_esperada + $indicador->meta_minima)) ? 'bg-success' : 'bg-danger'}} shadow-2-strong" data-tipo="indicador"
+                    data-nombre="{{ $indicador->nombre }}"
+                    data-valor="{{ $cumplimiento }}"
+                    data-meta-min="{{ $indicador->meta_minima }}"
+                    data-meta-max="{{ $indicador->meta_esperada }}"
+                    data-clase="{{ $indicador->variacion === 'on' ? 'variacion' : ($indicador->tipo_indicador === 'riesgo' ? 'riesgo' : 'normal') }}">
                     
                     
                         <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
@@ -172,11 +262,6 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                                 ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
                                     !!}
                                 </div>
-                                {{-- <div class="col-auto mx-2">
-                                    <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
-                                        <i class="fa-solid fa-list"></i>
-                                    </a>
-                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -191,7 +276,11 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                 @if ($indicador->tipo_indicador === "riesgo")
 
                 <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-                    <div class="card text-white {{($cumplimiento < $indicador->meta_minima) ? 'bg-success' : 'bg-danger'}} shadow-2-strong">
+                    <div class="card text-white {{($cumplimiento < $indicador->meta_minima) ? 'bg-success' : 'bg-danger'}} shadow-2-strong" data-tipo="indicador" data-nombre="{{ $indicador->nombre }}"
+                    data-valor="{{ $cumplimiento }}"
+                    data-meta-min="{{ $indicador->meta_minima }}"
+                    data-meta-max="{{ $indicador->meta_esperada }}"
+                    data-clase="riesgo">
                         <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
 
                         <div class="card-body">
@@ -261,11 +350,6 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
                                                     ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
                                         !!}
                                     </div>
-                                    {{-- <div class="col-auto mx-2">
-                                        <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
-                                            <i class="fa-solid fa-list"></i>
-                                        </a>
-                                    </div> --}}
                                 </div>
                         </div>
                     </div>
@@ -274,119 +358,113 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 
                 @else
-                <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-                    <div class="card text-white {{($cumplimiento <= $indicador->meta_minima) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
-                        <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
+                    <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
+                        <div class="card text-white {{($cumplimiento <= $indicador->meta_minima) ? 'bg-danger' : 'bg-success'}} shadow-2-strong"
+                        data-tipo="indicador"
+                        data-nombre="{{ $indicador->nombre }}"
+                        data-valor="{{ number_format($cumplimiento ?? 0, 2) }}"
+                        data-meta-min="{{ $indicador->meta_minima }}"
+                        data-meta-max="{{ $indicador->meta_esperada }}"
+                        data-clase="normal">
+                            <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
+                            <div class="card-body">
+                                <div class="row justify-content-around d-flex align-items-center">
+                                    <div class="col-12 ">
+                                        <h4 class="card-text fw-bold nombre">{{$indicador->nombre}}                               </h4>
+                                            <span class="card-title fw-bold display-6 mt-3 h3 resultado">
 
-                        <div class="card-body">
-                            <div class="row justify-content-around d-flex align-items-center">
-                                <div class="col-12 ">
-                                    <h4 class="card-text fw-bold nombre">{{$indicador->nombre}}                               </h4>
-                                        <span class="card-title fw-bold display-6 mt-3 h3 resultado">
+                                                @if($indicador->unidad_medida === 'pesos')
+                                                    ${{ number_format($cumplimiento, 2) }}
 
-                                            @if($indicador->unidad_medida === 'pesos')
-                                                ${{ number_format($cumplimiento, 2) }}
+                                                @elseif($indicador->unidad_medida === 'porcentaje')
+                                                    {{ round($cumplimiento, 2) }}%
 
-                                            @elseif($indicador->unidad_medida === 'porcentaje')
-                                                {{ round($cumplimiento, 2) }}%
+                                                @elseif($indicador->unidad_medida === 'dias')
+                                                    {{ round($cumplimiento, 2) }} Días
 
-                                            @elseif($indicador->unidad_medida === 'dias')
-                                                {{ round($cumplimiento, 2) }} Días
+                                                @elseif($indicador->unidad_medida === 'toneladas')
+                                                    {{ round($cumplimiento, 2) }} Ton.
 
-                                            @elseif($indicador->unidad_medida === 'toneladas')
-                                                {{ round($cumplimiento, 2) }} Ton.
+                                                @else
+                                                    {{ round($cumplimiento, 2) }}
+                                                @endif
 
-                                            @else
-                                                {{ round($cumplimiento, 2) }}
-                                            @endif
+                                            </span>
 
-                                        </span>
+                                    <input type="hidden" class="meta_minima" value="{{ $indicador->meta_minima }}">
+                                    <input type="hidden" class="resultado_obtenido" value="{{ number_format($cumplimiento, 2) }}">
+                                    <input type="hidden" class="tipo_indicado" value="normal">                                
 
-                                <input type="hidden" class="meta_minima" value="{{ $indicador->meta_minima }}">
-                                <input type="hidden" class="resultado_obtenido" value="{{ $cumplimiento }}">
-                                <input type="hidden" class="tipo_indicado" value="normal">                                
-
-                                </div>
-
-                            </div>
-
-                            <div class="row justify-content-around my-2">
-                                <div class="col-auto text-center">
-                                    <span>
-                                        <i class="fa fa-arrow-up"></i>
-                                        Meta: {{ $indicador->meta_esperada }}
-                                    </span>
-                                </div>
-                                <div class="col-auto text-center">
-                                    <span class="mx-5">
-                                        <i class="fa-solid fa-circle-down"></i>
-                                        Min.: {{ $indicador->meta_minima }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        </a>
-                        <div class="card-footer ">
-                                <div class="row justify-content-between ">
-                                    <div class="col-auto h4">
-                                        @php
-                                        $tipos = [
-                                            "g" => "<i class='fa-solid fa-city'></i> Indicador General",
-                                            "p" => "<i class='fa-solid fa-cow'></i> Pecuarios",
-                                            "m" => "<i class='fa-solid fa-dog'></i> Mascotas",
-                                        ];
-                                        @endphp
-
-                                        {!!  
-                                            empty($indicador->planta)
-                                                ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
-                                                : ($tipos[strtolower($indicador->planta)] 
-                                                    ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
-                                        !!}
                                     </div>
-                                    {{-- <div class="col-auto mx-2">
-                                        <a href="#" class="text-white" data-mdb-ripple-init data-mdb-tooltip-init data-mdb-placement="top" title="Ver historial" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#detall{{ $indicador->id }}">
-                                            <i class="fa-solid fa-list"></i>
-                                        </a>
-                                    </div> --}}
+
                                 </div>
-                        </div>                        
-                    </div>
-                </div>
-                    
-                @endif
 
-
-                    
-                @endif
-
-
-
-
-
-
-            @else
-
-                <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-                    <div class="card text-white bg-dark shadow-2-strong">
-                        <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
-                        <div class="card-body">
-                            <div class="row justify-content-around d-flex align-items-center">
-                                <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
-                                    <h5 class="card-title fw-bold  x">
-                                        Sin registros aún.
-                                    </h5>
-                                    <p class="card-text fw-bold">{{$indicador->nombre}}</p>
-                                </div>
-                                <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
-                                    <i class="fas fa-chart-line fa-3x"></i>
+                                <div class="row justify-content-around my-2">
+                                    <div class="col-auto text-center">
+                                        <span>
+                                            <i class="fa fa-arrow-up"></i>
+                                            Meta: {{ $indicador->meta_esperada }}
+                                        </span>
+                                    </div>
+                                    <div class="col-auto text-center">
+                                        <span class="mx-5">
+                                            <i class="fa-solid fa-circle-down"></i>
+                                            Min.: {{ $indicador->meta_minima }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+                            </a>
+                            <div class="card-footer ">
+                                    <div class="row justify-content-between ">
+                                        <div class="col-auto h4">
+                                            @php
+                                            $tipos = [
+                                                "g" => "<i class='fa-solid fa-city'></i> Indicador General",
+                                                "p" => "<i class='fa-solid fa-cow'></i> Pecuarios",
+                                                "m" => "<i class='fa-solid fa-dog'></i> Mascotas",
+                                            ];
+                                            @endphp
+
+                                            {!!  
+                                                empty($indicador->planta)
+                                                    ? "<i class='fa-solid fa-circle-exclamation'></i> Sin asignación"
+                                                    : ($tipos[strtolower($indicador->planta)] 
+                                                        ?? " <i class='fa-solid fa-industry'></i> Planta {$indicador->planta}")
+                                            !!}
+                                        </div>
+                                    </div>
+                            </div>                        
                         </div>
-                        </a>
                     </div>
-                </div>
-            @endif
+                @endif
+
+  
+                @endif
+
+                @else
+
+                    <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
+                        <div class="card text-white bg-dark shadow-2-strong">
+                            <a href="{{route('indicador.lleno.show.admin', $indicador->id)}}" class="text-white w-100">
+                            <div class="card-body">
+                                <div class="row justify-content-around d-flex align-items-center">
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
+                                        <h5 class="card-title fw-bold  x">
+                                            Sin registros aún.
+                                        </h5>
+                                        <p class="card-text fw-bold">{{$indicador->nombre}}</p>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
+                                        <i class="fas fa-chart-line fa-3x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                @endif 
 
 
         @empty
@@ -398,90 +476,84 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 
 
 
+        @forelse ($normas as $norma)
+            <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
+                <div class="card text-white {{($norma->meta_minima > $norma->porcentaje_mes) ? 'bg-danger' : 'bg-success'}} shadow-2-strong" data-tipo="norma" data-nombre="{{ $norma->nombre }}"
+                    data-valor="{{ number_format($norma->porcentaje_mes, 2) }}" data-meta-min="{{ $norma->meta_minima }}">
+                    <a href="{{route('apartado.norma', $norma->id)}}" class="text-white w-100">
+                    <div class="card-body">
+                        <div class="row justify-content-around d-flex align-items-center">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
+                                <span class="text-capitalize fw-bold" >{{ $norma->tipo_regulacion }}</span>
+                                <h2 class="card-title fw-bold display-6 resultado">{{round($norma->porcentaje_mes, 2)}}%</h2>
+                                <p class="card-text fw-bold nombre">{{$norma->nombre}}</p>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
+                                <i class="fas fa-chart-line fa-3x"></i>
+                                <input type="hidden" class="meta_minima" value="{{ $norma->meta_minima }}">
+                                <input type="hidden" class="resultado_obtenido" value="{{ $norma->porcentaje_mes }}">
+                                <input type="hidden" class="tipo_indicado" value="normal">
 
-
-{{-- Foreach de las encuestas --}}
-
-
-    @forelse ($normas as $norma)
-        <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-            <div class="card text-white {{($norma->meta_minima > $norma->porcentaje_mes) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
-                <a href="{{route('apartado.norma', $norma->id)}}" class="text-white w-100">
-                <div class="card-body">
-                    <div class="row justify-content-around d-flex align-items-center">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
-                            <h2 class="card-title fw-bold display-6 resultado">{{round($norma->porcentaje_mes, 2)}}%</h2>
-                            <p class="card-text fw-bold nombre">{{$norma->nombre}}</p>
-                        </div>
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
-                            <i class="fas fa-chart-line fa-3x"></i>
-                            <input type="hidden" class="meta_minima" value="{{ $norma->meta_minima }}">
-                            <input type="hidden" class="resultado_obtenido" value="{{ $norma->porcentaje_mes }}">
-                            <input type="hidden" class="tipo_indicado" value="normal">
-
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer p-2">
-                    <div class="row  d-flex justify-content-between align-items-center">
-                        <div class="col-12">
-                           <h4 class="">
-                             {{ $norma->planta }}
-                           </h4>
-                        </div>
-                    </div>
-                </div>
-                </a>
-            </div>
-        </div>
-    @empty
-
-    @endforelse 
-
-
-{{-- Foreach de las encuestas --}}
-
-
-
-{{-- Foreach del cumplimiento a normas --}}
-    @forelse ($encuestas as $encuesta)
-
-        <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
-            <div class="card text-white {{($encuesta->porcentaje_mes < $encuesta->meta_minima) ? 'bg-danger' : 'bg-success'}} shadow-2-strong">
-                <a href="{{route('encuesta.index', $encuesta->id)}}" class="text-white w-100">
-                <div class="card-body">
-                    <div class="row justify-content-around d-flex align-items-center">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
-                            <h2 class="card-title fw-bold display-6 x resultado">{{$encuesta->porcentaje_mes}}%</h2>
-                            <p class="card-text fw-bold nombre">{{$encuesta->nombre}}</p>
-                        </div>
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
-                            <i class="fas fa-chart-line fa-3x"></i>
-                            <input type="hidden" class="meta_minima" value="{{ $encuesta->meta_minima }}">
-                            <input type="hidden" class="resultado_obtenido" value="{{ $encuesta->porcentaje_mes }}">
-                            <input type="hidden" class="tipo_indicado" value="normal">
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer p-2">
+                    <div class="card-footer p-2">
                         <div class="row  d-flex justify-content-between align-items-center">
-                            <div class="col-auto">
-                                    Ver Detalles
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-arrow-circle-right"></i>
+                            <div class="col-12">
+                            <h4 class="">
+                                {{ $norma->planta }}
+                            </h4>
                             </div>
                         </div>
+                    </div>
+                    </a>
                 </div>
-                </a>
             </div>
-        </div>
+        @empty
 
-    @empty
+        @endforelse 
 
-    @endforelse
 
-{{-- Foreach del cumplimiento a normas --}}
+
+
+        @forelse ($encuestas as $encuesta)
+
+            <div class="col-10 col-sm-10 col-md-6 col-lg-4 my-3">
+                <div class="card text-white {{($encuesta->porcentaje_cumplimiento < $encuesta->meta_minima) ? 'bg-danger' : 'bg-success'}} shadow-2-strong" data-tipo="encuesta" data-nombre="{{ $encuesta->nombre }}" data-valor="{{ $encuesta->porcentaje_cumplimiento }}" data-meta-min="{{ $encuesta->meta_minima }}">
+                    <a href="{{route('encuesta.index', $encuesta->id)}}" class="text-white w-100">
+                    <div class="card-body">
+                        <div class="row justify-content-around d-flex align-items-center">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-7 ">
+                                <h2 class="card-title fw-bold display-6 x resultado">{{$encuesta->porcentaje_cumplimiento}}%</h2>
+                                <p class="card-text fw-bold nombre">{{$encuesta->nombre}}</p>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0 m-0">
+                                <i class="fas fa-chart-line fa-3x"></i>
+                                <input type="hidden" class="meta_minima" value="{{ $encuesta->meta_minima }}">
+                                <input type="hidden" class="resultado_obtenido" value="{{ $encuesta->porcentaje_cumplimiento }}">
+                                <input type="hidden" class="tipo_indicado" value="normal">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer p-2">
+                            <div class="row  d-flex justify-content-between align-items-center">
+                                <div class="col-auto">
+                                        Ver Detalles
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-arrow-circle-right"></i>
+                                </div>
+                            </div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+
+        @empty
+
+        @endforelse
+
+
     </div>
 
 
@@ -496,20 +568,7 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
         </div>
     @endif
 
-
-
-
 </div>
-
-
-
-
-
-
-
-
-
-
 
 
 {{-- Modales del detalle historico de los indocadores --}}
@@ -762,71 +821,82 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 </button>
 
 <div class="modal fade" id="grafico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-fullscreen">
     <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="exampleModalLabel">Gráfica</h5>
-        <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
-      </div>
-        <div class="modal-body">
-            <div class="row justify-content-center">
-                <div class="col-12 text-center ">
-                    <h3 class="text-primary fw-bold">{{ $departamento->nombre }}</h3>
-                </div>
+        <div class="modal-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h5 class="modal-title">
+                {{ $departamento->nombre }} | Planta: {{ $departamento->planta }}
+            </h5>
+
+            <div class="d-flex align-items-center gap-2">
+                <select id="sizeModal" class="form-select form-select-sm">
+                    <option value="modal-xl">XL</option>
+                    <option value="modal-fullscreen" selected>Fullscreen</option>
+                </select>
+
+                <button type="button" class="btn-close" data-mdb-dismiss="modal"></button>
             </div>
+
+        </div>
+        <div class="modal-body py-0">
 
             <div class="row justify-content-center">
                 <div class="col-12">
                     <!-- Tabs navs -->
                     <ul class="nav nav-tabs nav-justified mb-3" id="ex1" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a
-                        data-mdb-tab-init
-                        class="nav-link "
-                        id="ex3-tab-1"
-                        href="#ex3-tabs-1"
-                        role="tab"
-                        aria-controls="ex3-tabs-1"
-                        aria-selected="true"
-                        >Gráfica en Horizontal</a
-                        >
+                        <a data-mdb-tab-init class="nav-link active" id="ex3-tab-1" href="#ex3-tabs-1" role="tab" aria-controls="ex3-tabs-1" aria-selected="true" >Indicadores</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a
-                        data-mdb-tab-init
-                        class="nav-link active"
-                        id="ex3-tab-2"
-                        href="#ex3-tabs-2"
-                        role="tab"
-                        aria-controls="ex3-tabs-2"
-                        aria-selected="false"
-                        >Gráfica en Vertical</a
-                        >
+                        <a data-mdb-tab-init class="nav-link " id="ex3-tab-2" href="#ex3-tabs-2" role="tab" aria-controls="ex3-tabs-2" aria-selected="false" >Normas</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a data-mdb-tab-init class="nav-link " id="ex3-tab-3" href="#ex3-tabs-3" role="tab" aria-controls="ex3-tabs-2" aria-selected="false" >Encuestas</a>
                     </li>
                     </ul>
                     <!-- Tabs navs -->
 
                     <!-- Tabs content -->
                     <div class="tab-content" id="ex2-content">
-                    <div
-                        class="tab-pane fade "
-                        id="ex3-tabs-1"
-                        role="tabpanel"
-                        aria-labelledby="ex3-tab-1"
-                    >
-                        <canvas id="horizontal"></canvas>
-                    </div>
-                    <div
-                        class="tab-pane fade show active"
-                        id="ex3-tabs-2"
-                        role="tabpanel"
-                        aria-labelledby="ex3-tab-2"
-                    >
 
-                        <canvas id="vertical"></canvas>
-                    </div>
+                        <div class="tab-pane fade show active " id="ex3-tabs-1" role="tabpanel" aria-labelledby="ex3-tab-1">
+                            <div class="row justify-content-center">
+                                
+                                <div class="col-12 col-sm-12 col-md-9 col-lg-7 col-xl-7 text-center m-3 ">
+                                    <h5 class="fw-bold">Promedio del Mes</h5>
+                                    <h2 id="promIndicadores" class="fw-bold"></h2>
+                                </div>
+                                
+                                <div class="col-12 col-sm-12 col-md-10 col-lg-9 col-xl-9 ">
+                                    <canvas id="chartIndicadores"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade " id="ex3-tabs-2" role="tabpanel" aria-labelledby="ex3-tab-2">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-sm-12 col-md-9 col-lg-7 col-xl-7 text-center m-3 ">
+                                    <h5 class="fw-bold">Promedio del Mes</h5>
+                                    <h3 id="promNormas"></h3>
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-10 col-lg-9 col-xl-9 ">
+                                    <canvas id="chartNormas"></canvas>
+                                </div>
+                            </div>
+                        </div>
 
-                    </div>
+                        <div class="tab-pane fade" id="ex3-tabs-3" role="tabpanel" aria-labelledby="ex3-tab-2">
+                            <div class="row justify-content-center">
+                                <div class="col-11 col-sm-11 col-md-9 col-lg-7 col-xl-7 text-center m-3 ">
+                                    <h3 class="fw-bold" id="promEncuestas"></h3> 
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-10 col-lg-9 col-xl-9 ">
+                                    <canvas id="chartEncuestas"></canvas>
+                                </div>
+                            </div>
+                        </div>                        
+
+                        </div>
                     <!-- Tabs content -->
                 </div>
             </div>
@@ -840,153 +910,207 @@ Aqui yacen los restosa de algo que pudo ser y no fue (si puede ser solo que todo
 </div>
 
 
-
-
 @endsection
 
 
 @section('scripts')
 
-
-
 <script>
-function recolectarDatos() {
-    const nombres = document.querySelectorAll('.nombre');
-    const resultados = document.querySelectorAll('.resultado_obtenido');
-    const metasMin = document.querySelectorAll('.meta_minima');
-    const metasMax = document.querySelectorAll('.meta_maxima');
-    const tipos = document.querySelectorAll('.tipo_indicador');
+document.addEventListener('DOMContentLoaded', () => {
 
-    let labels = [];
-    let fullLabels = [];
-    let data = [];
-    let colores = [];
-    let lineaMin = [];
-    let lineaMax = [];
+    const indicadores = [];
+    const normas = [];
+    const encuestas = [];
 
-    const VERDE = 'rgba(0, 200, 83, 0.9)';
-    const ROJO  = 'rgba(211, 47, 47, 0.9)';
+    // 🔹 Leer datos desde las cards
+    document.querySelectorAll('.card[data-tipo]').forEach(card => {
+        const tipo = (card.dataset.tipo || '').toLowerCase().trim();
+        const item = {
+            nombre: card.dataset.nombre,
+            valor: parseFloat(card.dataset.valor) || 0,
+            meta_min: parseFloat(card.dataset.metaMin),
+            meta_max: parseFloat(card.dataset.metaMax),
+            clase: card.dataset.clase
+        };
 
-    resultados.forEach((el, i) => {
-        let valor = parseFloat(el.value);
-        if (isNaN(valor)) valor = 0;
-
-        let metaMin = parseFloat(metasMin[i]?.value ?? 0);
-        let metaMax = parseFloat(metasMax[i]?.value ?? metaMin);
-        let tipo = tipos[i]?.value ?? '';
-
-        let nombre = nombres[i]?.innerText.trim() ?? 'N/A';
-
-        // 🔥 label corto (para eje)
-        let labelCorto = nombre.length > 25 
-            ? nombre.substring(0, 18) + '...' 
-            : nombre;
-
-        labels.push(labelCorto);
-        fullLabels.push(nombre);
-
-        data.push(valor);
-        lineaMin.push(metaMin);
-        lineaMax.push(metaMax);
-
-        let color = 'gray';
-
-        if (tipo === 'variacion') {
-            let li = metaMax - metaMin;
-            let ls = metaMax + metaMin;
-            color = (valor >= li && valor <= ls) ? VERDE : ROJO;
-        } 
-        else if (tipo === 'riesgo') {
-            color = valor > metaMin ? ROJO : VERDE;
-        } 
-        else {
-            color = valor > metaMin ? VERDE : ROJO;
-        }
-
-        colores.push(color);
+        if (tipo === 'indicador') indicadores.push(item);
+        if (tipo === 'norma') normas.push(item);
+        if (tipo === 'encuesta') encuestas.push(item);
     });
 
-    return { labels, fullLabels, data, colores, lineaMin, lineaMax };
-}
-
-function crearGrafica(idCanvas, orientacion = 'x') {
-
-    const { labels, fullLabels, data, colores, lineaMin, lineaMax } = recolectarDatos();
-
-    const canvas = document.getElementById(idCanvas);
-    const mensaje = document.getElementById('mensajeVacio');
-
-    const todosCero = data.every(v => v === 0);
-
-    if (data.length === 0 || todosCero) {
-        mensaje.style.display = 'block';
-        canvas.style.display = 'none';
-        return;
-    } else {
-        mensaje.style.display = 'none';
-        canvas.style.display = 'block';
+    function truncarTexto(texto, limite = 22) {
+        if (!texto) return '';
+        return texto.length > limite ? texto.substring(0, limite) + '...' : texto;
     }
 
-    const ctx = canvas.getContext('2d');
+    function getColor(item) {
+        if (item.clase === 'variacion') {
+            return (item.valor >= (item.meta_max - item.meta_min) &&
+                    item.valor <= (item.meta_max + item.meta_min))
+                ? 'rgba(25, 135, 84, 0.8)'
+                : 'rgba(220, 53, 69, 0.8)';
+        }
+        if (item.clase === 'riesgo') {
+            return (item.valor < item.meta_min)
+                ? 'rgba(25, 135, 84, 0.8)'
+                : 'rgba(220, 53, 69, 0.8)';
+        }
+        return (item.valor <= item.meta_min)
+            ? 'rgba(220, 53, 69, 0.8)'
+            : 'rgba(25, 135, 84, 0.8)';
+    }
 
-    new Chart(ctx, {
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    type: 'bar',
-                    label: 'Resultado',
-                    data: data,
-                    backgroundColor: colores
-                },
-                {
-                    type: 'line',
-                    label: 'Meta mínima',
-                    data: lineaMin,
-                    borderColor: 'orange',
-                    borderWidth: 2,
-                    fill: false
-                },
-                {
-                    type: 'line',
-                    label: 'Meta máxima',
-                    data: lineaMax,
-                    borderColor: 'blue',
-                    borderWidth: 2,
-                    fill: false
-                }
-            ]
+    // Configuración base para DataLabels (Evita repetición)
+    const baseDataLabels = {
+        display: true, // Forzar visualización siempre
+        anchor: function(context) {
+            const bar = context.chart.getDatasetMeta(context.datasetIndex).data[context.dataIndex];
+            return (bar && bar.height < 50) ? 'end' : 'center';
         },
+        align: function(context) {
+            const bar = context.chart.getDatasetMeta(context.datasetIndex).data[context.dataIndex];
+            return (bar && bar.height < 50) ? 'top' : 'center';
+        },
+        rotation: function(context) {
+            const bar = context.chart.getDatasetMeta(context.datasetIndex).data[context.dataIndex];
+            return (bar && bar.height < 50) ? 0 : -90;
+        },
+        color: function(context) {
+            const value = context.dataset.data[context.dataIndex];
+            const bar = context.chart.getDatasetMeta(context.datasetIndex).data[context.dataIndex];
+            // Si el valor es 0 o la barra es muy baja, texto negro para que se vea
+            return (value === 0 || (bar && bar.height < 50)) ? '#000' : '#fff';
+        },
+        font: { weight: 'bold', size: 18 },
+        formatter: (value) => value + '%',
+        clamp: true,
+        clip: false
+    };
+
+    // =========================
+    // INDICADORES
+    // =========================
+    new Chart(document.getElementById('chartIndicadores'), {
+        type: 'bar',
+        data: {
+            labels: indicadores.map(i => truncarTexto(i.nombre)),
+            datasets: [{
+                data: indicadores.map(i => i.valor),
+                backgroundColor: indicadores.map(i => getColor(i))
+            }]
+        },
+        plugins: [ChartDataLabels],
         options: {
-            indexAxis: orientacion,
-
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
             scales: {
-                x: {
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 45
-                    }
-                }
+                x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 16, weight: 'bold' } } }
             },
-
             plugins: {
+                legend: { display: false },
+                datalabels: baseDataLabels
+            }
+        }
+    });
+
+    // =========================
+    // NORMAS
+    // =========================
+    new Chart(document.getElementById('chartNormas'), {
+        type: 'bar',
+        data: {
+            labels: normas.map(n => truncarTexto(n.nombre)),
+            datasets: [{
+                data: normas.map(n => n.valor),
+                backgroundColor: normas.map(n => (n.valor < n.meta_min) ? 'rgba(220, 53, 69, 0.8)' : 'rgba(25, 135, 84, 0.8)')
+            }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 16, weight: 'bold' } } }
+            },
+            plugins: {
+                legend: { display: false },
+                datalabels: baseDataLabels
+            }
+        }
+    });
+
+    // =========================
+    // ENCUESTAS
+    // =========================
+    const fullLabelsEncuestas = encuestas.map(e => e.nombre);
+    new Chart(document.getElementById('chartEncuestas'), {
+        type: 'bar',
+        data: {
+            labels: encuestas.map(e => truncarTexto(e.nombre)),
+            datasets: [{
+                data: encuestas.map(e => e.valor),
+                backgroundColor: encuestas.map(e => (e.valor < e.meta_min) ? 'rgba(220, 53, 69, 0.8)' : 'rgba(25, 135, 84, 0.8)')
+            }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 16, weight: 'bold' } } }
+            },
+            plugins: {
+                legend: { display: false },
+                datalabels: baseDataLabels,
                 tooltip: {
                     callbacks: {
-                        // 🔥 AQUÍ mostramos el label completo
-                        title: function(context) {
-                            return fullLabels[context[0].dataIndex];
-                        }
+                        title: (context) => fullLabelsEncuestas[context[0].dataIndex]
                     }
                 }
             }
         }
     });
-}
 
-// 🚀 USO
-crearGrafica('vertical', 'x'); // vertical
-crearGrafica('horizontal', 'y'); // horizontal
+
+
+    function calcularPromedio(lista) {
+        if (lista.length === 0) return 0;
+
+        const suma = lista.reduce((acc, item) => acc + (item.valor || 0), 0);
+        return suma / lista.length;
+    }
+
+    const promedioIndicadores = calcularPromedio(indicadores);
+    const promedioNormas = calcularPromedio(normas);
+    const promedioEncuestas = calcularPromedio(encuestas);
+
+    document.getElementById('promIndicadores').innerText = promedioIndicadores.toFixed(2) + '%';
+    document.getElementById('promNormas').innerText = promedioNormas.toFixed(2) + '%';
+    document.getElementById('promEncuestas').innerText = promedioEncuestas.toFixed(2) + '%';
+    });
+
+
+
 </script>
 
+<script>
 
+document.getElementById("sizeModal").addEventListener("change", function () {
+
+    const modalDialog = document.querySelector("#grafico .modal-dialog");
+
+    // quitamos clases previas
+    modalDialog.classList.remove("modal-xl", "modal-fullscreen");
+
+    // agregamos la seleccionada
+    if (this.value) {
+        modalDialog.classList.add(this.value);
+    }
+
+});
+
+</script>
 @endsection

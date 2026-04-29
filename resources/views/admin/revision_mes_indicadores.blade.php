@@ -85,7 +85,7 @@
                 </span>
                 <input type="search"
                     id="buscador"
-                    placeholder="Buscar por nombre o cumplimiento: good, bad"
+                    placeholder="Buscar por nombre o cumplimiento: verde, rojo"
                     class="form-control w-100">
             </div>
         </div>

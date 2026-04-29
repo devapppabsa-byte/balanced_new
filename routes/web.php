@@ -234,6 +234,7 @@ Route::get('/perfil_admin/normas/apartado_admin/{apartado}', [apartadoNormaContr
 //rutas que muestran los indicadores de cada departamento
 Route::get('/perfil_admin/lista_indicadores/{departamento}', [indicadorController::class, 'lista_indicadores_admin'])->name('lista.indicadores.admin')->middleware('auth:admin');
 
+
 Route::get('/perfil_admin/lista_indicadores/detalle_indicador/{indicador}', [indicadorController::class, 'indicador_lleno_show_admin'])->name('indicador.lleno.show.admin')->middleware('auth:admin');
 
 //Rutas del seguimiento de las quejas desde el perifl del admin

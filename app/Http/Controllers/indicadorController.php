@@ -1640,35 +1640,7 @@ $resultado_norma = DB::table('norma as n')
 
 
 
-//Uniendo los campos para generar la grafica del cumplimiento general
- $indicadores = $cumplimientoIndicadoresMensual
-    ->pluck('cumplimiento_total', 'mes');
 
- $encuestas = $resultado_encuestas
-    ->pluck('cumplimiento_total', 'mes');
-
- $normas = $resultado_norma
-    ->pluck('cumplimiento_total', 'mes');
-
-
-$meses = collect()
-    ->merge($indicadores->keys())
-    ->merge($encuestas->keys())
-    ->merge($normas->keys())
-    ->unique()
-    ->sort()
-    ->values();
-
-    
-$cumplimiento_general = $meses->map(function ($mes) use ($indicadores, $encuestas, $normas) {
-    return [
-        'mes' => $mes,
-        'total' =>
-            ($indicadores[$mes] ?? 0) +
-            ($encuestas[$mes] ?? 0) +
-            ($normas[$mes] ?? 0),
-    ];
-});
 
 
 
@@ -1729,8 +1701,7 @@ $normas = DB::table('apartado_norma as an')
 
 
 //CODIGO QUE ME AYUDA A MOSTRAR EL CUMPLIMIENTO DE LAS ENCUESTAS
-
-$encuestas = DB::table('encuestas as e')
+ $encuestas = DB::table('encuestas as e')
     ->leftJoin('preguntas as p', function ($join) {
         $join->on('p.id_encuesta', '=', 'e.id')
              ->where('p.cuantificable', 1);
@@ -1753,7 +1724,7 @@ $encuestas = DB::table('encuestas as e')
 
 
 
- return view('admin.lista_indicadores', compact('indicadores', 'departamento', 'encuestas', 'cumplimiento_general', 'normas'));
+ return view('admin.lista_indicadores', compact('indicadores', 'departamento', 'encuestas', 'normas'));
 
 }
 

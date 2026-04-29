@@ -62,7 +62,8 @@
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body py-3 px-4">
 
-                <form action="#" method="GET">
+                <form action="#" method="GET" id="search_indicadores">
+                </form>
                     <div class="d-flex flex-wrap align-items-end gap-3">
 
                         <!-- Fecha inicio -->
@@ -74,6 +75,7 @@
                                 </span>
                                 <input type="date"
                                     name="fecha_inicio"
+                                    form="search_indicadores"
                                     value="{{ request('fecha_inicio') ?? now()->format('Y-m-d') }}"
                                     class="form-control border-0 bg-light datepicker"
                                     onchange="this.form.submit()">
@@ -89,13 +91,14 @@
                                 </span>
                                 <input type="date"
                                     name="fecha_fin"
+                                    form="search_indicadores"
                                     value="{{ request('fecha_fin') ?? now()->format('Y-m-d') }}"
                                     class="form-control border-0 bg-light datepicker"
                                     onchange="this.form.submit()">
                             </div>
                         </div>
-                        
-                    </form>
+
+                    
                         <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Buscar</label>
                             <div class="input-group input-group-sm">
@@ -118,198 +121,160 @@
 
 </div>
 
+
+
 {{-- elaborando el perfil del usuario --}}
 
 <div class="container-fluid border-bottom mt-1">
 
 
 
-
-
-
     <div class="row justify-content-center">
 
-        {{-- @forelse ($departamentos as $departamento)
-        <div class="col-auto mt-2">
-            <div class="card shadow-3 rounded-4 p-3 border" style="max-width: 400px;">
+
+    @forelse ($departamentos as $departamento)
+
+    <div class="col-12 col-sm-12 col-md-4 col-lg-3 mt-2 departamento_search">
+        <div class="card shadow-3 rounded-4 p-3 border" >
             <div class="card-body p-1">
-                <h4 class="text-muted text-uppercase fw-bold">{{$departamento->nombre}}</h4>
 
+                <h4 class="text-muted text-uppercase fw-bold nombre">
+                    {{$departamento->nombre}}
+                </h4>
 
-                <!-- AQUI ESTA LA GRAFICA DEL CUMPLIMIENTO GENERAL-->
-                    <canvas id="{{$departamento->id}}" class="" height="200"></canvas> 
+                @php
+                    $data = $cumplimiento[$departamento->id] ?? collect();
+                @endphp
 
+                @if ($data->isEmpty())
+
+                    <div class="text-center py-4 text-muted">
+                        <img src="{{asset('/img/iconos/empty.png')}}"
+                            class="img-fluid mb-2"
+                            style="max-width: 120px;">
+                        <p class="mb-0 fw-semibold">
+                            Sin datos de cumplimiento
+                        </p>
+                    </div>
+
+                @else
                 
-                    <div class="text-center mt-4">
-                <a href="{{route('lista.indicadores.admin', $departamento->id)}}" class="btn btn-primary btn-sm rounded-pill">
-                    Ver todo <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-                </div>
-            </div>
-            </div>
-        </div>
+                    <canvas id="chart{{$departamento->id}}" height="200"></canvas>
+                    {{-- <small class="text-muted text-center">Solo indicadores numericos</small> --}}
+                @endif
 
-
-        @empty
-            <div class="col-8 text-center py-5 bg-white shadow shadow-sm border">
-                <div class="col-12">
-                    <img src="{{asset('/img/iconos/empty.png')}}" class="img-fluid" alt="">
-                </div>
-                <div class="col-12">
-                    <h2>
-                        <i class="fa fa-exclamation-circle text-danger"></i>
-                        No hay datos disponibles!
-                    </h2>
-                </div>
-            </div>
-        @endforelse --}}
-
-
-
-
-@forelse ($departamentos as $departamento)
-
-<div class="col-12 col-sm-12 col-md-4 col-lg-3 mt-2 departamento">
-    <div class="card shadow-3 rounded-4 p-3 border" style="max-width: 400px;">
-        <div class="card-body p-1">
-
-            <h4 class="text-muted text-uppercase fw-bold nombre">
-                {{$departamento->nombre}}
-            </h4>
-
-            @php
-                $data = $cumplimiento[$departamento->id] ?? collect();
-            @endphp
-
-            @if ($data->isEmpty())
-
-                <div class="text-center py-4 text-muted">
-                    <img src="{{asset('/img/iconos/empty.png')}}"
-                         class="img-fluid mb-2"
-                         style="max-width: 120px;">
-                    <p class="mb-0 fw-semibold">
-                        Sin datos de cumplimiento
-                    </p>
+                <div class="text-center mt-4">
+                    <a href="{{route('lista.indicadores.admin', $departamento->id)}}"
+                    class="btn btn-primary btn-sm rounded-pill">
+                        Ver todo <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
                 </div>
 
-            @else
-            
-                <canvas id="chart{{$departamento->id}}" height="200"></canvas>
-                {{-- <small class="text-muted text-center">Solo indicadores numericos</small> --}}
-            @endif
-
-            <div class="text-center mt-4">
-                <a href="{{route('lista.indicadores.admin', $departamento->id)}}"
-                   class="btn btn-primary btn-sm rounded-pill">
-                    Ver todo <i class="fas fa-arrow-right ms-1"></i>
-                </a>
             </div>
-
         </div>
     </div>
-</div>
 
-@if ($data->isNotEmpty())
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+    @if ($data->isNotEmpty())
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
 
-    const rawData = @json($cumplimiento[$departamento->id]);
+        const rawData = @json($cumplimiento[$departamento->id]);
 
-const labels = rawData.map(i => {
+    const labels = rawData.map(i => {
 
-    let [year, month] = i.mes.split("-"); // separa YYYY-MM
+        let [year, month] = i.mes.split("-"); // separa YYYY-MM
 
-    month = parseInt(month) - 1;
+        month = parseInt(month) - 1;
 
-    if (month < 1) {
-        month = 12;
-        year = parseInt(year) - 1;
-    }
-
-    // volver a formato YYYY-MM
-    const nuevoMes = year + "-" + String(month).padStart(2, "0");
-
-    return mesEnEspanol(nuevoMes);
-});
-
-    
-    const values = rawData.map(i => i.cumplimiento_total);
-
-    const MINIMO = 50;
-    const MAXIMO = 100;
-
-    const canvas = document.getElementById("chart{{$departamento->id}}");
-    if (!canvas) return;
-
-    new Chart(canvas.getContext("2d"), {
-
-        type: "bar", // 👈 importante cuando mezclas tipos
-
-        data: {
-            labels,
-            datasets: [
-                {
-                    label: "Promedio de Indicadores",
-                    data: values,
-                    backgroundColor: (ctx) => {
-                        const value = ctx.raw;
-                        return value < MINIMO
-                            ? "rgba(255,99,132,0.7)"
-                            : "rgba(75,192,75,0.7)";
-                    },
-                    borderWidth: 1,
-                    order: 2 // 👈 barras abajo
-                },
-                {
-                    type: "line",
-                    label: "Mínimo",
-                    data: labels.map(() => MINIMO),
-                    borderColor: "red",
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    fill: false,
-                    tension: 0,
-                    order: 9 // 👈 líneas arriba
-                },
-                {
-                    type: "line",
-                    label: "Máximo",
-                    data: labels.map(() => MAXIMO),
-                    borderColor: "green",
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    fill: false,
-                    tension: 0,
-                    order: 9
-                }
-            ]
-        },
-
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
-                }
-            }
+        if (month < 1) {
+            month = 12;
+            year = parseInt(year) - 1;
         }
+
+        // volver a formato YYYY-MM
+        const nuevoMes = year + "-" + String(month).padStart(2, "0");
+
+        return mesEnEspanol(nuevoMes);
     });
 
-});
+        
+        const values = rawData.map(i => i.cumplimiento_total);
+
+        const MINIMO = 50;
+        const MAXIMO = 100;
+
+        const canvas = document.getElementById("chart{{$departamento->id}}");
+        if (!canvas) return;
+
+        new Chart(canvas.getContext("2d"), {
+
+            type: "bar", // 👈 importante cuando mezclas tipos
+
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: "Promedio de Indicadores",
+                        data: values,
+                        backgroundColor: (ctx) => {
+                            const value = ctx.raw;
+                            return value < MINIMO
+                                ? "rgba(255,99,132,0.7)"
+                                : "rgba(75,192,75,0.7)";
+                        },
+                        borderWidth: 1,
+                        order: 2 // 👈 barras abajo
+                    },
+                    {
+                        type: "line",
+                        label: "Mínimo",
+                        data: labels.map(() => MINIMO),
+                        borderColor: "red",
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0,
+                        order: 9 // 👈 líneas arriba
+                    },
+                    {
+                        type: "line",
+                        label: "Máximo",
+                        data: labels.map(() => MAXIMO),
+                        borderColor: "green",
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0,
+                        order: 9
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+    });
 
 
-</script>
-@endif
+    </script>
+    @endif
 
-@empty
-<div class="col-8 text-center py-5 bg-white">
-    <h4>
-        <i class="fa-solid fa-building"></i>
-        No hay departamentos
-    </h4>
-</div>
-@endforelse
+    @empty
+    <div class="col-8 text-center py-5 bg-white">
+        <h4>
+            <i class="fa-solid fa-building"></i>
+            No hay departamentos
+        </h4>
+    </div>
+    @endforelse
 
 
 
@@ -321,17 +286,6 @@ const labels = rawData.map(i => {
 
 
     </div>
-
-
-
-
-
-
-
-
-
-
-<!-- Modal -->
 
 
 @endsection
@@ -359,7 +313,7 @@ function mesEnEspanol(yyyyMM) {
 <script>
 document.getElementById('buscador').addEventListener('input', function () {
     let filtro = this.value.toLowerCase().trim();
-    let cards = document.querySelectorAll('.departamento');
+    let cards = document.querySelectorAll('.departamento_search');
 
     cards.forEach(card => {
 
