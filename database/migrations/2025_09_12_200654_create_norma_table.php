@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('planta');
             $table->string('autor');
             $table->string('tipo_regulacion');
+            $table->string('ponderacion_norma');
             $table->string('id_objetivo_perspectiva');
             $table->unsignedBigInteger('id_departamento');
             $table->foreign('id_departamento')->references('id')->on('departamentos')->onDelete('cascade');

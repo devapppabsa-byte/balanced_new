@@ -6,6 +6,7 @@
     use App\Models\Norma;
     use App\Models\Encuesta;
     use App\Models\IndicadorLleno;
+    use Carbon\Carbon;
 @endphp
 <style>
 /* Cuando el checkbox está seleccionado */
@@ -86,8 +87,21 @@
                 <form action="#" method="GET">
                     <div class="d-flex flex-wrap align-items-end gap-3">
 
-                        <!-- Fecha inicio -->
                         <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Selecciona una Fecha</label>    
+                            <select name="fecha_filtro" class="form-select" id="" onchange="this.form.submit()">
+                                <option value="" disabled selected>Escoge una fecha</option>
+                                @foreach ($fechas_seleccionar as $fecha_seleccionar)
+                                    <option value="{{ $fecha_seleccionar }}">{{ Carbon::createFromFormat('Y-m', $fecha_seleccionar)
+                                    ->locale('es')
+                                    ->translatedFormat('F Y') }}
+                                    </option>
+                                @endforeach
+                            </select>              
+                        </div>
+
+                        <!-- Fecha inicio -->
+                        {{-- <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Desde</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light border-0">
@@ -99,10 +113,10 @@
                                     class="form-control border-0 bg-light datepicker"
                                     onchange="this.form.submit()">
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Fecha fin -->
-                        <div>
+                        {{-- <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Hasta</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light border-0">
@@ -114,7 +128,7 @@
                                     class="form-control border-0 bg-light datepicker"
                                     onchange="this.form.submit()">
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Botón gráfica -->
                         <div class="ms-auto">
@@ -180,15 +194,16 @@
 
                         $suma=0;
                         $suma_ponderacion=0;
-                    @endphp
 
-                    {{-- Todo esto para poder sacar la suma de las ponderaciones --}}
-                    @forelse($indicadoresObjetivo as $indicador_ponderacion)
-                        @php
-                            $suma_ponderacion = $suma_ponderacion + $indicador_ponderacion->ponderacion_indicador;
+                            foreach($indicadoresObjetivo as $indicador_ponderacion){
+                                $suma_ponderacion = $suma_ponderacion + $indicador_ponderacion->ponderacion_indicador;
+                            }
+                            foreach($encuestasObjetivo as $encuesta_ponderacion){
+                                $suma_ponderacion = $suma_ponderacion + $encuesta_ponderacion->ponderacion_encuesta;
+                            }
+                            
                         @endphp
-                    @empty
-                    @endforelse
+                    
 
                     <div class="col-12 col-sm-12 col-md-11 col-lg-6 col-xl-6 ">
                         <div class="card border-0 shadow-sm h-100 bg-light ">
@@ -308,12 +323,14 @@
 
                                                             @if (!empty($array_datos))
                                                                 <span class="fw-bold">
-                                                                    {{round(($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100, 2)}} %
+                                                                    {{number_format(($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100, 2)}} %
                                                                     {{-- esto es para completar la suma del cumplimiento general --}}
                                                                     @php
                                                                         $suma = $suma + ($indicador->ponderacion_indicador * $promedio_cumplimiento) / 100;
                                                                     @endphp
                                                                 </span>
+
+                                                                
                                                             @else
                                                                 <span class="fw-bold">0</span>
                                                             @endif
@@ -414,6 +431,354 @@
 
 
                                             
+                                            @foreach($encuestasObjetivo as $encuesta)
+
+                                                    <div class="col-11 my-2 p-2 m-1 rounded shadow-sm border border-2">
+                                                            <!-- Nombre -->
+                                                            <div class="fw-bold " style="font-size: 14px;">
+                                                                
+                                                                <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#enc_del{{$encuesta->id}}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </a>
+                                                                
+                                                                <a href="#">
+                                                                    {{ $encuesta->nombre }} 
+                                                                </a>
+                                                                
+                                                                @if(!is_null($encuesta->ponderacion_encuesta))
+                                                                    <span class="text-success">
+                                                                        -  Ponderacion: 
+                                                                        {{ $encuesta->ponderacion_encuesta }}%
+                                                                    </span>
+                                                                @endif
+                                                                <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ponen{{ $encuesta->id }}">
+                                                                    <i class="fa fa-plus-circle"></i>
+                                                                </a>
+                                                                <a href="#" class="text-danger"></a>
+                                                            </div>
+                                                            <hr>
+                                                            <!-- Info secundaria -->
+                                                            <div class="d-flex gap-3 mt-1 flex-wrap text-muted" style="font-size: 13px;">
+
+                                                                <span>
+                                                                    <i class="fa-solid fa-bullseye me-1"></i>
+                                                                    Meta: {{ $encuesta->meta_esperada }}
+                                                                </span>
+                                                        
+                                                                @php
+
+                                                                    $informacion_encuestas = DB::table('respuestas as r')
+                                                                                            ->join('preguntas as p', 'r.id_pregunta', '=', 'p.id')
+                                                                                            ->where('p.cuantificable', 1)
+                                                                                            ->whereBetween('r.created_at', [$inicio, $fin])
+                                                                                            ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
+                                                                    
+
+                                                                    //esto es por que la consulta de arriba me da el recultado en unidad y no en porcentaje.
+                                                                    $informacion_encuestas = $informacion_encuestas * 10;
+
+
+                                                                    
+                                                                    //dentro se pueden registrar encuestas, y dentro de estas encuestas se registran preguntas, las preguntas son contestadas por clientes.Para ver el resultado se toman las preguntas que tengan en el campo 'cuantificable' un 1. de todo eso necesito saber solo el cumplimiento general, osea el promedio de o que se contesto en los ultimos 6 meses.
+                                                                @endphp
+
+                                                            <span >
+                                                                <i class="fa-solid fa-gauge"></i>
+                                                                Promedio Cumplimiento: 
+                                                                    <span class="fw-bold">
+                                                                        {{ round($informacion_encuestas, 2) }} %
+                                                                    </span>
+                                                            </span>
+                                                  
+                                                            <span>
+                                                                <i class="fa-solid fa-right-left"></i>
+                                                                Indicador vs Ponderación: 
+                                                            </span>
+
+                                                            <span class="fw-bold">
+                                                                {{round((($informacion_encuestas * $encuesta->ponderacion_encuesta)/100), 2)}} %
+                                                                @php
+                                                                    $suma = $suma + (($informacion_encuestas * $encuesta->ponderacion_encuesta)/100);
+                                                                @endphp                                                 
+                                                            </span>
+                                                         
+                                                            
+                                                        
+                                                    </div>
+
+                                                        
+
+                                                    </div>
+
+                                            {{-- modales para la ponderacion --}}
+                                                    <div class="modal fade" id="ponen{{ $encuesta->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+                                                        <div class="modal-dialog modal-sm modal-dialog-centered">
+                                                            <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header bg-primary text-white border-0 py-3">
+                                                                    <span class="modal-title fw-bold" id="agregarDepartamentoLabel">
+                                                                        <i class="fa-solid fa-plus-circle me-2"></i>
+                                                                        Agregar Ponderación
+                                                                    </span>
+                                                                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body py-4">
+                                                                    <form action="{{ route('agregar.ponderacion.encuesta.objetivo', $encuesta->id) }}" method="POST">
+                                                                        @csrf
+                                                                        <div class="form-outline" data-mdb-input-init>
+                                                                            <input type="text" class="form-control" id="ponderacion_encuesta" name="ponderacion_encuesta" |value="{{old('ponderacion_encuesta')}}"required>
+                                                                            <label class="form-label" for="ponderacion_encuesta">
+                                                                                Ponderación:
+                                                                                <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            @if ($errors->first('ponderacion_encuesta'))
+                                                                                <div class="invalid-feedback">
+                                                                                    {{ $errors->first('ponderacion_encuesta') }}
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="form-group mt-2">
+                                                                            <button class="btn btn-primary btn-sm">
+                                                                                Guardar
+                                                                            </button>    
+                                                                        </div> 
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            {{-- modales para la ponderacion --}}
+
+
+
+                                                    <div class="modal fade" id="enc_del{{$encuesta->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                            <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header bg-danger text-white border-0 py-3">
+                                                                    <h5 class="modal-title fw-bold" id="">
+                                                                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                                                        Confirmar Eliminación
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body py-4">
+                                                                    <div class="text-center mb-4">
+                                                                        <div class="mb-3">
+                                                                            <i class="fa-solid fa-trash text-danger" style="font-size: 3rem;"></i>
+                                                                        </div>
+                                                                        <h6 class="fw-semibold">¿Estás seguro de el indicador del Objetivo?</h6>
+                                                                        <p class="text-muted mb-0">
+                                                                            <strong>{{$encuesta->nombre}}</strong>
+                                                                        </p>
+
+                                                                        <small class="text-muted d-block">
+                                                                            Esta acción no se puede deshacer.
+                                                                        </small>
+                                                                    </div>
+
+                                                                    <form action="{{route('encuesta.objetivo.delete', [$objetivo->id, $encuesta->id])}}" method="POST">
+                                                                        @csrf 
+                                                                        @method('PUT')
+                                                                        <div class="d-flex gap-2">
+                                                                            <button type="button" class="btn btn-outline-secondary flex-fill" data-mdb-ripple-init data-mdb-dismiss="modal">
+                                                                                Cancelar
+                                                                            </button>
+                                                                            <button type="submit" class="btn btn-danger flex-fill" data-mdb-ripple-init>
+                                                                                <i class="fa-solid fa-trash me-2"></i>
+                                                                                Eliminar
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>  
+
+
+                                            @endforeach
+
+
+                                            @foreach ($normasObjetivo as $norma)
+                                                    <div class="col-11 my-2 p-2 m-1 rounded shadow-sm border border-2">
+                                                            <!-- Nombre -->
+                                                            <div class="fw-bold " style="font-size: 14px;">
+                                                                
+                                                                <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#enc_del{{$encuesta->id}}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </a>
+                                                                
+                                                                <a href="#">
+                                                                    {{ $norma->nombre }} 
+                                                                </a>
+                                                                
+                                                                @if(!is_null($norma->ponderacion_norma))
+                                                                    <span class="text-success">
+                                                                        -  Ponderacion: 
+                                                                        {{ $norma->ponderacion_norma }}%
+                                                                    </span>
+                                                                @endif
+                                                                <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ponnom{{ $norma->id }}">
+                                                                    <i class="fa fa-plus-circle"></i>
+                                                                </a>
+                                                                <a href="#" class="text-danger"></a>
+                                                            </div>
+                                                            <hr>
+                                                            <!-- Info secundaria -->
+                                                            <div class="d-flex gap-3 mt-1 flex-wrap text-muted" style="font-size: 13px;">
+
+                                                                <span>
+                                                                    <i class="fa-solid fa-bullseye me-1"></i>
+                                                                    Meta: {{ $norma->meta_esperada }}
+                                                                </span>
+                                                        
+                                                                @php
+                                                                    $normas_cumplimiento = DB::table('apartado_norma as an')
+                                                                        ->join('norma as n', 'an.id_norma', '=', 'n.id')
+
+                                                                        ->leftJoin('cumplimiento_norma as cn', function ($join) use ($inicio, $fin) {
+                                                                            $join->on('cn.id_apartado_norma', '=', 'an.id')
+                                                                                ->whereBetween('cn.created_at', [$inicio, $fin]);
+                                                                        })
+
+                                                                        ->where('n.id', $norma->id)
+
+                                                                        ->select(
+                                                                            'n.*',
+                                                                            DB::raw('COUNT(DISTINCT an.id) as total_apartados'),
+                                                                            DB::raw('
+                                                                                (
+                                                                                    COUNT(DISTINCT cn.id_apartado_norma)
+                                                                                    / COUNT(DISTINCT an.id)
+                                                                                ) * 100 as porcentaje_mes
+                                                                            ')
+                                                                        )
+
+                                                                        ->groupBy('n.id')
+                                                                        ->first();
+                                                                
+
+
+                                                                    
+                                                                    //dentro se pueden registrar encuestas, y dentro de estas encuestas se registran preguntas, las preguntas son contestadas por clientes.Para ver el resultado se toman las preguntas que tengan en el campo 'cuantificable' un 1. de todo eso necesito saber solo el cumplimiento general, osea el promedio de o que se contesto en los ultimos 6 meses.
+                                                                @endphp
+
+                                                                <pre>{{ $normas_cumplimiento->porcentaje_mes }}</pre>
+
+                                                            <span >
+                                                                <i class="fa-solid fa-gauge"></i>
+                                                                Promedio Cumplimiento: 
+                                                                    <span class="fw-bold">
+                                                                        {{ round($informacion_encuestas, 2) }} %
+                                                                    </span>
+                                                            </span>
+                                                  
+                                                            <span>
+                                                                <i class="fa-solid fa-right-left"></i>
+                                                                Indicador vs Ponderación: 
+                                                            </span>
+
+                                                            <span class="fw-bold">
+                                                                {{round((($informacion_encuestas * $encuesta->ponderacion_encuesta)/100), 2)}} %
+                                                                @php
+                                                                    $suma = $suma + (($informacion_encuestas * $encuesta->ponderacion_encuesta)/100);
+                                                                @endphp                                                 
+                                                            </span>
+                                                         
+                                                            
+                                                        
+                                                    </div>
+
+                                                        
+
+                                                    </div>
+
+                                            {{-- modales para la ponderacion --}}
+                                                    <div class="modal fade" id="ponen{{ $encuesta->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+                                                        <div class="modal-dialog modal-sm modal-dialog-centered">
+                                                            <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header bg-primary text-white border-0 py-3">
+                                                                    <span class="modal-title fw-bold" id="agregarDepartamentoLabel">
+                                                                        <i class="fa-solid fa-plus-circle me-2"></i>
+                                                                        Agregar Ponderación
+                                                                    </span>
+                                                                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body py-4">
+                                                                    <form action="{{ route('agregar.ponderacion.encuesta.objetivo', $encuesta->id) }}" method="POST">
+                                                                        @csrf
+                                                                        <div class="form-outline" data-mdb-input-init>
+                                                                            <input type="text" class="form-control" id="ponderacion_encuesta" name="ponderacion_encuesta" |value="{{old('ponderacion_encuesta')}}"required>
+                                                                            <label class="form-label" for="ponderacion_encuesta">
+                                                                                Ponderación:
+                                                                                <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            @if ($errors->first('ponderacion_encuesta'))
+                                                                                <div class="invalid-feedback">
+                                                                                    {{ $errors->first('ponderacion_encuesta') }}
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="form-group mt-2">
+                                                                            <button class="btn btn-primary btn-sm">
+                                                                                Guardar
+                                                                            </button>    
+                                                                        </div> 
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            {{-- modales para la ponderacion --}}
+
+
+
+                                                    <div class="modal fade" id="enc_del{{$encuesta->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                            <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header bg-danger text-white border-0 py-3">
+                                                                    <h5 class="modal-title fw-bold" id="">
+                                                                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                                                        Confirmar Eliminación
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body py-4">
+                                                                    <div class="text-center mb-4">
+                                                                        <div class="mb-3">
+                                                                            <i class="fa-solid fa-trash text-danger" style="font-size: 3rem;"></i>
+                                                                        </div>
+                                                                        <h6 class="fw-semibold">¿Estás seguro de el indicador del Objetivo?</h6>
+                                                                        <p class="text-muted mb-0">
+                                                                            <strong>{{$encuesta->nombre}}</strong>
+                                                                        </p>
+
+                                                                        <small class="text-muted d-block">
+                                                                            Esta acción no se puede deshacer.
+                                                                        </small>
+                                                                    </div>
+
+                                                                    <form action="{{route('encuesta.objetivo.delete', [$objetivo->id, $encuesta->id])}}" method="POST">
+                                                                        @csrf 
+                                                                        @method('PUT')
+                                                                        <div class="d-flex gap-2">
+                                                                            <button type="button" class="btn btn-outline-secondary flex-fill" data-mdb-ripple-init data-mdb-dismiss="modal">
+                                                                                Cancelar
+                                                                            </button>
+                                                                            <button type="submit" class="btn btn-danger flex-fill" data-mdb-ripple-init>
+                                                                                <i class="fa-solid fa-trash me-2"></i>
+                                                                                Eliminar
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>     
+                                            @endforeach
+
+
+                                            
 
                                         </div>
                                     </div>
@@ -422,16 +787,18 @@
 
                                 <div class="row justify-content-center my-4">
 
+                                    
+
                                     <div class="col-4 shadow-sm mx-1 rounded p-3 text-white {{ ($suma < $objetivo->meta) ? 'bg-danger' : 'bg-success' }}">
                                         <h5 class="text-center">Porcentaje de cumplimiento del objetivo: </h5>
-                                        <h1 class="text-center fw-bold ">{{ number_format($suma,2) }}%</h1>
+                                        <h1 class="text-center fw-bold ">{{ number_format($suma,1) }}%</h1>
                                     </div>
 
                                     <div class="col-4 shadow-sm mx-1 rounded p-3">
                                         <h5 class="text-center">Porcentaje aportado a la perspectiva: </h5>
                                         <h1 class="text-center fw-bold cumplimiento_objetivo">
                                             
-                                            {{ number_format(($suma / 100) * $objetivo->ponderacion,2) }}%
+                                            {{ number_format(($suma / 100) * $objetivo->ponderacion,1) }}%
                                         </h1>                                   
                                     </div>
                                 </div>

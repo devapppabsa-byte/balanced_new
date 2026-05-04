@@ -396,10 +396,7 @@ class encuestaController extends Controller
     })
     ->values();
 
-
-
-
-        //ESTO ME DA LAS GRAFICAS POR MES DE LAS ENCUESTAS
+//ESTO ME DA LAS GRAFICAS POR MES DE LAS ENCUESTAS
 
 
 

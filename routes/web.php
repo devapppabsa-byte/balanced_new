@@ -263,11 +263,13 @@ Route::post('/perfil_admin/perspectiva/objetivo/post/{perspectiva}', [perspectiv
 Route::delete('/perfil_admin/perspectiva/objetivo/delete_objetivo/{objetivo}', [perspectivaController::class, 'objetivo_delete'])->name('objetivo.delete');
 
 Route::put('/perfil_admin/perspectiva/objetivo/delete_indicador_objetivo/{objetivo}/{indicador}', [perspectivaController::class, 'indicador_objetivo_delete'])->name('indicador.objetivo.delete');
+Route::put('/perfil_admin/perspectiva/objetivo/delete_encuesta_objetivo/{objetivo}/{encuesta}', [perspectivaController::class, 'encuesta_objetivo_delete'])->name('encuesta.objetivo.delete');
 
 
 Route::patch('/perfil_admin/perspectiva/objetivo/update/{objetivo}', [perspectivaController::class, 'objetivo_update'])->name('objetivo.update');
 Route::post('/perfil_admin/perspectiva/objetivo/agregar_indicador_a_objetivo/{objetivo}', [perspectivaController::class, 'add_indicador_objetivo'])->name('add.indicador.objetivo');
-Route::post('/perfil_admin/perspectiva/objetivo/agregar_ponderacion/{indicador}', [perspectivaController::class, 'agregar_ponderacion_indicador_objetivo'])->name('agregar.ponderacion.indicador.objetivo');
+Route::post('/perfil_admin/perspectiva/objetivo/agregar_ponderacion_indicador/{indicador}', [perspectivaController::class, 'agregar_ponderacion_indicador_objetivo'])->name('agregar.ponderacion.indicador.objetivo');
+Route::post('/perfil_admin/perspectiva/objetivo/agregar_ponderacion_encuesta/{encuesta}', [perspectivaController::class, 'agregar_ponderacion_encuesta_objetivo'])->name('agregar.ponderacion.encuesta.objetivo');
 
 
 //aqui van a ir las rutas para eso de las perspectivas

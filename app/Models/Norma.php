@@ -14,6 +14,7 @@ class Norma extends Model
         'id_departamento', 
         'meta_minima', 
         'meta_esperada',
+        'ponderacion_norma',
         'id_objetivo_perspectiva',
         'tipo_regulacion',
         'autor'

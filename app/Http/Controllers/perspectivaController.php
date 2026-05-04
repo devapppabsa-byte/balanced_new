@@ -7,6 +7,7 @@ use App\Models\Norma;
 use Illuminate\Http\Request;
 use App\Models\Perspectiva;
 use App\Models\Indicador;
+use App\Models\IndicadorLleno;
 use App\Models\Objetivo;
 use Carbon\Carbon;
 class perspectivaController extends Controller
@@ -98,27 +99,35 @@ class perspectivaController extends Controller
 
     public function detalle_perspectiva(Perspectiva $perspectiva){
 
-        $inicio = request()->filled('fecha_inicio')
-            ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
-                ->startOfDay()
-                ->utc()
-            : Carbon::now(config('app.timezone'))
-                //->subMonth()
-                ->startOfYear()
-                ->utc();
+        // $inicio = request()->filled('fecha_inicio')
+        //     ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
+        //         ->startOfDay()
+        //         ->utc()
+        //     : Carbon::now(config('app.timezone'))
+        //         //->subMonth()
+        //         ->startOfYear()
+        //         ->utc();
 
-        //$inicio = "2025-01-01T06:00:00.000000Z";
 
-        $fin = request()->filled('fecha_fin')
-            ? Carbon::parse(request('fecha_fin'), config('app.timezone'))
-                //->subMonth()    
-                ->endOfDay()
-                ->utc()
+        // $fin = request()->filled('fecha_fin')
+        //     ? Carbon::parse(request('fecha_fin'), config('app.timezone'))
+        //         //->subMonth()    
+        //         ->endOfDay()
+        //         ->utc()
 
-            : Carbon::now(config('app.timezone'))
-                ->endOfYear()
-                ->utc();
+        //     : Carbon::now(config('app.timezone'))
+        //         ->endOfYear()
+        //         ->utc();
 
+        $fechas_seleccionar = IndicadorLleno::where('final', 'on')
+            ->selectRaw("DATE_FORMAT(fecha_periodo, '%Y-%m') as periodo")
+            ->distinct()
+            ->orderBy('periodo')
+            ->pluck('periodo');
+
+
+        $fecha_filtro = request('fecha_filtro');
+        
 
 
         $objetivos = Objetivo::where('id_perspectiva', $perspectiva->id)->get();
@@ -128,7 +137,7 @@ class perspectivaController extends Controller
 
 
 
-        return view('admin.agregar_objetivos_perspectiva', compact('perspectiva', 'objetivos', 'indicadores', 'inicio', 'fin', 'encuestas', 'normas'));
+        return view('admin.agregar_objetivos_perspectiva', compact('perspectiva', 'objetivos', 'indicadores', 'inicio', 'fin', 'encuestas', 'normas', 'fechas_seleccionar', 'fecha_filtro'));
 
     }
 
@@ -136,6 +145,13 @@ class perspectivaController extends Controller
     public function objetivo_delete(Objetivo $objetivo){
 
         Indicador::where('id_objetivo_perspectiva', $objetivo->id)
+            ->update(['id_objetivo_perspectiva' => null]);
+
+
+        Encuesta::where('id_objetivo_perspectiva', $objetivo->id)
+            ->update(['id_objetivo_perspectiva' => null ]);
+
+        Norma::where('id_objetivo_perspectiva', $objetivo->id)
             ->update(['id_objetivo_perspectiva' => null]);
 
 
@@ -155,8 +171,14 @@ class perspectivaController extends Controller
     
         return back()->with('success','El indicador se elimino del Objetivo!');
     
-    
-    
+    }
+
+    public function encuesta_objetivo_delete(Objetivo $objetivo, Encuesta $encuesta){
+
+        $encuesta->id_objetivo_perspectiva = null;
+        $encuesta->update();
+        return back()->with('success', 'La encuesta se elimino del Objetivo');
+
     }
 
 
@@ -265,15 +287,26 @@ class perspectivaController extends Controller
 
         ]);
 
-
-
         $indicador->ponderacion_indicador = $request->ponderacion_indicador;
         $indicador->save();
 
 
+        return back()->with('success', 'La ponderación fue guardada!');
+
+    }
+
+    public function agregar_ponderacion_encuesta_objetivo(Encuesta $encuesta, Request $request){
 
 
-        return back()->with('success', 'La ponderación fue guardada');
+        $request->validate([
+            "ponderacion_encuesta" => "required"
+        ]);
+
+        $encuesta->ponderacion_encuesta = $request->ponderacion_encuesta;
+        $encuesta->save();
+
+        return back()->with('success', 'La ponderación fue guardada!');
+
 
     }
 

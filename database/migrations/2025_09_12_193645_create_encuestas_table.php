@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string("meta_esperada");
             $table->string("autor");
             $table->string("id_objetivo_encuesta");
+            $table->string("ponderacion_encuesta");
 
             $table->foreign("id_departamento")
                   ->references('id')

@@ -6,7 +6,7 @@
     use App\Models\MetaIndicador;
     use App\Models\IndicadorLleno;
 @endphp
-<div class="container-fluid">
+<div class="container-fluid sticky-top">
     <div class="row bg-primary d-flex align-items-center">
         <div class="col-12 col-sm-12 col-md-6 col-lg-10  pt-2 text-white">
             <h1 class="mt-1 mb-0">
@@ -42,7 +42,41 @@
         </div>
     </div>
     @include('admin.assets.nav')
- 
+
+    
+    <div class="row">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body py-3 px-4 text-center">
+
+                <form action="#" method="GET">
+                    <div class="d-flex flex-wrap align-items-end gap-3">
+
+                        <!-- Fecha inicio -->
+                        <div>
+                            <label class="form-label small text-muted fw-semibold mb-1">Selecciona una fecha:</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                                </span>
+
+                                <select class="form-select" name="" id="">
+                                    <option value="" disabled selected>Selecciona una Fecha</option>
+                                </select>
+
+                                <input type="date"
+                                    name="fecha"
+                                    value="{{ request('fecha') ?? now()->format('Y-m-d') }}"
+                                    class="form-control border-0 bg-light datepicker"
+                                    onchange="this.form.submit()">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 
