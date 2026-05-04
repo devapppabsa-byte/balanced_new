@@ -1409,9 +1409,6 @@ public function input_multiplicacion_guardar(Request $request, Indicador $indica
 
 public function input_promedio_guardar(Request $request, Indicador $indicador){
 
-
-    
-
     $autor_log = 'Id: '.auth()->guard('admin')->user()->id.' - '.auth()->guard('admin')->user()->nombre .' - '. $puesto_autor = auth()->guard('admin')->user()->puesto;
     $autor = auth()->guard('admin')->user()->nombre .' - '. $puesto_autor = auth()->guard('admin')->user()->puesto;
 
@@ -1496,196 +1493,53 @@ public function input_promedio_guardar(Request $request, Indicador $indicador){
 public function lista_indicadores_admin(Departamento $departamento){
 
 
-    //Filtro de fechas para los indicadores
-    $inicio = request()->filled('fecha_inicio')
-        ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
-            ->startOfDay()
-            ->utc()
-        : Carbon::now(config('app.timezone'))
-            ->startOfYear()
-            ->utc();
 
-    $fin = request()->filled('fecha_fin')
-        ? Carbon::parse(request('fecha_fin'), config('app.timezone'))
-            ->endOfDay()
-            ->utc()
-        : Carbon::now(config('app.timezone'))
-            ->endOfYear()
-            ->utc();
-
-
-
-    //Consulta SQL que me tra el cumplimiento  de los indicadores multiplicados por su ponderacion.
-    $subQuery = DB::table('indicadores_llenos as il')
-        ->join('indicadores as i', 'i.id', '=', 'il.id_indicador')
-        ->where('il.final', 'on')
-        ->where('i.id_departamento', $departamento->id)
-        ->whereBetween('il.created_at', [$inicio, $fin])
-        ->selectRaw("
-            il.id_indicador,
-            i.ponderacion,
-            DATE_FORMAT(il.created_at, '%Y-%m') as mes,
-            AVG(CAST(il.informacion_campo AS DECIMAL(10,2))) as promedio_indicador
-        ")
-        ->groupBy('il.id_indicador', 'mes', 'i.ponderacion');
-
-
-
-    $cumplimientoIndicadoresMensual = DB::query()
-        ->fromSub($subQuery, 't')
-        ->selectRaw("
-            mes,
-            SUM(ROUND((promedio_indicador * ponderacion)/100, 2)) as cumplimiento_total
-        ")
-        ->groupBy('mes')
-        ->orderBy('mes')
-        ->get();
+    //manda la fechas a el select que esta en la viues lista_indicadores
+    $fechas_seleccionar = IndicadorLleno::where('final', 'on')
+        ->selectRaw("DATE_FORMAT(fecha_periodo, '%Y-%m') as periodo")
+        ->distinct()
+        ->orderBy('periodo')
+        ->pluck('periodo');
 
 
 
 
-    //CONSULTA SQL DE LAS ENCUESTAS..
-    $resultado_encuestas = DB::table(DB::raw('
-        (
-            SELECT 
-                DATE_FORMAT(r.created_at, "%Y-%m") AS mes,
-                e.id AS encuesta_id,
-                e.ponderacion,
-                AVG(r.respuesta) AS promedio
-            FROM encuestas e
-            JOIN preguntas p ON p.id_encuesta = e.id
-            JOIN respuestas r ON r.id_pregunta = p.id
-            WHERE 
-                e.id_departamento = ?
-                AND p.cuantificable = 1
-                AND r.created_at BETWEEN ? AND ?
-            GROUP BY 
-                e.id,
-                e.ponderacion,
-                mes
-        ) as sub
-    '))
-    ->setBindings([
-        $departamento->id,
-        $inicio,
-        $fin
-    ])
-    ->select(
-        'mes',
-        DB::raw('SUM((promedio * (ponderacion / 10))) AS cumplimiento_total')
-    )
-    ->groupBy('mes')
-    ->orderBy('mes')
-    ->get();
+    //FINALIZA PRUEBAS  PARA LO DE LAS GRAFICAS
+    $indicadores = Indicador::with('indicadorLleno')->where('id_departamento', $departamento->id)->get();
+    //Este codigo es para sacar el cumplimiento normativo
 
 
 
 
+$ultimoMes = DB::table('cumplimiento_norma')
+    ->select('mes')
+    ->orderByRaw("STR_TO_DATE(CONCAT('01-', mes), '%d-%m-%y') DESC")
+    ->value('mes');
 
+$mes = substr($ultimoMes, 0, 2);
+$anio = substr($ultimoMes, 3, 2);
 
-/*
- |------------------------------------------------------------
- | Subconsulta: meses donde hay cumplimiento
- |------------------------------------------------------------
- */
-$meses = DB::table('cumplimiento_norma')
-    ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as mes")
-    ->whereBetween('created_at', [$inicio, $fin])
-    ->distinct();
-
-/*
- |------------------------------------------------------------
- | Consulta principal
- |------------------------------------------------------------
- */
-$resultado_norma = DB::table('norma as n')
-    ->joinSub($meses, 'm', function ($join) {
-        // cross join lógico para evaluar cada norma por mes
-        $join->on(DB::raw('1'), '=', DB::raw('1'));
-    })
-    ->where('n.id_departamento', $departamento->id)
-    ->select(
-        'm.mes',
-        DB::raw('
-            ROUND(
-                SUM(
-                    (
-                        (
-                            SELECT COUNT(*)
-                            FROM apartado_norma an2
-                            WHERE an2.id_norma = n.id
-                              AND EXISTS (
-                                  SELECT 1
-                                  FROM cumplimiento_norma cn2
-                                  WHERE cn2.id_apartado_norma = an2.id
-                                    AND DATE_FORMAT(cn2.created_at, "%Y-%m") = m.mes
-                              )
-                        )
-                        /
-                        (
-                            SELECT COUNT(*)
-                            FROM apartado_norma an3
-                            WHERE an3.id_norma = n.id
-                        )
-                    ) * 100 * (n.ponderacion / 100)
-                ),
-            2) AS cumplimiento_total
-        ')
-    )
-    ->groupBy('m.mes')
-    ->orderBy('m.mes')
-    ->get();
-//CONSULTA SQL DEL CUMPLIMIENTO NORMATIVO..
-
-
-
-
-
-
-
-
-
-//FINALIZA PRUEBAS  PARA LO DE LAS GRAFICAS
-$indicadores = Indicador::with('indicadorLleno')->where('id_departamento', $departamento->id)->get();
-//Este codigo es para sacar el cumplimiento normativo
-
-
-$inicio = Carbon::now()->startOfMonth();
-$fin = Carbon::now()->endOfMonth();
-$diasMes = $inicio->daysInMonth;
-
-
-
-$mesActual = now()->subMonth()->format('m-y');
-
-
-//aqui vamos a poner el codigo del cumplimiento normativo
-$mes = now()->subMonth()->format('m');  // 04
-$anio =now()->subMonth()->format('y');  // 26
-
-$normas = DB::table('apartado_norma as an') 
+$normas = DB::table('apartado_norma as an')
     ->join('norma as n', 'an.id_norma', '=', 'n.id')
     ->join('departamentos as d', 'n.id_departamento', '=', 'd.id')
 
     ->leftJoin('cumplimiento_norma as cn', function ($join) use ($mes, $anio) {
         $join->on('cn.id_apartado_norma', '=', 'an.id')
-             ->whereRaw("SUBSTRING(cn.mes, 1, 2) = ?", [$mes])
-             ->whereRaw("SUBSTRING(cn.mes, 4, 2) = ?", [$anio]);
+            ->whereRaw("SUBSTRING(cn.mes, 1, 2) = ?", [$mes])
+            ->whereRaw("SUBSTRING(cn.mes, 4, 2) = ?", [$anio]);
     })
 
     ->where('d.id', $departamento->id)
 
     ->select(
         'n.*',
-
         DB::raw('COUNT(DISTINCT an.id) as total_apartados'),
-
         DB::raw('
             (
                 SUM(
-                    CASE 
-                        WHEN cn.id_apartado_norma IS NOT NULL THEN 1 
-                        ELSE 0 
+                    CASE
+                        WHEN cn.id_apartado_norma IS NOT NULL THEN 1
+                        ELSE 0
                     END
                 ) / COUNT(DISTINCT an.id)
             ) * 100 as porcentaje_mes
@@ -1694,7 +1548,6 @@ $normas = DB::table('apartado_norma as an')
 
     ->groupBy('n.id')
     ->get();
-//aqui vamos a poner el codigo del cumplimiento normativo
 
 
 
@@ -1724,7 +1577,7 @@ $normas = DB::table('apartado_norma as an')
 
 
 
- return view('admin.lista_indicadores', compact('indicadores', 'departamento', 'encuestas', 'normas'));
+ return view('admin.lista_indicadores', compact('indicadores', 'departamento', 'encuestas', 'normas', 'fechas_seleccionar'));
 
 }
 
@@ -1812,9 +1665,9 @@ public function indicador_lleno_show_admin(Indicador $indicador){
 
     $campos_llenos = CampoPrecargado::where('id_indicador', $indicador->id)->get();
 
-    
 
     return view('admin.indicador_lleno_detalle', compact('indicador', 'campos_llenos', 'graficar', 'datos', 'grupos', 'indicador', 'tipo_indicador', 'promedios', 'info_meses'));
+
 
 }
 

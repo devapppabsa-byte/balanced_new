@@ -158,7 +158,6 @@
                 <h3>
                    <i class="fa " id="icono_card_cumplimiento"></i> Cumplimiento
                 </h3>
-                
                 <h2 id="suma_cumplimientos"></h2>
             </div>
         </div>
@@ -191,277 +190,275 @@
                     @empty
                     @endforelse
 
+                    <div class="col-12 col-sm-12 col-md-11 col-lg-6 col-xl-6 ">
+                        <div class="card border-0 shadow-sm h-100 bg-light ">
+                            <div class="card-body p-4 d-flex flex-column">
+
+                                <!-- Nombre del Departamento -->
+                                <div class="row mb-1 row">
+                                    <div class="col-12">
+                                        <h4 class="fw-bold mb-0 department-name text-truncate" data-mdb-tooltip-init title="{{ $objetivo->nombre }}" >
+                                        ID: {{ $objetivo->id }} - {{ $objetivo->nombre }}
+                                        </h4>
+                                        <h5 class="text-primary">
+                                            Peso en la Perspectiva:  <span class="fw-bold">{{ $objetivo->ponderacion }} %</span> 
+                                        </h5>
+                                        <h3 class="text-dark fw-bold">
+                                            Meta:  <span class="fw-bold">{{ $objetivo->meta }} %</span> 
+                                        </h3>
+                                        <h6 class=" badge badge-lg {{ ($suma_ponderacion === 100) ? 'badge-success' : 'badge-danger' }}">
+                                        <i class="fa fa-exclamation-circle"></i>  Suma de las ponderaciones de los indicadores:  <span class="fw-bold">{{ $suma_ponderacion }} %</span> 
+                                        </h6>
+                                    </div>
+                                    <hr>
+                                    <div class="col-12 ">
+                                        <span class=" bungee-regular text-muted">Indicadores:</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="row justify-content-center">
 
 
-                <div class="col-12 col-sm-12 col-md-11 col-lg-6 col-xl-6 ">
-                    <div class="card border-0 shadow-sm h-100 bg-light ">
-                        <div class="card-body p-4 d-flex flex-column">
+                                            {{-- aqui esta el ciclo de los indicadores KPI que conforman el objetivo --}}
+                                            @foreach($indicadoresObjetivo as $indicador)
 
-                            <!-- Nombre del Departamento -->
-                            <div class="row mb-1 row">
-                                <div class="col-12">
-                                    <h4 class="fw-bold mb-0 department-name text-truncate" data-mdb-tooltip-init title="{{ $objetivo->nombre }}" >
-                                     {{ $objetivo->nombre }}
-                                    </h4>
-                                    <h5 class="text-primary">
-                                        Peso en la Perspectiva:  <span class="fw-bold">{{ $objetivo->ponderacion }} %</span> 
-                                    </h5>
-                                    <h3 class="text-dark fw-bold">
-                                        Meta:  <span class="fw-bold">{{ $objetivo->meta }} %</span> 
-                                    </h3>
-                                    <h6 class=" badge badge-lg {{ ($suma_ponderacion === 100) ? 'badge-success' : 'badge-danger' }}">
-                                      <i class="fa fa-exclamation-circle"></i>  Suma de las ponderaciones de los indicadores:  <span class="fw-bold">{{ $suma_ponderacion }} %</span> 
-                                    </h6>
-                                </div>
-                                <hr>
-                                <div class="col-12 ">
-                                    <span class=" bungee-regular text-muted">Indicadores:</span>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row justify-content-center">
+                                                    <div class="col-11 my-2 p-2 m-1 rounded shadow-sm border border-2">
+                                                            <!-- Nombre -->
+                                                            <div class="fw-bold " style="font-size: 14px;">
+                                                                
+                                                                <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ind_del{{$indicador->id}}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </a>
+                                                                
+                                                                <a href="{{ route('analizar.indicador', $indicador->id) }}">
+                                                                    {{ $indicador->nombre }} 
+                                                                </a>
+                                                                
+                                                                @if(!is_null($indicador->ponderacion_indicador))
+                                                                    <span class="text-success">
+                                                                        -  Ponderacion: 
+                                                                        {{ $indicador->ponderacion_indicador }}%
+                                                                    </span>
+                                                                @endif
+                                                                <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#pon{{ $indicador->id }}">
+                                                                    <i class="fa fa-plus-circle"></i>
+                                                                </a>
+                                                                <a href="#" class="text-danger"></a>
+                                                            </div>
+                                                            <hr>
+                                                            <!-- Info secundaria -->
+                                                            <div class="d-flex gap-3 mt-1 flex-wrap text-muted" style="font-size: 13px;">
 
-
-                                    
-                                        @foreach($indicadoresObjetivo as $indicador)
-
-                                                <div class="col-11 my-2 p-2 m-1 rounded shadow-sm border border-2">
-                                                        <!-- Nombre -->
-                                                        <div class="fw-bold " style="font-size: 14px;">
-                                                            
-                                                            <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ind_del{{$indicador->id}}">
-                                                                <i class="fa fa-trash"></i>
-                                                            </a>
-                                                              
-                                                            <a href="{{ route('analizar.indicador', $indicador->id) }}">
-                                                                {{ $indicador->nombre }} 
-                                                            </a>
-                                                            
-                                                            @if(!is_null($indicador->ponderacion_indicador))
-                                                                <span class="text-success">
-                                                                    -  Ponderacion: 
-                                                                    {{ $indicador->ponderacion_indicador }}%
+                                                                <span>
+                                                                    <i class="fa-solid fa-bullseye me-1"></i>
+                                                                    Meta: {{ $indicador->meta_esperada }}
                                                                 </span>
-                                                            @endif
-                                                            <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#pon{{ $indicador->id }}">
-                                                                <i class="fa fa-plus-circle"></i>
-                                                            </a>
-                                                            <a href="#" class="text-danger"></a>
-                                                        </div>
-                                                        <hr>
-                                                        <!-- Info secundaria -->
-                                                        <div class="d-flex gap-3 mt-1 flex-wrap text-muted" style="font-size: 13px;">
+                                                        
+                                                                @php
+                                                                    $informacion_indicadores = \App\Models\IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
+                                                                    $array_datos = [];
+                                                                    foreach($informacion_indicadores as $informacion_indicador){
 
-                                                            <span>
-                                                                <i class="fa-solid fa-bullseye me-1"></i>
-                                                                Meta: {{ $indicador->meta_esperada }}
+                                                                        array_push($array_datos, $informacion_indicador->informacion_campo);
+                                                                    
+                                                                    }
+                                                                    
+                                                                @endphp
+                                                            <span >
+                                                                <i class="fa-solid fa-gauge"></i>
+                                                                Promedio Cumplimiento: 
+                                                                
+
+                                                                @if (!empty($array_datos))
+                                                                    <span class="fw-bold">
+
+                                                                        @php
+                                                                            $promedio_cumplimiento;    
+                                                                        @endphp
+                                                                        
+                                                                        @if ($indicador->tipo_indicador == "normal")
+                                                                            {{-- esta mamada la puse por que se les ocurrio que de repente la meta esperrada ya no era 100, era menos, epro a veces is alcanzaban el 100 y el cumplimiento se iba al mas del 100% de cumplimiento por que meta_esperada era 90 o algo asi --}}
+                                                                            @if ($indicador->unidad_medida == "porcentaje")
+                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
+                                                                            @else
+                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)   }} %
+                                                                            @endif
+
+                                                                        @else
+
+                                                                            @if($indicador->unidad_medida == "porcentaje")
+                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2)  }} %
+
+                                                                            @else
+                                                                                {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
+                                                                            @endif
+
+                                                                        @endif
+                                                                    </span>
+                                                                
+                                                                @else
+
+                                                                    <span class="fw-bold">0</span>
+                                                                
+                                                                @endif
                                                             </span>
-                                                    
-                                                            @php
-                                                                $informacion_indicadores = \App\Models\IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
-                                                                $array_datos = [];
-                                                                foreach($informacion_indicadores as $informacion_indicador){
-
-                                                                    array_push($array_datos, $informacion_indicador->informacion_campo);
-                                                                
-                                                                }
-                                                                
-                                                            @endphp
-                                                        <span >
-                                                            <i class="fa-solid fa-gauge"></i>
-                                                            Promedio Cumplimiento: 
-                                                            
+                                                            <span>
+                                                                <i class="fa-solid fa-right-left"></i>
+                                                                Indicador vs Ponderación: 
+                                                            </span>
 
                                                             @if (!empty($array_datos))
                                                                 <span class="fw-bold">
-
+                                                                    {{round(($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100, 2)}} %
+                                                                    {{-- esto es para completar la suma del cumplimiento general --}}
                                                                     @php
-                                                                        $promedio_cumplimiento;    
+                                                                        $suma = $suma + ($indicador->ponderacion_indicador * $promedio_cumplimiento) / 100;
                                                                     @endphp
-                                                                    
-                                                                    @if ($indicador->tipo_indicador == "normal")
-                                                                        {{-- esta mamada la puse por que se les ocurrio que de repente la meta esperrada ya no era 100, era menos, epro a veces is alcanzaban el 100 y el cumplimiento se iba al mas del 100% de cumplimiento por que meta_esperada era 90 o algo asi --}}
-                                                                        @if ($indicador->unidad_medida == "porcentaje")
-                                                                            {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
-                                                                        @else
-                                                                            {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)   }} %
-                                                                        @endif
-
-                                                                    @else
-
-                                                                        @if($indicador->unidad_medida == "porcentaje")
-                                                                            {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2)  }} %
-
-                                                                        @else
-                                                                            {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
-                                                                        @endif
-
-                                                                    @endif
                                                                 </span>
-                                                            
                                                             @else
-
                                                                 <span class="fw-bold">0</span>
-                                                            
                                                             @endif
-                                                        </span>
-                                                        <span>
-                                                            <i class="fa-solid fa-right-left"></i>
-                                                            Indicador vs Ponderación: 
-                                                        </span>
-
-                                                        @if (!empty($array_datos))
-                                                            <span class="fw-bold">
-                                                                {{round(($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100, 2)}} %
-                                                                {{-- esto es para completar la suma del cumplimiento general --}}
-                                                                @php
-                                                                    $suma = $suma + ($indicador->ponderacion_indicador * $promedio_cumplimiento) / 100;
-                                                                @endphp
-                                                            </span>
-                                                        @else
-                                                            <span class="fw-bold">0</span>
-                                                        @endif
-                                                    
-                                                </div>
-
-                                                    
-
-                                                </div>
+                                                        
+                                                    </div>
 
                                                         
-                                        {{-- modales para la ponderacion --}}
-                                                <div class="modal fade" id="pon{{ $indicador->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
-                                                    <div class="modal-dialog modal-sm modal-dialog-centered">
-                                                        <div class="modal-content border-0 shadow-lg">
-                                                            <div class="modal-header bg-primary text-white border-0 py-3">
-                                                                <span class="modal-title fw-bold" id="agregarDepartamentoLabel">
-                                                                    <i class="fa-solid fa-plus-circle me-2"></i>
-                                                                    Agregar Ponderación
-                                                                </span>
-                                                                <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body py-4">
-                                                                <form action="{{ route('agregar.ponderacion.indicador.objetivo', $indicador->id) }}" method="POST">
-                                                                    @csrf
-                                                                    <div class="form-outline" data-mdb-input-init>
-                                                                        <input type="text" class="form-control" id="ponderacion_indicador" name="ponderacion_indicador" |value="{{old('ponderacion_indicador')}}"required>
-                                                                        <label class="form-label" for="ponderacion_indicador">
-                                                                            Ponderación:
-                                                                            <span class="text-danger">*</span>
-                                                                        </label>
-                                                                        @if ($errors->first('ponderacion_indicador'))
-                                                                            <div class="invalid-feedback">
-                                                                                {{ $errors->first('ponderacion_indicador') }}
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
-                                                                    <div class="form-group mt-2">
-                                                                        <button class="btn btn-primary btn-sm">
-                                                                            Guardar
-                                                                        </button>    
-                                                                    </div> 
-                                                                </form>
-                                                            </div>
-                                                        </div>
+
                                                     </div>
-                                                </div>
-                                        {{-- modales para la ponderacion --}}
 
-
-
-                                                <div class="modal fade" id="ind_del{{$indicador->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content border-0 shadow-lg">
-                                                            <div class="modal-header bg-danger text-white border-0 py-3">
-                                                                <h5 class="modal-title fw-bold" id="">
-                                                                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
-                                                                    Confirmar Eliminación
-                                                                </h5>
-                                                                <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body py-4">
-                                                                <div class="text-center mb-4">
-                                                                    <div class="mb-3">
-                                                                        <i class="fa-solid fa-trash text-danger" style="font-size: 3rem;"></i>
-                                                                    </div>
-                                                                    <h6 class="fw-semibold">¿Estás seguro de el indicador del Objetivo?</h6>
-                                                                    <p class="text-muted mb-0">
-                                                                        <strong>{{$indicador->nombre}}</strong>
-                                                                    </p>
-
-                                                                    <small class="text-muted d-block">
-                                                                        Esta acción no se puede deshacer.
-                                                                    </small>
+                                                            
+                                            {{-- modales para la ponderacion --}}
+                                                    <div class="modal fade" id="pon{{ $indicador->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+                                                        <div class="modal-dialog modal-sm modal-dialog-centered">
+                                                            <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header bg-primary text-white border-0 py-3">
+                                                                    <span class="modal-title fw-bold" id="agregarDepartamentoLabel">
+                                                                        <i class="fa-solid fa-plus-circle me-2"></i>
+                                                                        Agregar Ponderación
+                                                                    </span>
+                                                                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
-
-                                                                <form action="{{route('indicador.objetivo.delete', [$objetivo->id, $indicador->id])}}" method="POST">
-                                                                    @csrf 
-                                                                    @method('PUT')
-                                                                    <div class="d-flex gap-2">
-                                                                        <button type="button" class="btn btn-outline-secondary flex-fill" data-mdb-ripple-init data-mdb-dismiss="modal">
-                                                                            Cancelar
-                                                                        </button>
-                                                                        <button type="submit" class="btn btn-danger flex-fill" data-mdb-ripple-init>
-                                                                            <i class="fa-solid fa-trash me-2"></i>
-                                                                            Eliminar
-                                                                        </button>
-                                                                    </div>
-                                                                </form>
-
+                                                                <div class="modal-body py-4">
+                                                                    <form action="{{ route('agregar.ponderacion.indicador.objetivo', $indicador->id) }}" method="POST">
+                                                                        @csrf
+                                                                        <div class="form-outline" data-mdb-input-init>
+                                                                            <input type="text" class="form-control" id="ponderacion_indicador" name="ponderacion_indicador" |value="{{old('ponderacion_indicador')}}"required>
+                                                                            <label class="form-label" for="ponderacion_indicador">
+                                                                                Ponderación:
+                                                                                <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            @if ($errors->first('ponderacion_indicador'))
+                                                                                <div class="invalid-feedback">
+                                                                                    {{ $errors->first('ponderacion_indicador') }}
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="form-group mt-2">
+                                                                            <button class="btn btn-primary btn-sm">
+                                                                                Guardar
+                                                                            </button>    
+                                                                        </div> 
+                                                                    </form>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>  
+                                            {{-- modales para la ponderacion --}}
 
 
-                                        @endforeach
+
+                                                    <div class="modal fade" id="ind_del{{$indicador->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                            <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header bg-danger text-white border-0 py-3">
+                                                                    <h5 class="modal-title fw-bold" id="">
+                                                                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                                                        Confirmar Eliminación
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body py-4">
+                                                                    <div class="text-center mb-4">
+                                                                        <div class="mb-3">
+                                                                            <i class="fa-solid fa-trash text-danger" style="font-size: 3rem;"></i>
+                                                                        </div>
+                                                                        <h6 class="fw-semibold">¿Estás seguro de el indicador del Objetivo?</h6>
+                                                                        <p class="text-muted mb-0">
+                                                                            <strong>{{$indicador->nombre}}</strong>
+                                                                        </p>
+
+                                                                        <small class="text-muted d-block">
+                                                                            Esta acción no se puede deshacer.
+                                                                        </small>
+                                                                    </div>
+
+                                                                    <form action="{{route('indicador.objetivo.delete', [$objetivo->id, $indicador->id])}}" method="POST">
+                                                                        @csrf 
+                                                                        @method('PUT')
+                                                                        <div class="d-flex gap-2">
+                                                                            <button type="button" class="btn btn-outline-secondary flex-fill" data-mdb-ripple-init data-mdb-dismiss="modal">
+                                                                                Cancelar
+                                                                            </button>
+                                                                            <button type="submit" class="btn btn-danger flex-fill" data-mdb-ripple-init>
+                                                                                <i class="fa-solid fa-trash me-2"></i>
+                                                                                Eliminar
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>  
 
 
-                                        
+                                            @endforeach
 
+
+                                            
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row justify-content-center my-4">
+
+                                    <div class="col-4 shadow-sm mx-1 rounded p-3 text-white {{ ($suma < $objetivo->meta) ? 'bg-danger' : 'bg-success' }}">
+                                        <h5 class="text-center">Porcentaje de cumplimiento del objetivo: </h5>
+                                        <h1 class="text-center fw-bold ">{{ number_format($suma,2) }}%</h1>
+                                    </div>
+
+                                    <div class="col-4 shadow-sm mx-1 rounded p-3">
+                                        <h5 class="text-center">Porcentaje aportado a la perspectiva: </h5>
+                                        <h1 class="text-center fw-bold cumplimiento_objetivo">
+                                            
+                                            {{ number_format(($suma / 100) * $objetivo->ponderacion,2) }}%
+                                        </h1>                                   
                                     </div>
                                 </div>
-
-                            </div>
-
-                            <div class="row justify-content-center my-4">
-
-                                <div class="col-4 shadow-sm mx-1 rounded p-3 text-white {{ ($suma < $objetivo->meta) ? 'bg-danger' : 'bg-success' }}">
-                                    <h5 class="text-center">Porcentaje de cumplimiento del objetivo: </h5>
-                                    <h1 class="text-center fw-bold ">{{ number_format($suma,2) }}%</h1>
-                                </div>
-
-                                <div class="col-4 shadow-sm mx-1 rounded p-3">
-                                    <h5 class="text-center">Porcentaje aportado a la perspectiva: </h5>
-                                    <h1 class="text-center fw-bold cumplimiento_objetivo">
-                                        
-                                        {{ number_format(($suma / 100) * $objetivo->ponderacion,2) }}%
-                                    </h1>                                   
-                                </div>
-                            </div>
-                            {{-- Aqui va el porcentaje de cumplimietno total --}}
+                                {{-- Aqui va el porcentaje de cumplimietno total --}}
 
 
-                            <!-- Acciones -->
-                            <div class="d-flex justify-content-end align-items-center pt-2 border-top">
-                                <div class="btn-group" role="group">
+                                <!-- Acciones -->
+                                <div class="d-flex justify-content-end align-items-center pt-2 border-top">
+                                    <div class="btn-group" role="group">
 
-                                    <button class="btn btn-sm btn-outline-success text-capitalize" data-mdb-tooltip-init title="Agregr Indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#add_in{{$objetivo->id}}">
-                                        <i class="fa-solid fa-plus-circle"></i>
-                                        Agregar Indicadores
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-primary" data-mdb-tooltip-init title="Editar " data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#edit_ob{{$objetivo->id}}">
-                                        <i class="fa-solid fa-edit"></i>
-                                    </button>
+                                        <button class="btn btn-sm btn-outline-success text-capitalize" data-mdb-tooltip-init title="Agregr Indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#add_in{{$objetivo->id}}">
+                                            <i class="fa-solid fa-plus-circle"></i>
+                                            Agregar Indicadores
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" data-mdb-tooltip-init title="Editar " data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#edit_ob{{$objetivo->id}}">
+                                            <i class="fa-solid fa-edit"></i>
+                                        </button>
 
-                                    <button class="btn btn-sm btn-outline-danger" data-mdb-tooltip-init title="Eliminar" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#del_ob{{$objetivo->id}}">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                
+                                        <button class="btn btn-sm btn-outline-danger" data-mdb-tooltip-init title="Eliminar" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#del_ob{{$objetivo->id}}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
 
                 @empty
@@ -488,13 +485,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
 
 
 

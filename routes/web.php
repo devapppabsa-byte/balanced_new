@@ -256,7 +256,7 @@ Route::get('/perfil_admin/perspectivas', [perspectivaController::class, 'perspec
 Route::post('/perfil_admin/perspectiva/store', [perspectivaController::class, 'perspectiva_store'])->name('perspectiva.store');
 Route::delete('/perfil_admin/perspectiva/delete/{perspectiva}', [perspectivaController::class, 'perspectiva_delete'])->name('eliminar.perspectiva');
 Route::patch('/perfil_admin/perspectiva/edit/{perspectiva}', [perspectivaController::class, 'edit_perspectiva'])->name('edit.perspectiva');
-Route::get('/perfil_admin/perspectiva/objetivo/{perspectiva}', [perspectivaController::class, 'detalle_perspectiva'])->name('detalle.perspectiva');
+Route::get('/perfil_admin/perspectiva/objetivo/{perspectiva}', [perspectivaController::class, 'detalle_perspectiva'])->name('detalle.perspectiva')->middleware('auth:admin');
 
 
 Route::post('/perfil_admin/perspectiva/objetivo/post/{perspectiva}', [perspectivaController::class, 'objetivo_store'])->name('objetivo.store');
