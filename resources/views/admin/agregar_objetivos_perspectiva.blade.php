@@ -87,21 +87,20 @@
                 <form action="#" method="GET">
                     <div class="d-flex flex-wrap align-items-end gap-3">
 
-                        <div>
+                        {{-- <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Selecciona una Fecha</label>    
                             <select name="fecha_filtro" class="form-select" id="" onchange="this.form.submit()">
                                 <option value="" disabled selected>Escoge una fecha</option>
                                 @foreach ($fechas_seleccionar as $fecha_seleccionar)
-                                    <option value="{{ $fecha_seleccionar }}">{{ Carbon::createFromFormat('Y-m', $fecha_seleccionar)
-                                    ->locale('es')
-                                    ->translatedFormat('F Y') }}
+                                    <option value="{{ $fecha_seleccionar }}" {{ ($fecha_seleccionar == $fecha_filtro) ? 'selected' : '' }}>
+                                        {{ Carbon::createFromFormat('Y-m', $fecha_seleccionar)->locale('es')->translatedFormat('F Y') }}
                                     </option>
                                 @endforeach
                             </select>              
-                        </div>
+                        </div> --}}
 
                         <!-- Fecha inicio -->
-                        {{-- <div>
+                        <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Desde</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light border-0">
@@ -109,14 +108,14 @@
                                 </span>
                                 <input type="date"
                                     name="fecha_inicio"
-                                    value="{{ request('fecha_inicio') ?? now()->format('Y-m-d') }}"
+                                    value="{{ request('fecha_inicio') ?? now()->startOfYear()->format('Y-m-d') }}"
                                     class="form-control border-0 bg-light datepicker"
                                     onchange="this.form.submit()">
                             </div>
-                        </div> --}}
+                        </div> 
 
                         <!-- Fecha fin -->
-                        {{-- <div>
+                        <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Hasta</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light border-0">
@@ -128,7 +127,7 @@
                                     class="form-control border-0 bg-light datepicker"
                                     onchange="this.form.submit()">
                             </div>
-                        </div> --}}
+                        </div>
 
                         <!-- Botón gráfica -->
                         <div class="ms-auto">
@@ -267,7 +266,7 @@
                                                                     <i class="fa-solid fa-bullseye me-1"></i>
                                                                     Meta: {{ $indicador->meta_esperada }}
                                                                 </span>
-                                                        
+                                        
                                                                 @php
                                                                     $informacion_indicadores = \App\Models\IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
                                                                     $array_datos = [];
@@ -472,10 +471,43 @@
                                                                                             ->where('p.cuantificable', 1)
                                                                                             ->whereBetween('r.created_at', [$inicio, $fin])
                                                                                             ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
+
+
+                                                                                        $rangos = [];
+
+                                                                                        if ($inicio->month <= 6) {
+                                                                                            $rangos[] = [
+                                                                                                'inicio' => $inicio->copy()->startOfYear()->startOfDay(),
+                                                                                                'fin' => $inicio->copy()->month(6)->endOfMonth()->endOfDay(),
+                                                                                            ];
+                                                                                        }
+
+                                                                                        if ($fin->month >= 7 || $inicio->year !== $fin->year) {
+                                                                                            $rangos[] = [
+                                                                                                'inicio' => $fin->copy()->month(7)->startOfMonth()->startOfDay(),
+                                                                                                'fin' => $fin->copy()->endOfYear()->endOfDay(),
+                                                                                            ];
+                                                                                        }
+
+                                                                                        $informacion_encuestas = DB::table('respuestas as r')
+                                                                                            ->join('preguntas as p', 'r.id_pregunta', '=', 'p.id')
+                                                                                            ->where('p.cuantificable', 1)
+                                                                                            ->where(function ($query) use ($rangos) {
+                                                                                                foreach ($rangos as $rango) {
+                                                                                                    $query->orWhereBetween('r.created_at', [
+                                                                                                        $rango['inicio']->utc(),
+                                                                                                        $rango['fin']->utc()
+                                                                                                    ]);
+                                                                                                }
+                                                                                            })
+                                                                                            ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
+
+                                                                                        $informacion_encuestas = round($informacion_encuestas ?? 0, 2)*10;                                                                                            
                                                                     
 
                                                                     //esto es por que la consulta de arriba me da el recultado en unidad y no en porcentaje.
-                                                                    $informacion_encuestas = $informacion_encuestas * 10;
+                                                                   
+                                                                    //$informacion_encuestas = $informacion_encuestas * 10;
 
 
                                                                     

@@ -99,25 +99,25 @@ class perspectivaController extends Controller
 
     public function detalle_perspectiva(Perspectiva $perspectiva){
 
-        // $inicio = request()->filled('fecha_inicio')
-        //     ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
-        //         ->startOfDay()
-        //         ->utc()
-        //     : Carbon::now(config('app.timezone'))
-        //         //->subMonth()
-        //         ->startOfYear()
-        //         ->utc();
+         $inicio = request()->filled('fecha_inicio')
+             ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
+                 ->startOfDay()
+                 ->utc()
+             : Carbon::now(config('app.timezone'))
+                 //->subMonth()
+                 ->startOfYear()
+                 ->utc();
 
 
-        // $fin = request()->filled('fecha_fin')
-        //     ? Carbon::parse(request('fecha_fin'), config('app.timezone'))
-        //         //->subMonth()    
-        //         ->endOfDay()
-        //         ->utc()
+         $fin = request()->filled('fecha_fin')
+             ? Carbon::parse(request('fecha_fin'), config('app.timezone'))
+                 //->subMonth()    
+                 ->endOfDay()
+                 ->utc()
 
-        //     : Carbon::now(config('app.timezone'))
-        //         ->endOfYear()
-        //         ->utc();
+             : Carbon::now(config('app.timezone'))
+                 ->endOfYear()
+                 ->utc();
 
         $fechas_seleccionar = IndicadorLleno::where('final', 'on')
             ->selectRaw("DATE_FORMAT(fecha_periodo, '%Y-%m') as periodo")
