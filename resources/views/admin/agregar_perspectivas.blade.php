@@ -4,6 +4,8 @@
 @php
     use App\Models\Indicador;
     use App\Models\IndicadorLleno;
+    use App\Models\Encuesta;
+    use App\Models\Norma;
 @endphp
     
 <div class="container-fluid sticky-top">
@@ -173,6 +175,8 @@
 
                                     @php
                                         $indicadores_objetivo = Indicador::where('id_objetivo_perspectiva', $objetivo->id)->get();
+                                        $encuesta_objetivo = Encuesta::where('id_objetivo_perspectiva', $objetivo->id)->get();
+                                        $norma_objetivo = Norma::where('id_objetivo_perspectiva', $objetivo->id)->get();
                                     @endphp
 
         
@@ -181,19 +185,22 @@
                                         @php
                                             $array_suma_cumplimientos = [];
                                             $indicadores_llenos = IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
+
+
+                                            foreach($indicadores_llenos as $indicador_lleno){
+                                                array_push($array_suma_cumplimientos, $indicador_lleno->informacion_campo);
+                                            }
+
                                         @endphp
                                         {{-- <h3>{{$indicador->nombre}}</h3> --}}
-                                        @foreach ($indicadores_llenos as $index_indicador => $indicador_lleno)
-                                                @php
-                                                    array_push($array_suma_cumplimientos, $indicador_lleno->informacion_campo)
-                                                @endphp
-                                        @endforeach
+
+
 
                            
 
                                     @if (!empty($array_suma_cumplimientos))
-                                        <span class="fw-bold sumar_cumplimientos">
 
+ww
                                             @php
                                                 $promedio_cumplimiento;    
                                          
@@ -233,14 +240,14 @@
                                                             );
 
                                                         }
-
                                                     }
-                                                    @endphp
-                                        </span>
+
+                                                @endphp
+
                                     
                                     @else
 
-                                        <span class="fw-bold">0</span>
+
                                     
                                     @endif
 

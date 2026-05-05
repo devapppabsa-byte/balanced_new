@@ -82,75 +82,77 @@
 
     <div class="row">
         <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body py-3 px-4 text-center">
+            <div class="card-body py-3 px-4">
 
-                <form action="#" method="GET">
-                    <div class="d-flex flex-wrap align-items-end gap-3">
+                <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
 
-                        {{-- <div>
-                            <label class="form-label small text-muted fw-semibold mb-1">Selecciona una Fecha</label>    
-                            <select name="fecha_filtro" class="form-select" id="" onchange="this.form.submit()">
-                                <option value="" disabled selected>Escoge una fecha</option>
-                                @foreach ($fechas_seleccionar as $fecha_seleccionar)
-                                    <option value="{{ $fecha_seleccionar }}" {{ ($fecha_seleccionar == $fecha_filtro) ? 'selected' : '' }}>
-                                        {{ Carbon::createFromFormat('Y-m', $fecha_seleccionar)->locale('es')->translatedFormat('F Y') }}
-                                    </option>
-                                @endforeach
-                            </select>              
-                        </div> --}}
+                    <form action="#" method="GET" class="mb-0">
+                        <div class="d-flex flex-wrap align-items-end gap-3">
 
-                        <!-- Fecha inicio -->
-                        <div>
-                            <label class="form-label small text-muted fw-semibold mb-1">Desde</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light border-0">
-                                    <i class="fa-solid fa-calendar-days text-primary"></i>
-                                </span>
-                                <input type="date"
-                                    name="fecha_inicio"
-                                    value="{{ request('fecha_inicio') ?? now()->startOfYear()->format('Y-m-d') }}"
-                                    class="form-control border-0 bg-light datepicker"
-                                    onchange="this.form.submit()">
+                            <!-- Fecha inicio -->
+                            <div>
+                                <label class="form-label small text-muted fw-semibold mb-1">Desde</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fa-solid fa-calendar-days text-primary"></i>
+                                    </span>
+                                    <input
+                                        type="date"
+                                        name="fecha_inicio"
+                                        value="{{ request('fecha_inicio') ?? now()->startOfYear()->format('Y-m-d') }}"
+                                        class="form-control border-0 bg-light datepicker"
+                                        onchange="this.form.submit()">
+                                </div>
                             </div>
-                        </div> 
 
-                        <!-- Fecha fin -->
-                        <div>
-                            <label class="form-label small text-muted fw-semibold mb-1">Hasta</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light border-0">
-                                    <i class="fa-solid fa-calendar-days text-danger"></i>
-                                </span>
-                                <input type="date"
-                                    name="fecha_fin"
-                                    value="{{ request('fecha_fin') ?? now()->format('Y-m-d') }}"
-                                    class="form-control border-0 bg-light datepicker"
-                                    onchange="this.form.submit()">
+                            <!-- Fecha fin -->
+                            <div>
+                                <label class="form-label small text-muted fw-semibold mb-1">Hasta</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fa-solid fa-calendar-days text-danger"></i>
+                                    </span>
+                                    <input
+                                        type="date"
+                                        name="fecha_fin"
+                                        value="{{ request('fecha_fin') ?? now()->format('Y-m-d') }}"
+                                        class="form-control border-0 bg-light datepicker"
+                                        onchange="this.form.submit()">
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Botón gráfica -->
-                        <div class="ms-auto">
-                                <a class="btn btn-primary btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_objetivo">
+                            <!-- Botón -->
+                            <div>
+                                <a
+                                    class="btn btn-primary btn-sm"
+                                    data-mdb-ripple-init
+                                    data-mdb-modal-init
+                                    data-mdb-target="#agregar_objetivo">
                                     <i class="fa-solid fa-plus-circle me-2"></i>
                                     Agregar Objetivos
-                                </a>                   
+                                </a>
+                            </div>
+
                         </div>
-                </form>
-            </div>
-            <p class="text-muted mb-0 mt-3">
-                @php
-                    $ponderacion_objetivos = [];
-                    foreach ($objetivos as $key => $objetivo) {
-                        array_push($ponderacion_objetivos, $objetivo->ponderacion);
-                    }
-                @endphp
-                <div class="badge badge-lg  {{(array_sum($ponderacion_objetivos) != 100 ? 'badge-danger' : 'badge-success' )}} ">
-                    <i class="fa fa-exclamation-circle"></i>
-                    La suma de las ponderaciones de los Objetivos es: <b> {{array_sum($ponderacion_objetivos)}}% </b> 
+                    </form>
+
+                    @php
+                        $ponderacion_objetivos = [];
+                        foreach ($objetivos as $objetivo) {
+                            $ponderacion_objetivos[] = $objetivo->ponderacion;
+                        }
+                    @endphp
+
+                    <div
+                        class="badge badge-lg {{ (array_sum($ponderacion_objetivos) != 100 ? 'badge-danger' : 'badge-success') }}">
+                        <i class="fa fa-exclamation-circle me-1"></i>
+                        La suma de las ponderaciones de los Objetivos es:
+                        <b>{{ array_sum($ponderacion_objetivos) }}%</b>
+                    </div>
+
                 </div>
 
-            </p>
+            </div>
         </div>
     </div>
 
@@ -159,23 +161,35 @@
 
 
 
-</div>
-
-
-
-
-<div class="container mt-3">
+<div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-8 col-sm-8 col-md-8 col-lg-6 col-xl-6 mb-4">
-            <div class="card bg-success p-4 text-white text-center" id="card_cumplimiento">
-                <h3>
-                   <i class="fa " id="icono_card_cumplimiento"></i> Cumplimiento
-                </h3>
-                <h2 id="suma_cumplimientos"></h2>
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 mb-4">
+            <div
+                class="card bg-success text-white border-0 shadow-sm"
+                id="card_cumplimiento">
+
+                <div class="card-body text-center py-4 px-4">
+                    <div class="mb-2">
+                        <i
+                            class="fa fs-3"
+                            id="icono_card_cumplimiento"></i>
+                    </div>
+
+                    <h5 class="fw-semibold mb-2">
+                        Cumplimiento
+                    </h5>
+
+                    <h2
+                        class="fw-bold mb-0"
+                        id="suma_cumplimientos"></h2>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+
+
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
@@ -200,6 +214,9 @@
                             foreach($encuestasObjetivo as $encuesta_ponderacion){
                                 $suma_ponderacion = $suma_ponderacion + $encuesta_ponderacion->ponderacion_encuesta;
                             }
+                            foreach($normasObjetivo as $norma_ponderacion){
+                                $suma_ponderacion = $suma_ponderacion + $norma_ponderacion->ponderacion_norma;
+                            }
                             
                         @endphp
                     
@@ -212,7 +229,7 @@
                                 <div class="row mb-1 row">
                                     <div class="col-12">
                                         <h4 class="fw-bold mb-0 department-name text-truncate" data-mdb-tooltip-init title="{{ $objetivo->nombre }}" >
-                                        ID: {{ $objetivo->id }} - {{ $objetivo->nombre }}
+                                            {{ $objetivo->nombre }}
                                         </h4>
                                         <h5 class="text-primary">
                                             Peso en la Perspectiva:  <span class="fw-bold">{{ $objetivo->ponderacion }} %</span> 
@@ -221,7 +238,11 @@
                                             Meta:  <span class="fw-bold">{{ $objetivo->meta }} %</span> 
                                         </h3>
                                         <h6 class=" badge badge-lg {{ ($suma_ponderacion === 100) ? 'badge-success' : 'badge-danger' }}">
-                                        <i class="fa fa-exclamation-circle"></i>  Suma de las ponderaciones de los indicadores:  <span class="fw-bold">{{ $suma_ponderacion }} %</span> 
+                                            <i class="fa fa-exclamation-circle"></i>  
+                                            Suma de las ponderaciones de los indicadores:  
+                                            <span class="fw-bold">
+                                                {{ $suma_ponderacion }} %
+                                            </span> 
                                         </h6>
                                     </div>
                                     <hr>
@@ -289,24 +310,26 @@
                                                                             $promedio_cumplimiento;    
                                                                         @endphp
                                                                         
-                                                                        @if ($indicador->tipo_indicador == "normal")
-                                                                            {{-- esta mamada la puse por que se les ocurrio que de repente la meta esperrada ya no era 100, era menos, epro a veces is alcanzaban el 100 y el cumplimiento se iba al mas del 100% de cumplimiento por que meta_esperada era 90 o algo asi --}}
-                                                                            @if ($indicador->unidad_medida == "porcentaje")
-                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
-                                                                            @else
-                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)   }} %
-                                                                            @endif
+                                                                @if ($indicador->tipo_indicador == "normal")
+                                                                    {{-- esta mamada la puse por que se les ocurrio que de repente la meta esperrada ya no era 100, era menos, epro a veces is alcanzaban el 100 y el cumplimiento se iba al mas del 100% de cumplimiento por que meta_esperada era 90 o algo asi --}}
+                                                                    @if ($indicador->unidad_medida == "porcentaje")
+                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
+                                                                    @else
+                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)   }} %
+                                                                    @endif
 
-                                                                        @else
+                                                                @else
 
-                                                                            @if($indicador->unidad_medida == "porcentaje")
-                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2)  }} %
+                                                                    @if($indicador->unidad_medida == "porcentaje")
+                                                                    
+                                                                        {{ round($promedio_cumplimiento = 100 - ( array_sum($array_datos) / count($array_datos)), 2)  }} %
 
-                                                                            @else
-                                                                                {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
-                                                                            @endif
+                                                                    @else
+                                                                        {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
+                                                                    @endif
 
-                                                                        @endif
+                                                                @endif
+
                                                                     </span>
                                                                 
                                                                 @else
@@ -356,7 +379,7 @@
                                                                     <form action="{{ route('agregar.ponderacion.indicador.objetivo', $indicador->id) }}" method="POST">
                                                                         @csrf
                                                                         <div class="form-outline" data-mdb-input-init>
-                                                                            <input type="text" class="form-control" id="ponderacion_indicador" name="ponderacion_indicador" |value="{{old('ponderacion_indicador')}}"required>
+                                                                            <input type="text" class="form-control" value="{{ old('ponderacion_indicador', $indicador->ponderacion_indicador) }}" id="ponderacion_indicador" name="ponderacion_indicador" |value="{{old('ponderacion_indicador')}}"required>
                                                                             <label class="form-label" for="ponderacion_indicador">
                                                                                 Ponderación:
                                                                                 <span class="text-danger">*</span>
@@ -440,7 +463,7 @@
                                                                     <i class="fa fa-trash"></i>
                                                                 </a>
                                                                 
-                                                                <a href="#">
+                                                                <a href="{{route('encuesta.index', $encuesta->id)}}">
                                                                     {{ $encuesta->nombre }} 
                                                                 </a>
                                                                 
@@ -453,7 +476,7 @@
                                                                 <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ponen{{ $encuesta->id }}">
                                                                     <i class="fa fa-plus-circle"></i>
                                                                 </a>
-                                                                <a href="#" class="text-danger"></a>
+                                                                
                                                             </div>
                                                             <hr>
                                                             <!-- Info secundaria -->
@@ -531,15 +554,12 @@
                                                                 {{round((($informacion_encuestas * $encuesta->ponderacion_encuesta)/100), 2)}} %
                                                                 @php
                                                                     $suma = $suma + (($informacion_encuestas * $encuesta->ponderacion_encuesta)/100);
-                                                                @endphp                                                 
+                                                                @endphp  
                                                             </span>
                                                          
                                                             
                                                         
                                                     </div>
-
-                                                        
-
                                                     </div>
 
                                             {{-- modales para la ponderacion --}}
@@ -557,7 +577,7 @@
                                                                     <form action="{{ route('agregar.ponderacion.encuesta.objetivo', $encuesta->id) }}" method="POST">
                                                                         @csrf
                                                                         <div class="form-outline" data-mdb-input-init>
-                                                                            <input type="text" class="form-control" id="ponderacion_encuesta" name="ponderacion_encuesta" |value="{{old('ponderacion_encuesta')}}"required>
+                                                                            <input type="text" value="{{ old('ponderacion_encuesta', $encuesta->ponderacion_encuesta) }}" class="form-control" id="ponderacion_encuesta" name="ponderacion_encuesta" |value="{{old('ponderacion_encuesta')}}"required>
                                                                             <label class="form-label" for="ponderacion_encuesta">
                                                                                 Ponderación:
                                                                                 <span class="text-danger">*</span>
@@ -579,8 +599,6 @@
                                                         </div>
                                                     </div>
                                             {{-- modales para la ponderacion --}}
-
-
 
                                                     <div class="modal fade" id="enc_del{{$encuesta->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
                                                         <div class="modal-dialog modal-dialog-centered">
@@ -635,11 +653,11 @@
                                                             <!-- Nombre -->
                                                             <div class="fw-bold " style="font-size: 14px;">
                                                                 
-                                                                <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#enc_del{{$encuesta->id}}">
+                                                                <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#nom_del{{$norma->id}}">
                                                                     <i class="fa fa-trash"></i>
                                                                 </a>
                                                                 
-                                                                <a href="#">
+                                                                <a href="{{route('apartado.norma', $norma->id)}}">
                                                                     {{ $norma->nombre }} 
                                                                 </a>
                                                                 
@@ -649,7 +667,7 @@
                                                                         {{ $norma->ponderacion_norma }}%
                                                                     </span>
                                                                 @endif
-                                                                <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ponnom{{ $norma->id }}">
+                                                                <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ponorm{{ $norma->id }}">
                                                                     <i class="fa fa-plus-circle"></i>
                                                                 </a>
                                                                 <a href="#" class="text-danger"></a>
@@ -664,12 +682,17 @@
                                                                 </span>
                                                         
                                                                 @php
+
+                                                                
+                                                                    $inicioConsulta = $inicio->copy()->addMonth();
+                                                                    $finConsulta = $fin->copy()->addMonth();
+
                                                                     $normas_cumplimiento = DB::table('apartado_norma as an')
                                                                         ->join('norma as n', 'an.id_norma', '=', 'n.id')
 
-                                                                        ->leftJoin('cumplimiento_norma as cn', function ($join) use ($inicio, $fin) {
+                                                                        ->leftJoin('cumplimiento_norma as cn', function ($join) use ($inicioConsulta, $finConsulta) {
                                                                             $join->on('cn.id_apartado_norma', '=', 'an.id')
-                                                                                ->whereBetween('cn.created_at', [$inicio, $fin]);
+                                                                                ->whereBetween('cn.created_at', [$inicioConsulta, $finConsulta]);
                                                                         })
 
                                                                         ->where('n.id', $norma->id)
@@ -694,13 +717,11 @@
                                                                     //dentro se pueden registrar encuestas, y dentro de estas encuestas se registran preguntas, las preguntas son contestadas por clientes.Para ver el resultado se toman las preguntas que tengan en el campo 'cuantificable' un 1. de todo eso necesito saber solo el cumplimiento general, osea el promedio de o que se contesto en los ultimos 6 meses.
                                                                 @endphp
 
-                                                                <pre>{{ $normas_cumplimiento->porcentaje_mes }}</pre>
-
                                                             <span >
                                                                 <i class="fa-solid fa-gauge"></i>
                                                                 Promedio Cumplimiento: 
                                                                     <span class="fw-bold">
-                                                                        {{ round($informacion_encuestas, 2) }} %
+                                                                        {{ round($normas_cumplimiento->porcentaje_mes, 2) }} %
                                                                     </span>
                                                             </span>
                                                   
@@ -710,14 +731,15 @@
                                                             </span>
 
                                                             <span class="fw-bold">
-                                                                {{round((($informacion_encuestas * $encuesta->ponderacion_encuesta)/100), 2)}} %
+                                                                {{round((($normas_cumplimiento->porcentaje_mes * $norma->ponderacion_norma)/100), 2)}} %
+
                                                                 @php
-                                                                    $suma = $suma + (($informacion_encuestas * $encuesta->ponderacion_encuesta)/100);
+                                                                    $suma = $suma + (($normas_cumplimiento->porcentaje_mes * $norma->ponderacion_norma)/100);
                                                                 @endphp                                                 
                                                             </span>
-                                                         
+
                                                             
-                                                        
+    
                                                     </div>
 
                                                         
@@ -725,7 +747,7 @@
                                                     </div>
 
                                             {{-- modales para la ponderacion --}}
-                                                    <div class="modal fade" id="ponen{{ $encuesta->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
+                                                    <div class="modal fade" id="ponorm{{ $norma->id }}" tabindex="-1" aria-labelledby="agregarDepartamentoLabel" aria-hidden="true" data-mdb-backdrop="static">
                                                         <div class="modal-dialog modal-sm modal-dialog-centered">
                                                             <div class="modal-content border-0 shadow-lg">
                                                                 <div class="modal-header bg-primary text-white border-0 py-3">
@@ -736,17 +758,17 @@
                                                                     <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body py-4">
-                                                                    <form action="{{ route('agregar.ponderacion.encuesta.objetivo', $encuesta->id) }}" method="POST">
+                                                                    <form action="{{ route('agregar.ponderacion.norma.objetivo', $norma->id) }}" method="POST">
                                                                         @csrf
                                                                         <div class="form-outline" data-mdb-input-init>
-                                                                            <input type="text" class="form-control" id="ponderacion_encuesta" name="ponderacion_encuesta" |value="{{old('ponderacion_encuesta')}}"required>
-                                                                            <label class="form-label" for="ponderacion_encuesta">
+                                                                            <input type="text" value="{{ old('ponderacion_norma', $norma->ponderacion_norma) }}" class="form-control" id="ponderacion_norma" name="ponderacion_norma" |value="{{old('ponderacion_norma')}}"required>
+                                                                            <label class="form-label" for="ponderacion_norma">
                                                                                 Ponderación:
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
-                                                                            @if ($errors->first('ponderacion_encuesta'))
+                                                                            @if ($errors->first('ponderacion_norma'))
                                                                                 <div class="invalid-feedback">
-                                                                                    {{ $errors->first('ponderacion_encuesta') }}
+                                                                                    {{ $errors->first('ponderacion_norma') }}
                                                                                 </div>
                                                                             @endif
                                                                         </div>
@@ -764,7 +786,7 @@
 
 
 
-                                                    <div class="modal fade" id="enc_del{{$encuesta->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
+                                                    <div class="modal fade" id="nom_del{{$norma->id}}" tabindex="-1" aria-labelledby="eliminarDepartamentoLabel{{$objetivo->id}}" aria-hidden="true" data-mdb-backdrop="static">
                                                         <div class="modal-dialog modal-dialog-centered">
                                                             <div class="modal-content border-0 shadow-lg">
                                                                 <div class="modal-header bg-danger text-white border-0 py-3">
@@ -789,7 +811,7 @@
                                                                         </small>
                                                                     </div>
 
-                                                                    <form action="{{route('encuesta.objetivo.delete', [$objetivo->id, $encuesta->id])}}" method="POST">
+                                                                    <form action="{{route('norma.objetivo.delete', [$objetivo->id, $encuesta->id])}}" method="POST">
                                                                         @csrf 
                                                                         @method('PUT')
                                                                         <div class="d-flex gap-2">
@@ -808,19 +830,11 @@
                                                         </div>
                                                     </div>     
                                             @endforeach
-
-
-                                            
-
                                         </div>
                                     </div>
-
                                 </div>
 
                                 <div class="row justify-content-center my-4">
-
-                                    
-
                                     <div class="col-4 shadow-sm mx-1 rounded p-3 text-white {{ ($suma < $objetivo->meta) ? 'bg-danger' : 'bg-success' }}">
                                         <h5 class="text-center">Porcentaje de cumplimiento del objetivo: </h5>
                                         <h1 class="text-center fw-bold ">{{ number_format($suma,1) }}%</h1>
@@ -829,7 +843,6 @@
                                     <div class="col-4 shadow-sm mx-1 rounded p-3">
                                         <h5 class="text-center">Porcentaje aportado a la perspectiva: </h5>
                                         <h1 class="text-center fw-bold cumplimiento_objetivo">
-                                            
                                             {{ number_format(($suma / 100) * $objetivo->ponderacion,1) }}%
                                         </h1>                                   
                                     </div>
@@ -1263,7 +1276,6 @@
                             </button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>

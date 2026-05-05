@@ -142,17 +142,27 @@ class perspectivaController extends Controller
     }
 
 
+
     public function objetivo_delete(Objetivo $objetivo){
 
         Indicador::where('id_objetivo_perspectiva', $objetivo->id)
-            ->update(['id_objetivo_perspectiva' => null]);
+            ->update([
+                'id_objetivo_perspectiva' => null, 
+                'ponderacion_indicador' => null
+            ]);
 
 
         Encuesta::where('id_objetivo_perspectiva', $objetivo->id)
-            ->update(['id_objetivo_perspectiva' => null ]);
+            ->update([
+                'id_objetivo_perspectiva' => null,
+                'ponderacion_encuesta' => null
+            ]);
 
         Norma::where('id_objetivo_perspectiva', $objetivo->id)
-            ->update(['id_objetivo_perspectiva' => null]);
+            ->update([
+                'id_objetivo_perspectiva' => null,
+                'ponderacion_norma' => null
+            ]);
 
 
         $objetivo->delete();
@@ -167,6 +177,7 @@ class perspectivaController extends Controller
     public function indicador_objetivo_delete(Objetivo $objetivo, Indicador $indicador){
     
         $indicador->id_objetivo_perspectiva = null;
+        $indicador->ponderacion_indicador = null;
         $indicador->update();
     
         return back()->with('success','El indicador se elimino del Objetivo!');
@@ -176,8 +187,20 @@ class perspectivaController extends Controller
     public function encuesta_objetivo_delete(Objetivo $objetivo, Encuesta $encuesta){
 
         $encuesta->id_objetivo_perspectiva = null;
+        $encuesta->ponderacion_encuesta = null;
         $encuesta->update();
-        return back()->with('success', 'La encuesta se elimino del Objetivo');
+        return back()->with('success', 'La encuesta se elimino del Objetivo!');
+
+    }
+
+
+    public function norma_objetivo_delete(Objetivo $objetivo, Norma $norma){
+
+        $norma->id_objetivo_perspectiva = null;
+        $norma->ponderacion_norma = null;
+        $norma->update();
+        return back()->with('success', 'La norma se elimino del Objetivo!');
+
 
     }
 
@@ -295,6 +318,7 @@ class perspectivaController extends Controller
 
     }
 
+
     public function agregar_ponderacion_encuesta_objetivo(Encuesta $encuesta, Request $request){
 
 
@@ -308,6 +332,23 @@ class perspectivaController extends Controller
         return back()->with('success', 'La ponderación fue guardada!');
 
 
+    }
+
+
+
+    public function agregar_ponderacion_norma_objetivo(Norma $norma, Request $request){
+
+        $request->validate([
+            "ponderacion_norma" => "required"
+        ]);
+
+
+        $norma->ponderacion_norma = $request->ponderacion_norma;
+        $norma->save();
+
+        return back()->with('success', 'La ponderación fue guardada!');
+
+        
     }
 
 

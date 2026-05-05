@@ -2,7 +2,7 @@
 @section('title', 'Encuesta')
     
 @section('contenido')
-<div class="container-fluid">
+<div class="container-fluid sticky-top">
     <div class="row bg-primary d-flex align-items-center">
         <div class="col-12 col-sm-12 col-md-6 col-lg-10  pt-2 text-white">
             <h3 class="mt-1 league-spartan">{{$encuesta->nombre}}</h3>
@@ -42,47 +42,47 @@
         </div>
     </div>
     @include('admin.assets.nav')
+
+    <div class="row">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                    <div>
+                        <h2 class="mb-1 fw-bold">
+                            <i class="fa-solid fa-clipboard-question text-primary me-2"></i>
+                            {{$encuesta->nombre}}
+                        </h2>
+                        <p class="text-muted mb-0">
+                            <small>{{$encuesta->descripcion}}</small>
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2 mt-2 mt-md-0">
+                        <button class="btn btn-info text-white" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#grafico">
+                            <i class="fa-solid fa-chart-line me-2"></i>
+                            Ver Gráficas
+                        </button>
+                        @if ($existe->isEmpty())
+                            <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_pregunta">
+                                <i class="fa-solid fa-plus-circle me-2"></i>
+                                Agregar Pregunta
+                            </button>
+                        @else
+                            <button class="btn btn-secondary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#encuesta_contestada">
+                                <i class="fa-solid fa-lock me-2"></i>
+                                Encuesta Contestada
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
             <!-- Header Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap">
-                        <div>
-                            <h2 class="mb-1 fw-bold">
-                                <i class="fa-solid fa-clipboard-question text-primary me-2"></i>
-                                {{$encuesta->nombre}}
-                            </h2>
-                            <p class="text-muted mb-0">
-                                <small>{{$encuesta->descripcion}}</small>
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2 mt-2 mt-md-0">
-                            <button class="btn btn-info text-white" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#grafico">
-                                <i class="fa-solid fa-chart-line me-2"></i>
-                                Ver Gráficas
-                            </button>
-                            @if ($existe->isEmpty())
-                                <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_pregunta">
-                                    <i class="fa-solid fa-plus-circle me-2"></i>
-                                    Agregar Pregunta
-                                </button>
-                            @else
-                                <button class="btn btn-secondary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#encuesta_contestada">
-                                    <i class="fa-solid fa-lock me-2"></i>
-                                    Encuesta Contestada
-                                </button>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
             <!-- Two Column Layout -->
             <div class="row g-4">
                 <!-- Columna 1: Preguntas -->
