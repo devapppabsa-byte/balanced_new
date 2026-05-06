@@ -41,7 +41,7 @@ class perspectivaController extends Controller
 
 
      $perspectivas = Perspectiva::with([
-            'objetivos.indicadores_perspectiva',
+            'objetivos.indicadores_perspectiva.indicadorLleno',
             'objetivos.encuestas_perspectiva',
             'objetivos.normas_perspectiva'
         ])->get();

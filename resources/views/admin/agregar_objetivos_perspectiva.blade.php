@@ -684,32 +684,85 @@
                                                                 @php
 
                                                                 
-                                                                    $inicioConsulta = $inicio->copy()->addMonth();
-                                                                    $finConsulta = $fin->copy()->addMonth();
+                                                                    $inicioMeses = $inicio->copy()->startOfMonth();
+                                                                    $finMeses = $fin->copy()->subMonth()->startOfMonth();
 
-                                                                    $normas_cumplimiento = DB::table('apartado_norma as an')
-                                                                        ->join('norma as n', 'an.id_norma', '=', 'n.id')
+                                                                    $inicioConsulta = $inicio->copy()->addMonth()->startOfMonth();
+                                                                    $finConsulta = $fin->copy()->addMonth()->endOfMonth();
 
+                                                                    /*
+                                                                    |--------------------------------------------------------------------------
+                                                                    | Meses visibles del rango
+                                                                    |--------------------------------------------------------------------------
+                                                                    */
+                                                                    $meses = collect();
+
+                                                                    $cursor = $inicioMeses->copy();
+
+                                                                    while ($cursor <= $finMeses) {
+                                                                        $meses->push($cursor->format('Y-m'));
+                                                                        $cursor->addMonth();
+                                                                    }
+
+                                                                    /*
+                                                                    |--------------------------------------------------------------------------
+                                                                    | Total de apartados
+                                                                    |--------------------------------------------------------------------------
+                                                                    */
+                                                                    $total_apartados = DB::table('apartado_norma')
+                                                                        ->where('id_norma', $norma->id)
+                                                                        ->count();
+
+                                                                    /*
+                                                                    |--------------------------------------------------------------------------
+                                                                    | Cumplimiento por mes
+                                                                    |--------------------------------------------------------------------------
+                                                                    */
+                                                                    $porMes = DB::table('apartado_norma as an')
                                                                         ->leftJoin('cumplimiento_norma as cn', function ($join) use ($inicioConsulta, $finConsulta) {
                                                                             $join->on('cn.id_apartado_norma', '=', 'an.id')
                                                                                 ->whereBetween('cn.created_at', [$inicioConsulta, $finConsulta]);
                                                                         })
-
-                                                                        ->where('n.id', $norma->id)
-
+                                                                        ->where('an.id_norma', $norma->id)
+                                                                        ->whereNotNull('cn.created_at')
                                                                         ->select(
-                                                                            'n.*',
-                                                                            DB::raw('COUNT(DISTINCT an.id) as total_apartados'),
-                                                                            DB::raw('
-                                                                                (
-                                                                                    COUNT(DISTINCT cn.id_apartado_norma)
-                                                                                    / COUNT(DISTINCT an.id)
-                                                                                ) * 100 as porcentaje_mes
-                                                                            ')
+                                                                            DB::raw("DATE_FORMAT(DATE_SUB(cn.created_at, INTERVAL 1 MONTH), '%Y-%m') as mes"),
+                                                                            DB::raw('COUNT(DISTINCT cn.id_apartado_norma) as cumplidos')
                                                                         )
+                                                                        ->groupBy(DB::raw("DATE_FORMAT(DATE_SUB(cn.created_at, INTERVAL 1 MONTH), '%Y-%m')"))
+                                                                        ->pluck('cumplidos', 'mes');
 
-                                                                        ->groupBy('n.id')
-                                                                        ->first();
+                                                                    /*
+                                                                    |--------------------------------------------------------------------------
+                                                                    | Completar meses faltantes con 0
+                                                                    |--------------------------------------------------------------------------
+                                                                    */
+                                                                    $porcentajes = $meses->map(function ($mes) use ($porMes, $total_apartados) {
+                                                                        $cumplidos = $porMes[$mes] ?? 0;
+
+                                                                        if ($total_apartados == 0) {
+                                                                            return 0;
+                                                                        }
+
+                                                                        return ($cumplidos / $total_apartados) * 100;
+                                                                    });
+
+                                                                    /*
+                                                                    |--------------------------------------------------------------------------
+                                                                    | Promedio mensual
+                                                                    |--------------------------------------------------------------------------
+                                                                    */
+                                                                    $porcentaje_promedio = round($porcentajes->avg(), 2);
+
+                                                                    /*
+                                                                    |--------------------------------------------------------------------------
+                                                                    | Objeto compatible con tu código actual
+                                                                    |--------------------------------------------------------------------------
+                                                                    */
+                                                                    $normas_cumplimiento = (object) [
+                                                                        'total_apartados' => $total_apartados,
+                                                                        'porcentaje_mes' => $porcentaje_promedio,
+                                                                    ];
                                                                 
 
 
@@ -721,7 +774,8 @@
                                                                 <i class="fa-solid fa-gauge"></i>
                                                                 Promedio Cumplimiento: 
                                                                     <span class="fw-bold">
-                                                                        {{ round($normas_cumplimiento->porcentaje_mes, 2) }} %
+                                                                       
+                                                                         {{ round($normas_cumplimiento->porcentaje_mes, 2) }} % 
                                                                     </span>
                                                             </span>
                                                   
