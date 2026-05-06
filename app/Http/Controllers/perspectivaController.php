@@ -10,6 +10,7 @@ use App\Models\Indicador;
 use App\Models\IndicadorLleno;
 use App\Models\Objetivo;
 use Carbon\Carbon;
+use App\Services\CumplimientoService;
 class perspectivaController extends Controller
 {
 
@@ -39,7 +40,33 @@ class perspectivaController extends Controller
 
 
 
-        $perspectivas = Perspectiva::with('objetivos.indicadores_perspectiva')->get();
+     $perspectivas = Perspectiva::with([
+            'objetivos.indicadores_perspectiva',
+            'objetivos.encuestas_perspectiva',
+            'objetivos.normas_perspectiva'
+        ])->get();
+
+
+        foreach ($perspectivas as $perspectiva) {
+            $perspectiva->cumplimiento = CumplimientoService::calcularPerspectiva(
+                $perspectiva,
+                $inicio,
+                $fin
+            );
+
+            $perspectiva->aporte = round(
+                ($perspectiva->cumplimiento * $perspectiva->ponderacion) / 100,
+                2
+            );
+        }
+
+
+
+
+
+
+
+
 
         return view('admin.agregar_perspectivas', compact('perspectivas', 'inicio', 'fin'));
     
@@ -178,7 +205,7 @@ class perspectivaController extends Controller
     
         $indicador->id_objetivo_perspectiva = null;
         $indicador->ponderacion_indicador = null;
-        $indicador->update();
+        $indicador->save();
     
         return back()->with('success','El indicador se elimino del Objetivo!');
     
@@ -188,7 +215,7 @@ class perspectivaController extends Controller
 
         $encuesta->id_objetivo_perspectiva = null;
         $encuesta->ponderacion_encuesta = null;
-        $encuesta->update();
+        $encuesta->save();
         return back()->with('success', 'La encuesta se elimino del Objetivo!');
 
     }
@@ -198,7 +225,7 @@ class perspectivaController extends Controller
 
         $norma->id_objetivo_perspectiva = null;
         $norma->ponderacion_norma = null;
-        $norma->update();
+        $norma->save();
         return back()->with('success', 'La norma se elimino del Objetivo!');
 
 

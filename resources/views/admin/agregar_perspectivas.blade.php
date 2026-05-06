@@ -144,6 +144,14 @@
     </div>
 </div>
 
+@foreach ($perspectivas as $perspectiva)
+<h3>Cumplimiento {{ $perspectiva->cumplimiento }}%</h3>
+
+<h3 class="cumplimiento_objetivo">
+   Aporte {{ $perspectiva->aporte }}%
+</h3>
+@endforeach
+
 
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -170,95 +178,81 @@
                                         </h2>
                                     </a>
                                 </div>
+                                @php
+                                    $suma = 0;
+                                    $array_indicadores = [];
+                                    $promedio_cumplimiento = 0;
+                                @endphp
 
-                                    @foreach ($perspectiva->objetivos as $key_perspectiva => $objetivo)
+                                @foreach ($perspectiva->objetivos as $key_perspectiva => $objetivo)
 
                                     @php
-                                        $indicadores_objetivo = Indicador::where('id_objetivo_perspectiva', $objetivo->id)->get();
-                                        $encuesta_objetivo = Encuesta::where('id_objetivo_perspectiva', $objetivo->id)->get();
-                                        $norma_objetivo = Norma::where('id_objetivo_perspectiva', $objetivo->id)->get();
-                                    @endphp
+                                        foreach($objetivo->indicadores_perspectiva as $indicadorObjetivo){
 
-        
-                                    @foreach ($indicadores_objetivo as $indicador)
+                                            $indicadores_llenos = IndicadorLleno::where('id_indicador', $indicadorObjetivo->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
 
-                                        @php
-                                            $array_suma_cumplimientos = [];
-                                            $indicadores_llenos = IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
-
-
+                                            
                                             foreach($indicadores_llenos as $indicador_lleno){
-                                                array_push($array_suma_cumplimientos, $indicador_lleno->informacion_campo);
-                                            }
+                                                
+                                                array_push($array_indicadores, $indicador_lleno->informacion_campo) ;
 
-                                        @endphp
-                                        {{-- <h3>{{$indicador->nombre}}</h3> --}}
+                                                if ($indicadorObjetivo->tipo_indicador == "normal") {
 
+                                                    if ($indicadorObjetivo->unidad_medida == "porcentaje") {
 
+                                                        $promedio_cumplimiento = round(
+                                                            array_sum($array_indicadores) / count($array_indicadores),
+                                                            2
+                                                        );
 
-                           
+                                                    } 
+                                                    else {
 
-                                    @if (!empty($array_suma_cumplimientos))
+                                                        $promedio_cumplimiento = round(
+                                                            (
+                                                                array_sum($array_datos) /
+                                                                (count($array_indicadores) / $indicador->meta_esperada)
+                                                            ) * 100,
+                                                            2
+                                                        );
 
-ww
-                                            @php
-                                                $promedio_cumplimiento;    
-                                         
-                                                    if ($indicador->tipo_indicador == "normal") {
+                                                    }
 
-                                                        // Caso normal
-                                                        if ($indicador->unidad_medida == "porcentaje") {
+                                                } else {
 
-                                                            $promedio_cumplimiento = round(
-                                                                array_sum($array_suma_cumplimientos) / count($array_suma_cumplimientos),
-                                                                2
-                                                            );
+                                                    if ($indicadorObjetivo->unidad_medida == "porcentaje") {
 
-                                                        } else {
-
-                                                            $promedio_cumplimiento = round(
-                                                                (array_sum($array_suma_cumplimientos) / (count($array_suma_cumplimientos) / $indicador->meta_esperada)) * 100
-                                                            );
-
-                                                        }
+                                                        $promedio_cumplimiento = round(
+                                                            array_sum($array_indicadores) / count($array_indicadores),
+                                                            2
+                                                        );
 
                                                     } else {
 
-                                                        // Caso inverso
-                                                        if ($indicador->unidad_medida == "porcentaje") {
+                                                        $promedio_cumplimiento = round(
+                                                            $indicadorObjetivo->meta_esperada /
+                                                            (array_sum($array_indicadores) / count($array_indicadores)) * 100,
+                                                            2
+                                                        );
 
-                                                            $promedio_cumplimiento = 100 - round(
-                                                                array_sum($array_suma_cumplimientos) / count($array_suma_cumplimientos),
-                                                                2
-                                                            );
-
-                                                        } else {
-
-                                                            $promedio_cumplimiento = round(
-                                                                $indicador->meta_esperada / (array_sum($array_suma_cumplimientos) / count($array_suma_cumplimientos)) * 100,
-                                                                2
-                                                            );
-
-                                                        }
                                                     }
 
-                                                @endphp
+                                                }
+
+                                                                                            
+                                                }
+
+                                            $promedio_cumplimiento = number_format(($promedio_cumplimiento * $indicadorObjetivo->ponderacion_indicador) / 100, 2);
+                                                
+                                        }
+
+
+
+
+                                    @endphp
+                                @endforeach
 
                                     
-                                    @else
-
-
-                                    
-                                    @endif
-
-                                        
-
-                                                {{-- <h1>{{array_sum($array_suma_cumplimientos) / count($array_suma_cumplimientos)}}</h1> --}}
-
-                                            @endforeach
-
-                                    @endforeach
-
 
                                 @if (isset($promedio_cumplimiento))
                                     

@@ -265,7 +265,7 @@
                                                                 </a>
                                                                 
                                                                 <a href="{{ route('analizar.indicador', $indicador->id) }}">
-                                                                    {{ $indicador->nombre }} 
+                                                                  {{ $indicador->id }} | {{ $indicador->nombre }} 
                                                                 </a>
                                                                 
                                                                 @if(!is_null($indicador->ponderacion_indicador))
@@ -311,7 +311,7 @@
                                                                         @endphp
                                                                         
                                                                 @if ($indicador->tipo_indicador == "normal")
-                                                                    {{-- esta mamada la puse por que se les ocurrio que de repente la meta esperrada ya no era 100, era menos, epro a veces is alcanzaban el 100 y el cumplimiento se iba al mas del 100% de cumplimiento por que meta_esperada era 90 o algo asi --}}
+
                                                                     @if ($indicador->unidad_medida == "porcentaje")
                                                                         {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
                                                                     @else
@@ -322,7 +322,7 @@
 
                                                                     @if($indicador->unidad_medida == "porcentaje")
                                                                     
-                                                                        {{ round($promedio_cumplimiento = 100 - ( array_sum($array_datos) / count($array_datos)), 2)  }} %
+                                                                        {{ round($promedio_cumplimiento = ( array_sum($array_datos) / count($array_datos)), 2)  }} %
 
                                                                     @else
                                                                         {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
@@ -615,7 +615,7 @@
                                                                         <div class="mb-3">
                                                                             <i class="fa-solid fa-trash text-danger" style="font-size: 3rem;"></i>
                                                                         </div>
-                                                                        <h6 class="fw-semibold">¿Estás seguro de el indicador del Objetivo?</h6>
+                                                                        <h6 class="fw-semibold">¿Estás seguro de eliminar la encuesta del Objetivo?</h6>
                                                                         <p class="text-muted mb-0">
                                                                             <strong>{{$encuesta->nombre}}</strong>
                                                                         </p>
@@ -658,7 +658,7 @@
                                                                 </a>
                                                                 
                                                                 <a href="{{route('apartado.norma', $norma->id)}}">
-                                                                    {{ $norma->nombre }} 
+                                                                  {{ $norma->id }} | {{ $norma->nombre }} 
                                                                 </a>
                                                                 
                                                                 @if(!is_null($norma->ponderacion_norma))
@@ -803,7 +803,7 @@
                                                                         </div>
                                                                         <h6 class="fw-semibold">¿Estás seguro de el indicador del Objetivo?</h6>
                                                                         <p class="text-muted mb-0">
-                                                                            <strong>{{$encuesta->nombre}}</strong>
+                                                                            <strong>{{$norma->nombre}}</strong>
                                                                         </p>
 
                                                                         <small class="text-muted d-block">
@@ -811,7 +811,7 @@
                                                                         </small>
                                                                     </div>
 
-                                                                    <form action="{{route('norma.objetivo.delete', [$objetivo->id, $encuesta->id])}}" method="POST">
+                                                                    <form action="{{route('norma.objetivo.delete', [$objetivo->id, $norma->id])}}" method="POST">
                                                                         @csrf 
                                                                         @method('PUT')
                                                                         <div class="d-flex gap-2">

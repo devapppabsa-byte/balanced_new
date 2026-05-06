@@ -18,7 +18,17 @@ class Objetivo extends Model
     }
 
     public function indicadores_perspectiva(){
-        return $this->hasMany(IndicadorPerspectiva::class, 'id_objetivo_perspectiva');
+        return $this->hasMany(Indicador::class, 'id_objetivo_perspectiva');
+    }
+
+
+    //metodos lpra las relaciones que se necesitan para las perspectivas y todo eso.
+    public function encuestas_perspectiva(){
+        return $this->hasMany(Encuesta::class, 'id_objetivo_perspectiva');
+    }
+
+    public function normas_perspectiva(){
+        return $this->hasMany(Norma::class, 'id_objetivo_perspectiva');
     }
 
 }
