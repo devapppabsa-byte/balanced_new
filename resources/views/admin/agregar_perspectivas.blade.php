@@ -157,16 +157,14 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-12">
+
             
                 <!-- Departamentos Grid -->
             <div class="row justify-content-center d-flex align-items-start">
-
-                @php
-                    $total_cumplimiento_perspectiva = 0;
-                @endphp
-
                 @forelse ($perspectivas as $perspectiva)
-                    
+                @php
+                    $total_final_cumplimiento_perspectiva = 0
+                @endphp
                     <div class="col-12 col-sm-11 col-md-10 col-lg-6 col-xl-6">
                         <div class="card border-0 w-100 shadow-sm h-100 department-card my-4">
                             <div class="card-body  d-flex flex-column row">
@@ -183,6 +181,14 @@
 
                                 <div class="row">
                                         @forelse ($perspectiva->objetivos as $objetivo)
+
+
+                                            @php
+                                                $total_cumplimiento_perspectiva = 0;
+                                                $total_cumplimiento_objetivo = 0;
+                                            @endphp
+                        
+
 
                                             <div class="col-12">
                                                 <h4 class="text-truncate" data-mdb-tooltip-init title="{{ $objetivo->nombre }}">
@@ -201,7 +207,7 @@
         
                                                 @php
                                                     //aqui declaro la variable que me va a ayudar a traer la suma del cumplimiento de los indicadores
-                                                    $suma_cumplimientos = 0;
+                                                    $suma_cumplimientos_indicadores = 0;
                                                 @endphp
                                                 @foreach ($objetivo->indicadores_perspectiva as $indicador)
 
@@ -262,7 +268,7 @@
 
 
                                                     @php
-                                                       $suma_cumplimientos =$suma_cumplimientos + (($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100)
+                                                       $suma_cumplimientos_indicadores = $suma_cumplimientos_indicadores + (($promedio_cumplimiento * $indicador->ponderacion_indicador) / 100)
                                                     @endphp
           
                                                 @endforeach
@@ -274,7 +280,10 @@
                                                     </div>
                                                     <div class="col-6 border text-center p-3 bg-primary text-white">
                                                         <h1> 
-                                                              {{ number_format($suma_cumplimientos, 2) }} %
+                                                              {{number_format($suma_cumplimientos_indicadores, 2) }} %
+                                                              @php
+                                                                  $total_cumplimiento_objetivo = $total_cumplimiento_objetivo +  number_format($suma_cumplimientos_indicadores, 2);
+                                                              @endphp
                                                         </h1>
                                                         <span class="">
                                                             Aportado al Objetivo por KPI                                                            
@@ -283,8 +292,11 @@
 
 
                                                     <div class="col-6 border text-center p-3 bg-secondary text-white">
-                                                        <h1 class="aportado_perspectiva">
-                                                            {{ number_format(($suma_cumplimientos * $objetivo->ponderacion) / 100, 2) }}%
+                                                        <h1>
+                                                            {{ number_format(($suma_cumplimientos_indicadores * $objetivo->ponderacion) / 100, 2) }}%
+                                                            @php
+                                                                 $total_cumplimiento_perspectiva = $total_cumplimiento_perspectiva +  number_format(($suma_cumplimientos_indicadores * $objetivo->ponderacion) / 100, 2);
+                                                            @endphp
                                                         </h1>
                                                         <span class="">Aportado a la Perspectiva por KPI</span>
                                                     </div>
@@ -292,254 +304,293 @@
 
                                                 <br>
 
-                                                {{-- Ciclo que me trae las encuestas --}}
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <h2 class="text-center fw-bold">Encuestas</h2>
-                                                    </div>
+
+
+{{-- Ciclo que me trae las encuestas --}}
+                                            <div class="row mt-4">
+                                                <div class="col-12">
+                                                    <h2 class="text-center fw-bold">Encuestas</h2>
                                                 </div>
-
-                                                @foreach ($objetivo->encuestas_perspectiva as $encuesta)
-                                                    <a href="#" class="h5 text-primary fw-bold">{{ $encuesta->nombre }}</a> 
-
-                                                    @php
-                
-                                                        $informacion_encuestas = DB::table('respuestas as r')
-                                                        ->join('preguntas as p', 'r.id_pregunta', '=', 'p.id')
-                                                        ->where('p.cuantificable', 1)
-                                                        ->whereBetween('r.created_at', [$inicio, $fin])
-                                                        ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
-
-
-                                                        // $rangos = [];
-
-                                                        // if ($inicio->month <= 6) {
-                                                        //     $rangos[] = [
-                                                        //         'inicio' => $inicio->copy()->startOfYear()->startOfDay(),
-                                                        //         'fin' => $inicio->copy()->month(6)->endOfMonth()->endOfDay(),
-                                                        //     ];
-                                                        // }
-
-                                                        // if ($fin->month >= 7 || $inicio->year !== $fin->year) {
-                                                        //     $rangos[] = [
-                                                        //         'inicio' => $fin->copy()->month(7)->startOfMonth()->startOfDay(),
-                                                        //         'fin' => $fin->copy()->endOfYear()->endOfDay(),
-                                                        //     ];
-                                                        // }
-
-                                                        // $informacion_encuestas = DB::table('respuestas as r')
-                                                        //     ->join('preguntas as p', 'r.id_pregunta', '=', 'p.id')
-                                                        //     ->where('p.cuantificable', 1)
-                                                        //     ->where(function ($query) use ($rangos) {
-                                                        //         foreach ($rangos as $rango) {
-                                                        //             $query->orWhereBetween('r.created_at', [
-                                                        //                 $rango['inicio']->utc(),
-                                                        //                 $rango['fin']->utc()
-                                                        //             ]);
-                                                        //         }
-                                                        //     })
-                                                        //     ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
-
-                                                        // $informacion_encuestas = round($informacion_encuestas ?? 0, 2)*10;                                                                                            
-                                                                        
-
-
-
-
-                                                            $rangos = [];
-
-                                                            if ($inicio->month <= 6) {
-                                                                $rangos[] = [
-                                                                    'inicio' => $inicio->copy()->startOfYear()->startOfDay(),
-                                                                    'fin' => $inicio->copy()->month(6)->endOfMonth()->endOfDay(),
-                                                                ];
-                                                            }
-
-                                                            if ($fin->month >= 7 || $inicio->year !== $fin->year) {
-                                                                $rangos[] = [
-                                                                    'inicio' => $fin->copy()->month(7)->startOfMonth()->startOfDay(),
-                                                                    'fin' => $fin->copy()->endOfYear()->endOfDay(),
-                                                                ];
-                                                            }
-
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Promedio por semestre
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $promediosSemestre = collect();
-
-                                                            foreach ($rangos as $rango) {
-                                                                $promedio = DB::table('respuestas as r')
-                                                                    ->join('preguntas as p', 'r.id_pregunta', '=', 'p.id')
-                                                                    ->where('p.cuantificable', 1)
-                                                                    ->whereBetween('r.created_at', [
-                                                                        $rango['inicio']->utc(),
-                                                                        $rango['fin']->utc()
-                                                                    ])
-                                                                    ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
-
-                                                                $promediosSemestre->push((float) ($promedio ?? 0));
-                                                            }
-
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Promedio de semestres
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $informacion_encuestas = round($promediosSemestre->avg() ?? 0, 2) * 10;
-
-
-
-
-
-
-
-
-                                                            //esto es por que la consulta de arriba me da el recultado en unidad y no en porcentaje.
-                                                            
-                                                            //$informacion_encuestas = $informacion_encuestas * 10;
-
-
-                                                            
-                                                            //dentro se pueden registrar encuestas, y dentro de estas encuestas se registran preguntas, las preguntas son contestadas por clientes.Para ver el resultado se toman las preguntas que tengan en el campo 'cuantificable' un 1. de todo eso necesito saber solo el cumplimiento general, osea el promedio de o que se contesto en los ultimos 6 meses.
-                                                    @endphp
-
-                                                    <div class="row text-center p-3">
-
-                                                        <div class="col-6 p-3 bg-secondary text-white">
-                                                            <h1> 
-                                                                {{ ($informacion_encuestas * $encuesta->ponderacion_encuesta) / 100 }} %
-                                                            </h1>
-                                                            <span class="fw-bold">Cumplimiento del objetivo Encuestas: </span> 
-                                                        </div>
-
-                                                        <div class="col-6 p-3 bg-primary text-white">
-                                                            <h1 class="aportado_perspectiva">
-                                                                {{ ((($informacion_encuestas * $encuesta->ponderacion_encuesta) / 100) * $objetivo->ponderacion) / 100 }} %
-                                                            </h1>
-                                                            <span class="fw-bold">Aportado a la perspectiva indicadores:</span>
-                                                        </div>
-
-                                                    </div>
-
-                                                @endforeach
-
-
-
-
-
-
-
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <h2 class="text-center fw-bold">Normas</h2>
-                                                    </div>
-                                                </div>
-
-                                                @foreach ($objetivo->normas_perspectiva as $norma)
-                                                    <h4 class="text-primary">{{ $norma->nombre }}</h4> 
-
-
-                                                        @php                                                        
-                                                            $inicioMeses = $inicio->copy()->timezone('America/Mexico_City')->startOfMonth();
-                                                            $finMeses = $fin->copy()->timezone('America/Mexico_City')->subSecond()->startOfMonth();
-
-                                                            $inicioConsulta = $inicio->copy()->addMonth()->startOfMonth();
-                                                            $finConsulta = $fin->copy()->addMonth()->endOfMonth();
-
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Meses dentro del rango
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $meses = collect();
-
-                                                            $cursor = $inicioMeses->copy();
-
-                                                            while ($cursor <= $finMeses) {
-                                                                $meses->push($cursor->format('Y-m'));
-                                                                $cursor->addMonth();
-                                                            }
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Total de apartados de la norma
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $total_apartados = DB::table('apartado_norma')
-                                                                ->where('id_norma', $norma->id)
-                                                                ->count();
-
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Cumplimiento por mes
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $porMes = DB::table('apartado_norma as an')
-                                                                ->leftJoin('cumplimiento_norma as cn', function ($join) use ($inicioConsulta, $finConsulta) {
-                                                                    $join->on('cn.id_apartado_norma', '=', 'an.id')
-                                                                        ->whereBetween('cn.created_at', [$inicioConsulta, $finConsulta]);
-                                                                })
-                                                                ->where('an.id_norma', $norma->id)
-                                                                ->whereNotNull('cn.created_at')
-                                                                ->select(
-                                                                    DB::raw("DATE_FORMAT(DATE_SUB(cn.created_at, INTERVAL 1 MONTH), '%Y-%m') as mes"),
-                                                                    DB::raw('COUNT(DISTINCT cn.id_apartado_norma) as cumplidos')
-                                                                )
-                                                                ->groupBy(DB::raw("DATE_FORMAT(DATE_SUB(cn.created_at, INTERVAL 1 MONTH), '%Y-%m')"))
-                                                                ->pluck('cumplidos', 'mes');
-
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Completar meses faltantes con 0
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $porcentajes = $meses->map(function ($mes) use ($porMes, $total_apartados) {
-                                                                $cumplidos = $porMes[$mes] ?? 0;
-
-                                                                if ($total_apartados == 0) {
-                                                                    return 0;
-                                                                }
-
-                                                                return ($cumplidos / $total_apartados) * 100;
-                                                            });
-
-                                                            /*
-                                                            |--------------------------------------------------------------------------
-                                                            | Promedio mensual del rango
-                                                            |--------------------------------------------------------------------------
-                                                            */
-                                                            $promedio_cumplimiento = round($porcentajes->avg(), 2);
-                                                
-                                                            //dentro se pueden registrar encuestas, y dentro de estas encuestas se registran preguntas, las preguntas son contestadas por clientes.Para ver el resultado se toman las preguntas que tengan en el campo 'cuantificable' un 1. de todo eso necesito saber solo el cumplimiento general, osea el promedio de o que se contesto en los ultimos 6 meses.
-                                                        @endphp
-
-
-                            <div class="row text-center p-3 ">
-                                <div class="col-6 p-3 bg-primary text-white">
-                                    <h4> 
-                                        {{ ($promedio_cumplimiento * $norma->ponderacion_norma) / 100 }} %
-                                    </h4>
-                                    <span class="fw-bold">Cumplimiento del objetivo normas: </span> 
-                                </div>
-                                <div class="col-6 p-3 bg-secondary text-white">
-                                    <h4 class="aportado_perspectiva">
-                                        {{ (($promedio_cumplimiento * $norma->ponderacion_norma) / 100 * $objetivo->ponderacion) / 100 }} %
-                                    </h4>
-                                    <span class="fw-bold">Aportado a la perspectiva indicadores:</span>
-                                </div>
-                        </div>
-                    @endforeach
-
-
-
-
-
-
-
-
                                             </div>
 
+                                            @php
+                                                $suma_cumplimientos_encuestas = 0;
+                                            @endphp
+
+                                            @foreach ($objetivo->encuestas_perspectiva as $encuesta)
+                                                <a href="#" class="h5 text-primary fw-bold">{{ $encuesta->nombre }}</a>
+
+                                                @php
+                                                    $rangos = [];
+
+                                                    if ($inicio->month <= 6) {
+                                                        $rangos[] = [
+                                                            'inicio' => $inicio->copy()->startOfYear()->startOfDay(),
+                                                            'fin' => $inicio->copy()->month(6)->endOfMonth()->endOfDay(),
+                                                        ];
+                                                    }
+
+                                                    if ($fin->month >= 7 || $inicio->year !== $fin->year) {
+                                                        $rangos[] = [
+                                                            'inicio' => $fin->copy()->month(7)->startOfMonth()->startOfDay(),
+                                                            'fin' => $fin->copy()->endOfYear()->endOfDay(),
+                                                        ];
+                                                    }
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Promedio por semestre
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $promediosSemestre = collect();
+
+                                                    foreach ($rangos as $rango) {
+                                                        $promedio = DB::table('respuestas as r')
+                                                            ->join('preguntas as p', 'r.id_pregunta', '=', 'p.id')
+                                                            ->where('p.cuantificable', 1)
+                                                            ->whereBetween('r.created_at', [
+                                                                $rango['inicio']->utc(),
+                                                                $rango['fin']->utc()
+                                                            ])
+                                                            ->avg(DB::raw('CAST(r.respuesta AS DECIMAL(10,2))'));
+
+                                                        $promediosSemestre->push((float) ($promedio ?? 0));
+                                                    }
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Promedio de semestres
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $informacion_encuestas = round($promediosSemestre->avg() ?? 0, 2) * 10;
+
+                                                    $aporte_encuesta = ($informacion_encuestas * $encuesta->ponderacion_encuesta) / 100;
+
+                                                    $suma_cumplimientos_encuestas += $aporte_encuesta;
+                                                @endphp
+
+                                                <div class="row text-center p-3">
+
+                                                    <div class="col-6 p-3 bg-secondary text-white">
+                                                        <h1>
+                                                            {{ number_format($aporte_encuesta, 2) }} %
+                                                        </h1>
+                                                        <span class="fw-bold">Cumplimiento del objetivo Encuestas</span>
+                                                    </div>
+
+                                                    <div class="col-6 p-3 bg-primary text-white">
+                                                        <h1 class="a">
+                                                            {{ number_format(($aporte_encuesta * $objetivo->ponderacion) / 100, 2) }} %
+                                                        </h1>
+                                                        <span class="fw-bold">Aportado a la perspectiva por Encuestas</span>
+                                                    </div>
+
+                                                </div>
+
+                                            @endforeach
+
+                                            <div class="row text-center p-3 mt-2 shadow zoom">
+                                                <div class="col-12 my-2">
+                                                    <h3>Total aportado por Encuestas</h3>
+                                                </div>
+
+                                                <div class="col-6 border text-center p-3 bg-secondary text-white">
+                                                    <h1>
+                                                        {{ number_format($suma_cumplimientos_encuestas, 2) }} %
+                                                        @php
+                                                            $total_cumplimiento_objetivo = $total_cumplimiento_objetivo + number_format($suma_cumplimientos_encuestas, 2);
+                                                        @endphp
+                                                    </h1>
+                                                    <span>
+                                                        Aportado al Objetivo por Encuestas
+                                                    </span>
+                                                </div>
+
+                                                <div class="col-6 border text-center p-3 bg-primary text-white">
+                                                    <h1>
+                                                        {{number_format(($suma_cumplimientos_encuestas * $objetivo->ponderacion) / 100, 2) }} %
+                                                        @php
+                                                            $total_cumplimiento_perspectiva = $total_cumplimiento_perspectiva + number_format(($suma_cumplimientos_encuestas * $objetivo->ponderacion) / 100, 2);
+                                                            
+                                                        @endphp
+                                                    </h1>
+                                                    <span>
+                                                        Aportado a la Perspectiva por Encuestas
+                                                    </span>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+                                            <div class="row mt-4">
+                                                <div class="col-12">
+                                                    <h2 class="text-center fw-bold">Normas</h2>
+                                                </div>
+                                            </div>
+
+                                            @php
+                                                $suma_cumplimientos_normas = 0;
+                                            @endphp
+
+                                            @foreach ($objetivo->normas_perspectiva as $norma)
+
+                                                <a href="{{route('apartado.norma', $norma->id)}}" class="h4 text-primary" >{{ $norma->nombre }}</a>
+
+                                                @php
+                                                    $inicioMeses = $inicio->copy()->timezone('America/Mexico_City')->startOfMonth();
+                                                    $finMeses = $fin->copy()->timezone('America/Mexico_City')->subSecond()->startOfMonth();
+
+                                                    $inicioConsulta = $inicio->copy()->addMonth()->startOfMonth();
+                                                    $finConsulta = $fin->copy()->addMonth()->endOfMonth();
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Meses dentro del rango
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $meses = collect();
+
+                                                    $cursor = $inicioMeses->copy();
+
+                                                    while ($cursor <= $finMeses) {
+                                                        $meses->push($cursor->format('Y-m'));
+                                                        $cursor->addMonth();
+                                                    }
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Total de apartados de la norma
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $total_apartados = DB::table('apartado_norma')
+                                                        ->where('id_norma', $norma->id)
+                                                        ->count();
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Cumplimiento por mes
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $porMes = DB::table('apartado_norma as an')
+                                                        ->leftJoin('cumplimiento_norma as cn', function ($join) use ($inicioConsulta, $finConsulta) {
+                                                            $join->on('cn.id_apartado_norma', '=', 'an.id')
+                                                                ->whereBetween('cn.created_at', [$inicioConsulta, $finConsulta]);
+                                                        })
+                                                        ->where('an.id_norma', $norma->id)
+                                                        ->whereNotNull('cn.created_at')
+                                                        ->select(
+                                                            DB::raw("DATE_FORMAT(DATE_SUB(cn.created_at, INTERVAL 1 MONTH), '%Y-%m') as mes"),
+                                                            DB::raw('COUNT(DISTINCT cn.id_apartado_norma) as cumplidos')
+                                                        )
+                                                        ->groupBy(DB::raw("DATE_FORMAT(DATE_SUB(cn.created_at, INTERVAL 1 MONTH), '%Y-%m')"))
+                                                        ->pluck('cumplidos', 'mes');
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Completar meses faltantes con 0
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $porcentajes = $meses->map(function ($mes) use ($porMes, $total_apartados) {
+                                                        $cumplidos = $porMes[$mes] ?? 0;
+
+                                                        if ($total_apartados == 0) {
+                                                            return 0;
+                                                        }
+
+                                                        return ($cumplidos / $total_apartados) * 100;
+                                                    });
+
+                                                    /*
+                                                    |--------------------------------------------------------------------------
+                                                    | Promedio mensual del rango
+                                                    |--------------------------------------------------------------------------
+                                                    */
+                                                    $promedio_cumplimiento = round($porcentajes->avg(), 2);
+
+                                                    $aporte_norma = ($promedio_cumplimiento * $norma->ponderacion_norma) / 100;
+
+                                                    $suma_cumplimientos_normas += $aporte_norma;
+                                                @endphp
+
+                                                <div class="row text-center p-3">
+
+                                                    <div class="col-6 p-3 bg-primary text-white">
+                                                        <h4>
+                                                            {{ number_format($promedio_cumplimiento, 2) }} %
+                                                        </h4>
+                                                        <span class="">Promedio cumplimiento normas</span>
+                                                    </div>
+
+                                                    <div class="col-6 p-3 bg-secondary text-white">
+                                                        <h4 class="aportado_perspectiva">
+                                                            {{ number_format(($promedio_cumplimiento * $norma->ponderacion_norma) / 100, 2) }} %
+                                                        </h4>
+                                                        <span class="">Promedio vs Ponderación ({{ $norma->ponderacion_norma }}%)</span>
+                                                    </div>
+
+                                                </div>
+                        @endforeach
+
+
+
+                                                <div class="row text-center p-3 mt-2 shadow zoom">
+                                                    <div class="col-12 my-2">
+                                                        <h3>Total aportado por Normas</h3>
+                                                    </div>
+
+                                                    <div class="col-6 border text-center p-3 bg-primary text-white">
+                                                        <h1>
+                                                            {{number_format($suma_cumplimientos_normas, 2) }} %
+                                                            @php
+                                                                $total_cumplimiento_objetivo = $total_cumplimiento_objetivo + number_format($suma_cumplimientos_normas, 2);
+                                                            @endphp
+                                                        </h1>
+                                                        <span>
+                                                            Aportado al Objetivo por Normas
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="col-6 border text-center p-3 bg-secondary text-white">
+                                                        <h1>
+                                                            {{number_format(($suma_cumplimientos_normas * $objetivo->ponderacion) / 100, 2) }} %
+                                                            @php
+                                                                $total_cumplimiento_perspectiva = $total_cumplimiento_perspectiva + number_format(($suma_cumplimientos_normas * $objetivo->ponderacion) / 100, 2);
+                      
+                                                            @endphp
+                                                        </h1>
+                                                        <span>
+                                                            Aportado a la Perspectiva por Normas
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="col-12 text-center my-5 p-5 border border-4">
+                                                <div class="row justify-content-center d-flex align-items-center">
+                                                    <div class="col-6">
+                                                        <h5 class="text-center ">Cumplimiento del objetivo: </h5>
+                                                        <h3 class="text-center fw-bold cumplimieto_objetivo">  
+                                                        {{ $total_cumplimiento_objetivo }}    
+                                                        %</h3>
+                                                    </div>
+                                                    <div class="col-6 bg-light rounded-5">
+                                                        <h5 class="text-center">% Aportado a la perspectiva: </h5>
+                                                        <h3 class="text-center fw-bold cumplimiento_perspectiva" data-suma-perspectiva="{{ $total_cumplimiento_perspectiva }}">
+                                                            {{ $total_cumplimiento_perspectiva }}%
+                                                            @php
+                                                                $total_final_cumplimiento_perspectiva = $total_final_cumplimiento_perspectiva + $total_cumplimiento_perspectiva;
+
+                                                            @endphp
+                                                        </h3>         
+                                     
+                                                    </div>
+                                                </div>
+                                            </div>
 
 
                                         @empty
@@ -547,22 +598,27 @@
                                         @endforelse
 
 
-                                <div class="col-12 text-center mb-3">
-                                    <div class="row justify-content-center d-flex align-items-center">
-                                        <div class="col-6">
-                                            <h5 class="text-center">Cumplimiento del objetivo: </h5>
-                                            <h3 class="text-center fw-bold ">  %</h3>
-                                        </div>
-                                        <div class="col-6 bg-light rounded-5">
-                                            <h5 class="text-center">% Aportado a la perspectiva: </h5>
-                                            <h3 class="text-center fw-bold cumplimiento_objetivo">
-                                                
-                                                %
-                                            </h3>         
-                         
-                                        </div>
-                                    </div>
-                                </div>
+
+
+
+                                            <div class="col-12 text-center my-5 p-5 border border-4">
+                                                <div class="row justify-content-center d-flex align-items-center">
+                                                    <div class="col-12 bg-light rounded-5">
+                                                        <h5 class="text-center">% Cumplimiento Perspectiva: </h5>
+                                                        <h3 class="text-center fw-bold cumplimiento_perspectiva">
+                                                            {{ $total_final_cumplimiento_perspectiva }}
+                                                            %
+                                                        </h3>         
+                                     
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
 
                                 <!-- Botón Principal -->
                                  <div class=" flex-grow text-center mb-2 col-12">
@@ -616,9 +672,17 @@
                         </div>
                     </div>  
                 @endforelse
+             </div>
+
+
+             
         </div>
     </div>
 </div>
+
+
+
+
 
 
 
@@ -789,28 +853,7 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
 @endforeach
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -822,43 +865,28 @@
 @section('scripts')
     
 <script>
-const elementos = document.querySelectorAll('.cumplimiento_objetivo');
+document.addEventListener('DOMContentLoaded', function () {
+    let suma = 0;
+    const icono = document.getElementById('icono_card_cumplimiento');
+    const card = document.getElementById('card_cumplimiento')
 
-let suma = 0;
+    document.querySelectorAll('[data-suma-perspectiva]').forEach(function (el) {
+        suma += parseFloat(el.getAttribute('data-suma-perspectiva')) || 0;
+    });
 
-elementos.forEach(el => {
-    // Obtener texto (ej: "85.50%")
-    let texto = el.textContent;
+    document.getElementById('suma_cumplimientos').textContent = suma.toFixed(2)+'%';
 
-    // Limpiar % y comas
-    texto = texto.replace('%', '').replace(',', '');
 
-    // Convertir a número
-    let numero = parseFloat(texto);
+    if(suma < 80 ){
+        icono.classList.add("fa-xmark-circle");
+        card.classList.add("bg-danger");
+    }
 
-    if (!isNaN(numero)) {
-        suma += numero;
+    else{
+        icono.classList.add("fa-check-circle");
+        card.classList.add("bg-succes");
     }
 });
-
-// Mostrar resultado
-document.getElementById('suma_cumplimientos').textContent = suma.toFixed(2) + '%';
-
-let card_cumplimiento = document.getElementById('card_cumplimiento');
-let icono_card_cumplimiento = document.getElementById('icono_card_cumplimiento');
-
-if(suma < 80){
-    card_cumplimiento.classList.add('bg-danger');
-    icono_card_cumplimiento.classList.add("fa-xmark-circle");
-
-}
-else{
-    card_cumplimiento.classList.add('bg-succes');
-    icono_card_cumplimiento.classList.add("fa-check-circle");
-
-}
-
-
 </script>
 
 @endsection

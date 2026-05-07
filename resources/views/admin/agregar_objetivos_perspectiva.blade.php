@@ -274,6 +274,7 @@
                                                                         {{ $indicador->ponderacion_indicador }}%
                                                                     </span>
                                                                 @endif
+
                                                                 <a class="text-primary mx-1" data-mdb-tooltip-init title="Agregar ponderacion al indicador" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#pon{{ $indicador->id }}">
                                                                     <i class="fa fa-plus-circle"></i>
                                                                 </a>
@@ -289,55 +290,56 @@
                                                                 </span>
                                         
                                                                 @php
+
                                                                     $informacion_indicadores = \App\Models\IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
                                                                     $array_datos = [];
+                                                                    
                                                                     foreach($informacion_indicadores as $informacion_indicador){
 
                                                                         array_push($array_datos, $informacion_indicador->informacion_campo);
                                                                     
                                                                     }
-                                                                    
+                                                    
                                                                 @endphp
-                                                            <span >
+                                                            <span>
+
                                                                 <i class="fa-solid fa-gauge"></i>
                                                                 Promedio Cumplimiento: 
                                                                 
 
                                                                 @if (!empty($array_datos))
                                                                     <span class="fw-bold">
-
                                                                         @php
                                                                             $promedio_cumplimiento;    
                                                                         @endphp
                                                                         
-                                                                @if ($indicador->tipo_indicador == "normal")
+                                                                        @if ($indicador->tipo_indicador == "normal")
 
-                                                                    @if ($indicador->unidad_medida == "porcentaje")
-                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 ) }} %
-                                                                    @else
-                                                                        {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)   }} %
-                                                                    @endif
+                                                                            @if ($indicador->unidad_medida == "porcentaje")
+                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / count($array_datos), 2 )}} %
+                                                                            @else
+                                                                                {{ round($promedio_cumplimiento =  array_sum($array_datos) / (count($array_datos) / $indicador->meta_esperada) * 100, 2)}} %
+                                                                            @endif
 
-                                                                @else
+                                                                        @else
 
-                                                                    @if($indicador->unidad_medida == "porcentaje")
-                                                                    
-                                                                        {{ round($promedio_cumplimiento = ( array_sum($array_datos) / count($array_datos)), 2)  }} %
+                                                                            @if($indicador->unidad_medida == "porcentaje")
+                                                                            
+                                                                                {{ round($promedio_cumplimiento = ( array_sum($array_datos) / count($array_datos)), 2)}} %
 
-                                                                    @else
-                                                                        {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)   }} %
-                                                                    @endif
+                                                                            @else
+                                                                                {{ round($promedio_cumplimiento =   $indicador->meta_esperada / (array_sum($array_datos) / count($array_datos)) * 100, 2)}} %
+                                                                            @endif
 
-                                                                @endif
-
+                                                                        @endif
                                                                     </span>
-                                                                
                                                                 @else
 
                                                                     <span class="fw-bold">0</span>
                                                                 
                                                                 @endif
                                                             </span>
+
                                                             <span>
                                                                 <i class="fa-solid fa-right-left"></i>
                                                                 Indicador vs Ponderación: 
@@ -451,7 +453,6 @@
 
                                             @endforeach
 
-
                                             
                                             @foreach($encuestasObjetivo as $encuesta)
 
@@ -537,29 +538,27 @@
                                                                     //dentro se pueden registrar encuestas, y dentro de estas encuestas se registran preguntas, las preguntas son contestadas por clientes.Para ver el resultado se toman las preguntas que tengan en el campo 'cuantificable' un 1. de todo eso necesito saber solo el cumplimiento general, osea el promedio de o que se contesto en los ultimos 6 meses.
                                                                 @endphp
 
-                                                            <span >
-                                                                <i class="fa-solid fa-gauge"></i>
-                                                                Promedio Cumplimiento: 
-                                                                    <span class="fw-bold">
-                                                                        {{ round($informacion_encuestas, 2) }} %
-                                                                    </span>
-                                                            </span>
-                                                  
-                                                            <span>
-                                                                <i class="fa-solid fa-right-left"></i>
-                                                                Indicador vs Ponderación: 
-                                                            </span>
+                                                                <span >
+                                                                    <i class="fa-solid fa-gauge"></i>
+                                                                    Promedio Cumplimiento: 
+                                                                        <span class="fw-bold" >
+                                                                            {{ round($informacion_encuestas, 2) }} %
+                                                                        </span>
+                                                                </span>
+                                                    
+                                                                <span>
+                                                                    <i class="fa-solid fa-right-left"></i>
+                                                                    Indicador vs Ponderación: 
+                                                                </span>
 
-                                                            <span class="fw-bold">
-                                                                {{round((($informacion_encuestas * $encuesta->ponderacion_encuesta)/100), 2)}} %
-                                                                @php
-                                                                    $suma = $suma + (($informacion_encuestas * $encuesta->ponderacion_encuesta)/100);
-                                                                @endphp  
-                                                            </span>
-                                                         
-                                                            
+                                                                <span class="fw-bold">
+                                                                    {{round((($informacion_encuestas * $encuesta->ponderacion_encuesta)/100), 2)}} %
+                                                                    @php
+                                                                        $suma = $suma + (($informacion_encuestas * $encuesta->ponderacion_encuesta)/100);
+                                                                    @endphp  
+                                                                </span>
                                                         
-                                                    </div>
+                                                        </div>
                                                     </div>
 
                                             {{-- modales para la ponderacion --}}
@@ -890,14 +889,20 @@
 
                                 <div class="row justify-content-center my-4">
                                     <div class="col-4 shadow-sm mx-1 rounded p-3 text-white {{ ($suma < $objetivo->meta) ? 'bg-danger' : 'bg-success' }}">
-                                        <h5 class="text-center">Porcentaje de cumplimiento del objetivo: </h5>
-                                        <h1 class="text-center fw-bold ">{{ number_format($suma,1) }}%</h1>
+                                        <h5 class="text-center">
+                                            Porcentaje de cumplimiento del objetivo: 
+                                        </h5>
+                                        <h1 class="text-center fw-bold" data-suma-cumplimiento-objetivo="{{number_format($suma,2)}}">
+                                            {{number_format($suma,2)}}%
+                                        </h1>
                                     </div>
 
                                     <div class="col-4 shadow-sm mx-1 rounded p-3">
-                                        <h5 class="text-center">Porcentaje aportado a la perspectiva: </h5>
-                                        <h1 class="text-center fw-bold cumplimiento_objetivo">
-                                            {{ number_format(($suma / 100) * $objetivo->ponderacion,1) }}%
+                                        <h5 class="text-center">
+                                            Porcentaje aportado a la perspectiva: 
+                                        </h5>
+                                        <h1 class="text-center fw-bold cumplimiento_objetivo" data-suma-cumplimiento-objetivo="{{ number_format(($suma / 100) * $objetivo->ponderacion,2) }}">
+                                            {{ number_format(($suma / 100) * $objetivo->ponderacion,2) }} %
                                         </h1>                                   
                                     </div>
                                 </div>
@@ -1030,9 +1035,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 
 
