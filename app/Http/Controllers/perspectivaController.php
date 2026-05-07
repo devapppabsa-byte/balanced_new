@@ -21,11 +21,7 @@ class perspectivaController extends Controller
             ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
                 ->startOfDay()
                 ->utc()
-            : Carbon::now(config('app.timezone'))
-                //->subMonth()
-                ->startOfYear()
-                ->utc();
-
+            : Carbon::parse("2026-01-01T06:00:00.000000Z");
         //$inicio = "2025-01-01T06:00:00.000000Z";
 
         $fin = request()->filled('fecha_fin')
@@ -130,18 +126,15 @@ class perspectivaController extends Controller
              ? Carbon::parse(request('fecha_inicio'), config('app.timezone'))
                  ->startOfDay()
                  ->utc()
-             : Carbon::now(config('app.timezone'))
-                 //->subMonth()
-                 ->startOfYear()
-                 ->utc();
+             : Carbon::parse("2026-01-01T06:00:00.000000Z");
 
+             
 
          $fin = request()->filled('fecha_fin')
              ? Carbon::parse(request('fecha_fin'), config('app.timezone'))
                  //->subMonth()    
                  ->endOfDay()
                  ->utc()
-
              : Carbon::now(config('app.timezone'))
                  ->endOfYear()
                  ->utc();

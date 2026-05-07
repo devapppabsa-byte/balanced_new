@@ -99,7 +99,7 @@
                                     <input
                                         type="date"
                                         name="fecha_inicio"
-                                        value="{{ request('fecha_inicio') ?? now()->startOfYear()->format('Y-m-d') }}"
+                                        value="{{ request('fecha_inicio') ?? '2025-01-01' }}"
                                         class="form-control border-0 bg-light datepicker"
                                         onchange="this.form.submit()">
                                 </div>
@@ -263,9 +263,9 @@
                                                                 <a class="text-danger btn-sm" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#ind_del{{$indicador->id}}">
                                                                     <i class="fa fa-trash"></i>
                                                                 </a>
-                                                                
-                                                                <a href="{{ route('analizar.indicador', $indicador->id) }}">
-                                                                  {{ $indicador->id }} | {{ $indicador->nombre }} 
+
+                                                                <a href="{{ route('analizar.indicador', $indicador->id) }}" target="_blank">
+                                                                    {{ $indicador->nombre }} 
                                                                 </a>
                                                                 
                                                                 @if(!is_null($indicador->ponderacion_indicador))
@@ -291,9 +291,9 @@
                                         
                                                                 @php
 
-                                                                    $informacion_indicadores = \App\Models\IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
+                                                                    $informacion_indicadores = IndicadorLleno::where('id_indicador', $indicador->id)->where('final', 'on')->whereBetween('fecha_periodo', [$inicio, $fin])->get();
                                                                     $array_datos = [];
-                                                                    
+
                                                                     foreach($informacion_indicadores as $informacion_indicador){
 
                                                                         array_push($array_datos, $informacion_indicador->informacion_campo);
@@ -464,7 +464,7 @@
                                                                     <i class="fa fa-trash"></i>
                                                                 </a>
                                                                 
-                                                                <a href="{{route('encuesta.index', $encuesta->id)}}">
+                                                                <a href="{{route('encuesta.index', $encuesta->id)}}" target="_blank">
                                                                     {{ $encuesta->nombre }} 
                                                                 </a>
                                                                 
@@ -656,8 +656,8 @@
                                                                     <i class="fa fa-trash"></i>
                                                                 </a>
                                                                 
-                                                                <a href="{{route('apartado.norma', $norma->id)}}">
-                                                                  {{ $norma->id }} | {{ $norma->nombre }} 
+                                                                <a href="{{route('apartado.norma', $norma->id)}}" target="_blank">
+                                                                   {{ $norma->nombre }} 
                                                                 </a>
                                                                 
                                                                 @if(!is_null($norma->ponderacion_norma))

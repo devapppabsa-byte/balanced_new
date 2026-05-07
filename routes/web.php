@@ -360,7 +360,7 @@ Route::get('perfil_usuario/analizando_datos/{indicador}', [indicadorController::
 
 
 
-
+//Rutas que me llevan a los KPI con las fechas que se dan en el panle de las perspectivas
 
 
 
