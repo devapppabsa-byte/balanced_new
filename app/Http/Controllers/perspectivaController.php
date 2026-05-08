@@ -92,8 +92,40 @@ class perspectivaController extends Controller
 
     public function perspectiva_delete(Perspectiva $perspectiva){
 
-        $perspectiva->delete();
-        return back()->with('deleted', 'La perspectiva fue eliminada');
+        //listando objetivos
+        $objetivos = Objetivo::where('id_perspectiva', $perspectiva->id)->get();        
+
+
+        foreach($objetivos as $objetivo){
+
+
+                Indicador::where('id_objetivo_perspectiva', $objetivo->id)
+                    ->update([
+                        'id_objetivo_perspectiva' => null, 
+                        'ponderacion_indicador' => null
+                    ]);
+
+
+                Encuesta::where('id_objetivo_perspectiva', $objetivo->id)
+                    ->update([
+                        'id_objetivo_perspectiva' => null,
+                        'ponderacion_encuesta' => null
+                    ]);
+
+                Norma::where('id_objetivo_perspectiva', $objetivo->id)
+                    ->update([
+                        'id_objetivo_perspectiva' => null,
+                        'ponderacion_norma' => null
+                    ]);
+
+
+        }
+
+         $perspectiva->delete();
+
+
+
+         return back()->with('deleted', 'Perspectiva eliminada!.');
 
     }
 

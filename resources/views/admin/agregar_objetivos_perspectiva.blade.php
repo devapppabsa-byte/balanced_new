@@ -683,11 +683,18 @@
                                                                 @php
 
                                                                 
-                                                                    $inicioMeses = $inicio->copy()->startOfMonth();
-                                                                    $finMeses = $fin->copy()->subMonth()->startOfMonth();
+                                                                    // $inicioMeses = $inicio->copy()->startOfMonth();
+                                                                    // $finMeses = $fin->copy()->subMonth()->startOfMonth();
 
+                                                                    // $inicioConsulta = $inicio->copy()->addMonth()->startOfMonth();
+                                                                    // $finConsulta = $fin->copy()->addMonth()->endOfMonth();
+
+                                                                    $inicioMeses = $inicio->copy()->timezone('America/Mexico_City')->startOfMonth();
+                                                                    $finMeses = $fin->copy()->timezone('America/Mexico_City')->subSecond()->startOfMonth();
                                                                     $inicioConsulta = $inicio->copy()->addMonth()->startOfMonth();
                                                                     $finConsulta = $fin->copy()->addMonth()->endOfMonth();
+
+
 
                                                                     /*
                                                                     |--------------------------------------------------------------------------
