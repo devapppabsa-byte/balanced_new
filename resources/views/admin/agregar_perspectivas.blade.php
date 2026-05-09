@@ -936,7 +936,7 @@
                     </div>
                     <h3 class="fw-bold">Sin perspectivas registradas</h3>
                     <p class="text-muted mb-4">La estrategia está esperando. Comienza por definir tu primera perspectiva de negocio.</p>
-                    <button class="btn btn-primary btn-lg rounded-pill px-5" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_perspectiva">
+                    <button class="btn btn-primary btn-lg  px-5" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#agregar_perspectiva">
                         <i class="fa-solid fa-plus-circle me-2"></i>Nueva Perspectiva
                     </button>
                 </div>

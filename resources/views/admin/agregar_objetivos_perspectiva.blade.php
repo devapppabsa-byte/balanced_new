@@ -38,6 +38,7 @@
                     {{session('success')}}
                 </div>
             @endif
+       
             @if (session('editado'))
                 <div class="text-white fw-bold ">
                     <i class="fa fa-check-circle mx-2"></i>
@@ -1080,7 +1081,7 @@
 
                             @forelse ($indicadores as $indicador)
 
-                                <div class="col-3 m-1 p-3 indicador-item"
+                                <div class="col-3 m-1 p-3 item-indicador"
                                     data-nombre="{{ strtolower($indicador->nombre) }}">
 
                                     <input type="checkbox"
@@ -1148,7 +1149,7 @@
                                 
                             <h3>Encuestas</h3>
                             @forelse ($encuestas as $encuesta)
-                                   <div class="col-3 m-1 p-3 indicador-item"
+                                   <div class="col-3 m-1 p-3 item-indicador"
                                         data-nombre="{{ strtolower($encuesta->nombre) }}">
 
                                         <input type="checkbox"
@@ -1215,7 +1216,7 @@
 
                             <h3>Normas</h3>
                             @forelse ($normas as $norma)
-                                   <div class="col-3 m-1 p-3 indicador-item"
+                                   <div class="col-3 m-1 p-3 item-indicador"
                                         data-nombre="{{ strtolower($norma->nombre) }}">
 
                                         <input type="checkbox"
@@ -1457,12 +1458,18 @@ document.addEventListener("DOMContentLoaded", function () {
 document.getElementById('buscadorIndicadores')
 .addEventListener('keyup', function () {
 
+    
     let filtro = this.value.toLowerCase();
     let contenedores = document.querySelectorAll('.item-indicador');
+   
 
+    console.log()
+    
     contenedores.forEach(function (contenedor) {
 
         let nombre = contenedor.dataset.nombre || '';
+
+        
 
         if (nombre.includes(filtro)) {
             contenedor.style.display = "";

@@ -50,8 +50,6 @@
 
                 <form action="#" method="GET">
                     <div class="d-flex flex-wrap align-items-end gap-3">
-
-                        <!-- Fecha inicio -->
                         <div>
                             <label class="form-label small text-muted fw-semibold mb-1">Selecciona una fecha:</label>
                             <div class="input-group input-group-sm">
@@ -59,15 +57,17 @@
                                     <i class="fa-solid fa-calendar-days text-primary"></i>
                                 </span>
 
-                                <select class="form-select" name="" id="">
-                                    <option value="" disabled selected>Selecciona una Fecha</option>
-                                </select>
+                                <select class="form-select" onchange="this.form.submit()" name="fecha_select">
+                                    <option value="" disabled selected>
+                                        Selecciona una Fecha
+                                    </option>
+                                    @foreach ($fechas_seleccionar as $fecha)
+                                        <option value="{{ $fecha }}" {{ $fecha == request('fecha_select') ? 'selected' : '' }}>
+                                            {{ Carbon::parse($fecha)->locale('es')->translatedFormat('F \d\e Y') }}
+                                        </option>                                        
+                                    @endforeach
 
-                                <input type="date"
-                                    name="fecha"
-                                    value="{{ request('fecha') ?? now()->format('Y-m-d') }}"
-                                    class="form-control border-0 bg-light datepicker"
-                                    onchange="this.form.submit()">
+                                </select>
                             </div>
                         </div>
                     </div>
