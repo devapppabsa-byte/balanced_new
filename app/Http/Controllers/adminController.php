@@ -141,11 +141,8 @@ $departamentos = Departamento::get();
 
 
    
-        
 
-
-
-        return view('admin.perfil_admin', compact('departamentos', 'cumplimiento'));
+       return view('admin.perfil_admin', compact('departamentos', 'cumplimiento'));
 
     }
 

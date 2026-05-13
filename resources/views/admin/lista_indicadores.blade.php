@@ -44,7 +44,7 @@
     @include('admin.assets.nav')
 
     
-    <div class="row">
+    {{-- <div class="row">
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body py-3 px-4 text-center">
 
@@ -74,7 +74,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 
 </div>

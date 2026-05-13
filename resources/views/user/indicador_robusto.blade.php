@@ -352,7 +352,7 @@
         @forelse ($campos_llenos as $campo_lleno)
         <div class="row p-2 justify-content-center">
             @if ($campo_lleno->nombre_campo == 'comentario')
-            <div class="col-12 bg-light table-responsive ck-content">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6  bg-light table-responsive ck-content">
                 <i class="fa-solid fa-circle-info"></i>Información Extra
                 <p>
                     {!!  $campo_lleno->informacion_campo !!}
